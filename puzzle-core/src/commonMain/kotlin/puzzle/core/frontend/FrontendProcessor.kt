@@ -60,7 +60,9 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {
 			totalDuration = totalDuration,
 			readDuration = source.duration,
 			lexerDuration = tokens.duration,
-			parserDuration = node.duration
+			lexerSpeed = source.value.size * 1_000_000L / tokens.duration.inWholeNanoseconds,
+			parserDuration = node.duration,
+			parserSpeed = tokens.value.size * 1_000_000L / node.duration.inWholeNanoseconds
 		)
 		node.value
 	}
@@ -72,7 +74,9 @@ private fun printDurations(
 	totalDuration: Duration,
 	readDuration: Duration,
 	lexerDuration: Duration,
+	lexerSpeed: Long,
 	parserDuration: Duration,
+	parserSpeed: Long,
 ) {
 	val message = buildString {
 		val path = path.absolutePath
@@ -82,15 +86,14 @@ private fun printDurations(
 		val readTime = readDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
 		val lexerTime = lexerDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
 		val parserTime = parserDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
-		append("[TOTAL] $totalTime")
-		append(" ".repeat(10 - totalTime.length))
-		append("[READ] $readTime")
-		append(" ".repeat(10 - readTime.length))
-		append("[LEXER] $lexerTime")
-		append(" ".repeat(10 - lexerTime.length))
-		append("[PARSER] $parserTime")
+		append("[TOTAL] ${totalTime.padEnd(10, ' ')}")
+		append("[READ] ${readTime.padEnd(10, ' ')}")
+		append("[LEXER] ${lexerTime.padEnd(10, ' ')}")
+		append("[PARSER] ${parserTime.padEnd(10, ' ')}")
+		append("[LEXER-SPEED] ${lexerSpeed.toString().padStart(5, ' ')} chars/ms  ")
+		append("[PARSER-SPEED] ${parserSpeed.toString().padStart(5, ' ')} tokens/ms\n")
 	}
-	println(message)
+	print(message)
 }
 
 private fun CharArray.getLineStarts(): IntArray {
