@@ -1,13 +1,12 @@
 package puzzle.core.exception
 
-import kotlinx.io.files.Path
 import puzzle.core.frontend.ast.AstNode
 import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.SourcePosition
 import puzzle.core.frontend.model.calcPosition
 import puzzle.core.frontend.token.PzlToken
-import puzzle.core.util.absolutePath
+import puzzle.core.util.PathWrapper
 
 private class SyntaxException(message: String) : Exception(message)
 
@@ -34,7 +33,7 @@ fun syntaxError(message: String, node: AstNode): Nothing {
 
 private fun buildSyntaxExceptionMessage(
 	message: String,
-	sourcePath: Path,
+	sourcePath: PathWrapper,
 	position: SourcePosition?,
 	token: PzlToken?,
 ): String = buildString {

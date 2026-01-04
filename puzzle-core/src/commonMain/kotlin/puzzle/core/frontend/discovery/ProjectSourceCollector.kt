@@ -1,8 +1,7 @@
 package puzzle.core.frontend.discovery
 
-import kotlinx.io.files.Path
 import kotlinx.serialization.json.Json
-import puzzle.core.util.*
+import puzzle.core.util.PathWrapper
 
 object ProjectSourceCollector {
 	
@@ -17,28 +16,35 @@ object ProjectSourceCollector {
 	
 	private val validGroupRegex = "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)*$".toRegex()
 	
-	fun collect(projectPath: Path): ProjectSource {
+	fun collect(projectPath: PathWrapper): ProjectSource {
 		if (!projectPath.exists() || !projectPath.isDirectory) {
 			error("错误: $projectPath 项目不存在")
 		}
 		val projectConfig = decodeProjectConfig(projectPath)
 		val moduleSources = projectConfig.modules.map { module ->
-			val modulePath = Path(projectPath, module)
+			val modulePath = PathWrapper(projectPath, module)
 			if (!modulePath.exists() || !modulePath.isDirectory) {
 				error("错误: $modulePath 模块不存在")
 			}
 			val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
-			val sourcePath = Path(modulePath, "src", "main")
+			val sourcePath = PathWrapper(modulePath, "src", "main")
 			if (!sourcePath.exists() || !sourcePath.isDirectory) {
 				error("错误: $sourcePath 源目录不存在")
 			}
 			getModuleSourceFiles(moduleConfig.name, sourcePath)
 		}
-		return ProjectSource(projectConfig.name, moduleSources)
+		val maxPathLength = moduleSources.maxOf { module ->
+			module.paths.maxOf { it.absolutePath.length }
+		}
+		return ProjectSource(
+			name = projectConfig.name,
+			modules = moduleSources,
+			maxPathLength = maxPathLength
+		)
 	}
 	
-	private fun decodeProjectConfig(projectPath: Path): ProjectConfig {
-		val projectConfigPath = Path(projectPath, "puzzle.json")
+	private fun decodeProjectConfig(projectPath: PathWrapper): ProjectConfig {
+		val projectConfigPath = PathWrapper(projectPath, "puzzle.json")
 		if (!projectConfigPath.exists() || !projectConfigPath.isFile) {
 			error("错误: $projectConfigPath 项目配置文件不存在")
 		}
@@ -58,8 +64,8 @@ object ProjectSourceCollector {
 		return projectConfig
 	}
 	
-	private fun decodeModuleConfig(modulePath: Path, projectConfig: ProjectConfig): ModuleConfig {
-		val moduleConfigPath = Path(modulePath, "puzzle.json")
+	private fun decodeModuleConfig(modulePath: PathWrapper, projectConfig: ProjectConfig): ModuleConfig {
+		val moduleConfigPath = PathWrapper(modulePath, "puzzle.json")
 		if (!moduleConfigPath.exists() || !moduleConfigPath.isFile) {
 			error("错误: $moduleConfigPath 模块配置文件不存在")
 		}
@@ -82,12 +88,12 @@ object ProjectSourceCollector {
 		return moduleConfig
 	}
 	
-	private fun getModuleSourceFiles(name: String, sourcePath: Path): ModuleSource {
+	private fun getModuleSourceFiles(name: String, sourcePath: PathWrapper): ModuleSource {
 		val paths = collectAllPzlPaths(sourcePath)
 		return ModuleSource(name, paths)
 	}
 	
-	private fun collectAllPzlPaths(path: Path): List<Path> {
+	private fun collectAllPzlPaths(path: PathWrapper): List<PathWrapper> {
 		if (!path.exists()) return emptyList()
 		when {
 			path.isFile && path.name.endsWith(".pzl") -> return listOf(path)

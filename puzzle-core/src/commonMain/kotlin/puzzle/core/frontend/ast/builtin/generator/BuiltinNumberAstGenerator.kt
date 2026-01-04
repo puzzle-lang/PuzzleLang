@@ -32,6 +32,14 @@ fun generateBuiltinNumberAst(): AstFile = buildBuiltinAst("Number.pzl") {
 					modifiers = listOf(OVERRIDE, BUILTIN)
 				)
 			}
+			NumberType.signedTypes.forEach { type ->
+				appendFun(
+					name = "<=>",
+					parameters = listOf(parameter("other", type)),
+					returnType = INT,
+					modifiers = listOf(OVERRIDE, BUILTIN)
+				)
+			}
 			arithmeticOperators.forEach { operator ->
 				NumberType.signedTypes.forEach { type ->
 					appendFun(
@@ -122,6 +130,25 @@ fun generateBuiltinNumberAst(): AstFile = buildBuiltinAst("Number.pzl") {
 					appendFun("**", listOf(parameter("x", DOUBLE)), DOUBLE, listOf(BUILTIN))
 				}
 			}
+			
+			appendFun(
+				name = "==",
+				parameters = listOf(parameter("other", "Any", isNullable = true)),
+				returnType = FLOAT,
+				modifiers = listOf(OVERRIDE, BUILTIN)
+			)
+			
+			appendFun(
+				name = "hash",
+				returnType = INT,
+				modifiers = listOf(OVERRIDE, BUILTIN)
+			)
+			
+			appendFun(
+				name = "toString",
+				returnType = "String",
+				modifiers = listOf(OVERRIDE, BUILTIN)
+			)
 		}
 	}
 }

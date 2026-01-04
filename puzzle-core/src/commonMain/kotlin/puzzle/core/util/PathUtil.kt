@@ -1,53 +1,83 @@
 package puzzle.core.util
 
-import kotlinx.io.*
+import kotlinx.io.InternalIoApi
+import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.readString
+import kotlinx.io.writeString
 
-val Path.absolutePath: String
-	get() = SystemFileSystem.resolve(this).toString()
-
-val Path.isFile: Boolean
-	get() = SystemFileSystem.metadataOrNull(this)?.isRegularFile ?: false
-
-val Path.isDirectory: Boolean
-	get() = SystemFileSystem.metadataOrNull(this)?.isDirectory ?: false
-
-fun Path.readText(): String {
-	return SystemFileSystem.source(this)
-		.buffered()
-		.use { it.readString() }
+fun PathWrapper(path: String): PathWrapper {
+	return PathWrapper.of(path)
 }
 
-@OptIn(InternalIoApi::class)
-fun Path.writeText(text: String) {
-	SystemFileSystem.source(this)
-		.buffered()
-		.buffer
-		.writeString(text)
+fun PathWrapper(base: PathWrapper, vararg parts: String): PathWrapper {
+	return PathWrapper.of(base, *parts)
 }
 
-fun Path.createDirectories(mustCreate: Boolean = false) {
-	SystemFileSystem.createDirectories(this, mustCreate = mustCreate)
-}
-
-fun Path.sink(append: Boolean = false): RawSink {
-	return SystemFileSystem.sink(this, append = append)
-}
-
-fun Path.exists(): Boolean {
-	return SystemFileSystem.exists(this)
-}
-
-fun Path.list(): Collection<Path> {
-	return SystemFileSystem.list(this)
-}
-
-fun Path.delete() {
-	if (!this.exists()) return
-	if (this.isFile) SystemFileSystem.delete(this)
-	if (this.isDirectory) {
-		this.list().forEach { it.delete() }
-		SystemFileSystem.delete(this)
+class PathWrapper private constructor(
+	private val path: Path,
+) {
+	
+	companion object {
+		
+		fun of(path: String): PathWrapper {
+			return PathWrapper(Path(path))
+		}
+		
+		fun of(base: PathWrapper, vararg parts: String): PathWrapper {
+			return PathWrapper(Path(base.path, *parts))
+		}
+	}
+	
+	val absolutePath by lazy {
+		SystemFileSystem.resolve(path).toString()
+	}
+	
+	val parent by lazy {
+		path.parent?.let { PathWrapper(it) }
+	}
+	
+	private val metadata by lazy {
+		SystemFileSystem.metadataOrNull(path)
+	}
+	
+	val isFile: Boolean by lazy { metadata?.isRegularFile ?: false }
+	
+	val isDirectory: Boolean by lazy { metadata?.isDirectory ?: false }
+	
+	val name = path.name
+	
+	fun readText(): String {
+		return SystemFileSystem.source(path)
+			.buffered()
+			.use { it.readString() }
+	}
+	
+	@OptIn(InternalIoApi::class)
+	fun writeText(text: String, append: Boolean = false) {
+		SystemFileSystem.sink(path, append)
+			.buffered()
+			.use { it.writeString(text) }
+	}
+	
+	fun createDirectories(mustCreate: Boolean = false) {
+		SystemFileSystem.createDirectories(path, mustCreate)
+	}
+	
+	fun exists(): Boolean {
+		return SystemFileSystem.exists(path)
+	}
+	
+	fun list(): List<PathWrapper> {
+		return SystemFileSystem.list(path).map { PathWrapper(it) }
+	}
+	
+	fun deleteAll() {
+		if (!exists()) return
+		if (isFile) SystemFileSystem.delete(path)
+		if (!isDirectory) return
+		this.list().forEach { it.deleteAll() }
+		SystemFileSystem.delete(path)
 	}
 }

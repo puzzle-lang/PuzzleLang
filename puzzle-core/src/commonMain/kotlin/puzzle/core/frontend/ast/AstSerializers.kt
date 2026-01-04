@@ -1,6 +1,5 @@
 package puzzle.core.frontend.ast
 
-import kotlinx.io.files.Path
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -12,7 +11,7 @@ import puzzle.core.frontend.token.kinds.AssignmentKind
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.OperatorKind
 import puzzle.core.frontend.token.kinds.SymbolKind
-import puzzle.core.util.absolutePath
+import puzzle.core.util.PathWrapper
 
 val AstSerializersModule = SerializersModule {
 	contextual(DotStringListSerializer)
@@ -20,7 +19,7 @@ val AstSerializersModule = SerializersModule {
 	contextual(OperatorKindSerializer)
 	contextual(ModifierKindSerializer)
 	contextual(AssignmentKindSerializer)
-	contextual(PathSerializer)
+	contextual(PathWrapperSerializer)
 }
 
 private object DotStringListSerializer : KSerializer<List<String>> {
@@ -107,19 +106,19 @@ private object AssignmentKindSerializer : KSerializer<AssignmentKind> {
 	}
 }
 
-private object PathSerializer : KSerializer<Path> {
+private object PathWrapperSerializer : KSerializer<PathWrapper> {
 	
 	override val descriptor = PrimitiveSerialDescriptor(
-		PathSerializer::class.qualifiedName!!,
+		PathWrapperSerializer::class.qualifiedName!!,
 		PrimitiveKind.STRING
 	)
 	
-	override fun serialize(encoder: Encoder, value: Path) {
+	override fun serialize(encoder: Encoder, value: PathWrapper) {
 		encoder.encodeString(value.absolutePath)
 	}
 	
-	override fun deserialize(decoder: Decoder): Path {
+	override fun deserialize(decoder: Decoder): PathWrapper {
 		val path = decoder.decodeString()
-		return Path(path)
+		return PathWrapper(path)
 	}
 }

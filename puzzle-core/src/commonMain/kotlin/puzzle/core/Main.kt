@@ -2,9 +2,9 @@ package puzzle.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.io.files.Path
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.processFrontend
+import puzzle.core.util.PathWrapper
 import puzzle.core.util.getCurrentMemoryUsage
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
@@ -14,9 +14,8 @@ fun main(args: Array<out String>) {
 	when (command) {
 		"build" -> {
 			val projectPath = args.drop(1).firstOrNull()
-				?.let { Path(it) }
 				?: return println("缺少项目路径, 使用 puzzle help 查看使用手册")
-			build(projectPath)
+			build(PathWrapper(projectPath))
 		}
 		
 		"help" -> help()
@@ -25,7 +24,7 @@ fun main(args: Array<out String>) {
 	}
 }
 
-private fun build(projectPath: Path) = runBlocking(Dispatchers.Default) {
+private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
 	val value = measureTimedValue { processFrontend(projectPath) }
 	println("执行用时: ${value.duration}")
 	val usage = getCurrentMemoryUsage()

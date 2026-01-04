@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.io.files.Path
 import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.generator.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
@@ -15,17 +14,20 @@ import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.parser.PzlParser
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.semantics.PzlSemantics
-import puzzle.core.util.absolutePath
-import puzzle.core.util.readText
+import puzzle.core.util.PathWrapper
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTimedValue
 
-suspend fun processFrontend(projectPath: Path): AstProject = coroutineScope {
-	val projectSource = ProjectSourceCollector.collect(projectPath)
+suspend fun processFrontend(projectPath: PathWrapper): AstProject = coroutineScope {
+	val projectSourceValue = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
+	val projectSource = projectSourceValue.value
 	val jobs = projectSource.modules.map { module ->
 		async(Dispatchers.Default) {
 			val jobs = module.paths.map { path ->
 				async(Dispatchers.Default) {
-					processFile(path)
+					processFile(path, projectSource.maxPathLength)
 				}
 			}
 			val nodes = jobs.awaitAll()
@@ -35,26 +37,60 @@ suspend fun processFrontend(projectPath: Path): AstProject = coroutineScope {
 	val projectModules = jobs.awaitAll()
 	val builtinModule = BuiltinAstGenerator.generate()
 	val project = AstProject(
-		projectSource.name,
+		name = projectSource.name,
 		modules = projectModules + builtinModule
 	)
 	PzlSemantics.analyze(project)
 	project
 }
 
-private fun processFile(path: Path): AstFile {
-	val value = measureTimedValue {
-		val source = path.readText().toCharArray()
-		val lineStarts = source.getLineStarts()
-		val context = PzlContext(path, lineStarts)
-		context(context) {
-			val tokens = FileLexerScanner.scan(source)
-			val cursor = PzlTokenCursor(tokens)
-			PzlParser.parse(cursor)
-		}
+private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {
+	val markStart = markNow()
+	val source = measureTimedValue { path.readText().toCharArray() }
+	val lineStarts = source.value.getLineStarts()
+	val context = PzlContext(path, lineStarts)
+	return context(context) {
+		val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
+		val cursor = PzlTokenCursor(tokens.value)
+		val node = measureTimedValue { PzlParser.parse(cursor) }
+		val totalDuration = markStart.elapsedNow()
+		printDurations(
+			path = path,
+			maxPathLength = maxPathLength,
+			totalDuration = totalDuration,
+			readDuration = source.duration,
+			lexerDuration = tokens.duration,
+			parserDuration = node.duration
+		)
+		node.value
 	}
-	println("${path.absolutePath} --> ${value.duration}")
-	return value.value
+}
+
+private fun printDurations(
+	path: PathWrapper,
+	maxPathLength: Int,
+	totalDuration: Duration,
+	readDuration: Duration,
+	lexerDuration: Duration,
+	parserDuration: Duration,
+) {
+	val message = buildString {
+		val path = path.absolutePath
+		append(path)
+		append(" ${"-".repeat(maxPathLength - path.length)}--> ")
+		val totalTime = totalDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
+		val readTime = readDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
+		val lexerTime = lexerDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
+		val parserTime = parserDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
+		append("[TOTAL] $totalTime")
+		append(" ".repeat(10 - totalTime.length))
+		append("[READ] $readTime")
+		append(" ".repeat(10 - readTime.length))
+		append("[LEXER] $lexerTime")
+		append(" ".repeat(10 - lexerTime.length))
+		append("[PARSER] $parserTime")
+	}
+	println(message)
 }
 
 private fun CharArray.getLineStarts(): IntArray {

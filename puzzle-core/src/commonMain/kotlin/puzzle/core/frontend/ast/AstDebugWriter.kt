@@ -1,11 +1,8 @@
 package puzzle.core.frontend.ast
 
-import kotlinx.io.buffered
-import kotlinx.io.files.Path
-import kotlinx.io.writeString
 import kotlinx.serialization.json.Json
 import puzzle.core.frontend.model.AstProject
-import puzzle.core.util.*
+import puzzle.core.util.PathWrapper
 
 object AstDebugWriter {
 	
@@ -17,10 +14,10 @@ object AstDebugWriter {
 		serializersModule = AstSerializersModule
 	}
 	
-	fun write(projectPath: Path, project: AstProject) {
-		val buildPath = Path(projectPath, "build", "ast")
+	fun write(projectPath: PathWrapper, project: AstProject) {
+		val buildPath = PathWrapper(projectPath, "build", "ast")
 		if (buildPath.exists()) {
-			buildPath.delete()
+			buildPath.deleteAll()
 		}
 		project.modules.forEach { module ->
 			module.nodes.forEach { node ->
@@ -34,20 +31,22 @@ object AstDebugWriter {
 				if (!astPath.parent!!.exists()) {
 					astPath.parent!!.createDirectories()
 				}
-				astPath.sink().buffered().use {
-					it.writeString(json.encodeToString(node))
-				}
+				astPath.writeText(json.encodeToString(node))
 			}
 		}
 	}
 	
-	private fun getBuiltinPath(buildPath: Path, moduleName: String, nodeName: String): Path {
+	private fun getBuiltinPath(buildPath: PathWrapper, moduleName: String, nodeName: String): PathWrapper {
 		val nodeName = nodeName.removeSuffix(".pzl")
-		return Path(buildPath, moduleName, "src", "main", "puzzle", "$nodeName.json")
+		return PathWrapper(buildPath, moduleName, "src", "main", "puzzle", "$nodeName.json")
 	}
 	
-	private fun getAstPath(projectPath: Path, buildPath: Path, sourcePath: Path): Path {
+	private fun getAstPath(
+		projectPath: PathWrapper,
+		buildPath: PathWrapper,
+		sourcePath: PathWrapper,
+	): PathWrapper {
 		val path = sourcePath.absolutePath.removePrefix(projectPath.absolutePath).removeSuffix(".pzl")
-		return Path(buildPath, "$path.json")
+		return PathWrapper(buildPath, "$path.json")
 	}
 }

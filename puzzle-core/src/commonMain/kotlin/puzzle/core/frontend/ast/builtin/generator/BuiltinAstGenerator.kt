@@ -12,7 +12,9 @@ object BuiltinAstGenerator {
 				name = "puzzle-builtin-ast",
 				nodes = listOf(
 					generateBuiltinAnyAst(),
-					generateBuiltinNumberAst()
+					generateComparableAst(),
+					generateBuiltinNumberAst(),
+					generateBuiltinBooleanAst(),
 				)
 			)
 		}

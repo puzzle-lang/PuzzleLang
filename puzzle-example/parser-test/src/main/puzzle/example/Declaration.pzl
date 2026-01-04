@@ -4,7 +4,7 @@ package puzzle.example
  * 操作符测试
  */
 fun operatorTest() {
-    var num = 0
+    val num = 0
     val plus = 1 + 2
     val prefixPlus = ++num
     val suffixPlus = num++
