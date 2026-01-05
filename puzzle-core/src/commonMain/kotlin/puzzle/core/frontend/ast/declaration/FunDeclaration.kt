@@ -21,7 +21,7 @@ class FunDeclaration(
 	val typeSpec: TypeSpec?,
 	val contextSpec: DeclarationContextSpec?,
 	val annotationCalls: List<AnnotationCall>,
-	val body: List<Statement>,
+	val body: List<Statement>?,
 	override val location: SourceLocation,
 ) : TopLevelAllowedDeclaration
 

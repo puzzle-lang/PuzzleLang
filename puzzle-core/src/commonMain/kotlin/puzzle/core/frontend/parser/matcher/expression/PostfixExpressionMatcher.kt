@@ -1,21 +1,21 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
+import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.parser.parser.expression.checkIdentifier
 import puzzle.core.frontend.parser.parser.expression.parsePostfixExpression
 import puzzle.core.frontend.token.kinds.ContextualKind.SUPER
 import puzzle.core.frontend.token.kinds.ContextualKind.THIS
-import puzzle.core.frontend.token.kinds.SymbolKind.HASH
+import puzzle.core.frontend.token.kinds.SymbolKind.AT
 
 object PostfixExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<Expression> {
 	
 	context(cursor: PzlTokenCursor)
 	override fun match(left: Expression?): Boolean {
 		return when {
-			cursor.checkIdentifier() && cursor.offsetOrNull(1)?.kind != HASH -> {
+			cursor.checkIdentifier() && cursor.offsetOrNull(1)?.kind != AT -> {
 				cursor.advance()
 				true
 			}

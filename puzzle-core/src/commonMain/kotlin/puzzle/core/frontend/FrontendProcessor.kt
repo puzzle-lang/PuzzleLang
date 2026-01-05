@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import puzzle.core.frontend.ast.AstFile
-import puzzle.core.frontend.ast.builtin.generator.BuiltinAstGenerator
+import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
 import puzzle.core.frontend.lexer.FileLexerScanner
 import puzzle.core.frontend.model.AstModule

@@ -1,10 +1,13 @@
 package puzzle.core.frontend.ast.parameter
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.ast.AstNode
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.type.TypeReference
+import puzzle.core.frontend.model.SourceLocation
+import puzzle.core.frontend.token.kinds.ContextualKind
+import puzzle.core.frontend.token.kinds.OperatorKind
+import puzzle.core.frontend.token.kinds.PzlTokenKind
 
 @Serializable
 class TypeSpec(
@@ -31,10 +34,10 @@ class Variance(
 
 @Serializable
 enum class VarianceKind(
-	val value: String,
+	val kind: PzlTokenKind,
 ) {
 	
-	IN("in"),
+	IN(OperatorKind.IN),
 	
-	OUT("out")
+	OUT(ContextualKind.OUT)
 }

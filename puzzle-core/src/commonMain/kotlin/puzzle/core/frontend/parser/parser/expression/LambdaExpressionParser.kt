@@ -14,7 +14,7 @@ import puzzle.core.frontend.token.kinds.SymbolKind.*
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseLambdaExpression(): LambdaExpression {
-	val containsLabel = cursor.offset(-2).kind == HASH
+	val containsLabel = cursor.offset(-2).kind == AT
 	val start = if (containsLabel) cursor.offset(-3).location else cursor.previous.location
 	val label = if (containsLabel) cursor.offset(-3).toIdentifier() else null
 	val references = parseLambdaParameterReferences()

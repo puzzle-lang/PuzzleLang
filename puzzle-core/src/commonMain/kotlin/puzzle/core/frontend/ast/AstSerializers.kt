@@ -12,6 +12,7 @@ import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.OperatorKind
 import puzzle.core.frontend.token.kinds.SymbolKind
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.path
 
 val AstSerializersModule = SerializersModule {
 	contextual(DotStringListSerializer)
@@ -119,6 +120,6 @@ private object PathWrapperSerializer : KSerializer<PathWrapper> {
 	
 	override fun deserialize(decoder: Decoder): PathWrapper {
 		val path = decoder.decodeString()
-		return PathWrapper(path)
+		return path(path)
 	}
 }

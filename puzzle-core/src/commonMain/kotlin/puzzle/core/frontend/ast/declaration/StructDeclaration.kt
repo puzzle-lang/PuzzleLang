@@ -16,7 +16,7 @@ class StructDeclaration(
 	val name: Identifier,
 	val docComment: DocComment?,
 	val modifiers: List<Modifier>,
-	val primaryAnnotationCalls: List<AnnotationCall>,
+	val primaryCtorAnnotationCalls: List<AnnotationCall>,
 	val primaryCtorModifiers: List<Modifier>,
 	val parameters: List<Parameter>,
 	val superTypes: List<SuperTypeReference>,

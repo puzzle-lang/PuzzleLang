@@ -2,6 +2,7 @@ package puzzle.core.frontend.discovery
 
 import kotlinx.serialization.json.Json
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.path
 
 object ProjectSourceCollector {
 	
@@ -22,12 +23,12 @@ object ProjectSourceCollector {
 		}
 		val projectConfig = decodeProjectConfig(projectPath)
 		val moduleSources = projectConfig.modules.map { module ->
-			val modulePath = PathWrapper(projectPath, module)
+			val modulePath = path(projectPath, module)
 			if (!modulePath.exists() || !modulePath.isDirectory) {
 				error("错误: $modulePath 模块不存在")
 			}
 			val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
-			val sourcePath = PathWrapper(modulePath, "src", "main")
+			val sourcePath = path(modulePath, "src", "main")
 			if (!sourcePath.exists() || !sourcePath.isDirectory) {
 				error("错误: $sourcePath 源目录不存在")
 			}
@@ -44,7 +45,7 @@ object ProjectSourceCollector {
 	}
 	
 	private fun decodeProjectConfig(projectPath: PathWrapper): ProjectConfig {
-		val projectConfigPath = PathWrapper(projectPath, "puzzle.json")
+		val projectConfigPath = path(projectPath, "puzzle.json")
 		if (!projectConfigPath.exists() || !projectConfigPath.isFile) {
 			error("错误: $projectConfigPath 项目配置文件不存在")
 		}
@@ -65,7 +66,7 @@ object ProjectSourceCollector {
 	}
 	
 	private fun decodeModuleConfig(modulePath: PathWrapper, projectConfig: ProjectConfig): ModuleConfig {
-		val moduleConfigPath = PathWrapper(modulePath, "puzzle.json")
+		val moduleConfigPath = path(modulePath, "puzzle.json")
 		if (!moduleConfigPath.exists() || !moduleConfigPath.isFile) {
 			error("错误: $moduleConfigPath 模块配置文件不存在")
 		}

@@ -1,12 +1,12 @@
 package puzzle.core.frontend.parser.parser.statement
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.statement.ForDestructurePattern
 import puzzle.core.frontend.ast.statement.ForStatement
 import puzzle.core.frontend.ast.statement.ForValuePattern
+import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -19,12 +19,12 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.OperatorKind.IN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
+import puzzle.core.frontend.token.kinds.SymbolKind.AT
 import puzzle.core.frontend.token.kinds.SymbolKind.COLON
-import puzzle.core.frontend.token.kinds.SymbolKind.HASH
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseForStatement(): ForStatement {
-	val containsLabel = cursor.offset(-2).kind == HASH
+	val containsLabel = cursor.offset(-2).kind == AT
 	val start = if (containsLabel) cursor.offset(-3).location else cursor.previous.location
 	val label = if (containsLabel) cursor.offset(-3).toIdentifier() else null
 	cursor.expect(LPAREN, "for 语句缺少 '('")

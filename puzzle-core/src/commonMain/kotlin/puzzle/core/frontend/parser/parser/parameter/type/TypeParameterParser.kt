@@ -1,19 +1,19 @@
 package puzzle.core.frontend.parser.parser.parameter.type
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.ast.parameter.Variance
 import puzzle.core.frontend.ast.parameter.VarianceKind
+import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.parameter.parseTypeExpansion
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
 import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
-import puzzle.core.frontend.token.kinds.ContextualKind.OUT
-import puzzle.core.frontend.token.kinds.OperatorKind.*
+import puzzle.core.frontend.token.kinds.OperatorKind.BIT_AND
+import puzzle.core.frontend.token.kinds.OperatorKind.GT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
@@ -62,9 +62,10 @@ private fun parseTypeParameter(): TypeParameter {
 
 context(cursor: PzlTokenCursor)
 private fun parseVariance(): Variance? {
-	return when {
-		cursor.match(IN) -> Variance(VarianceKind.IN, cursor.previous.location)
-		cursor.match(OUT) -> Variance(VarianceKind.OUT, cursor.previous.location)
-		else -> null
+	VarianceKind.entries.forEach { kind ->
+		if (cursor.match(kind.kind)) {
+			return Variance(kind, cursor.previous.location)
+		}
 	}
+	return null
 }

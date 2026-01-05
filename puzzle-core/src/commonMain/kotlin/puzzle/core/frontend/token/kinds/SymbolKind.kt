@@ -21,7 +21,6 @@ sealed class SymbolKind(
 				COLON, QUESTION, ELVIS,
 				AT,
 				ARROW,
-				HASH,
 				TRIPLE_DOT,
 				PLUS_DOUBLE_DOT
 			)
@@ -37,8 +36,6 @@ sealed class SymbolKind(
 	object AT : SymbolKind("@")
 	
 	object ARROW : SymbolKind("->")
-	
-	object HASH : SymbolKind("#")
 	
 	object TRIPLE_DOT : SymbolKind("...")
 	

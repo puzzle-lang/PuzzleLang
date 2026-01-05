@@ -22,7 +22,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseClassDeclaration(header: DeclarationHeader, start: SourceLocation): ClassDeclaration {
 	val name = parseIdentifier(IdentifierTarget.CLASS)
-	val primaryAnnotationCalls = parseAnnotationCalls()
+	val primaryCtorAnnotationCalls = parseAnnotationCalls()
 	val primaryCtorModifiers = parseModifiers()
 	primaryCtorModifiers.check(ModifierTarget.CTOR)
 	val parameters = parseParameters(ParameterTarget.CLASS)
@@ -36,7 +36,7 @@ fun parseClassDeclaration(header: DeclarationHeader, start: SourceLocation): Cla
 		name = name,
 		docComment = header.docComment,
 		modifiers = header.modifiers,
-		primaryAnnotationCalls = primaryAnnotationCalls,
+		primaryCtorAnnotationCalls = primaryCtorAnnotationCalls,
 		primaryCtorModifiers = primaryCtorModifiers,
 		parameters = parameters,
 		typeSpec = header.typeSpec,

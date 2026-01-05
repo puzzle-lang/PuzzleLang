@@ -31,7 +31,7 @@ fun parseObjectDeclaration(
 	} else {
 		parseIdentifier(IdentifierTarget.OBJECT)
 	}
-	val primaryAnnotationCalls = parseAnnotationCalls()
+	val primaryCtorAnnotationCalls = parseAnnotationCalls()
 	val primaryCtorModifiers = parseModifiers()
 	primaryCtorModifiers.check(ModifierTarget.CTOR)
 	val parameters = parseParameters(ParameterTarget.OBJECT)
@@ -45,7 +45,7 @@ fun parseObjectDeclaration(
 		name = name,
 		docComment = header.docComment,
 		modifiers = header.modifiers,
-		primaryAnnotationCalls = primaryAnnotationCalls,
+		primaryCtorAnnotationCalls = primaryCtorAnnotationCalls,
 		primaryCtorModifiers = primaryCtorModifiers,
 		parameters = parameters,
 		superTypes = superTypes,

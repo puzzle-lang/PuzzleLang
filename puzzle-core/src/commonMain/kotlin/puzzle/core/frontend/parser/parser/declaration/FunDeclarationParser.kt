@@ -66,7 +66,7 @@ fun parseFunDeclaration(header: DeclarationHeader, start: SourceLocation): FunDe
 			SingleReturnSpec(type)
 		}
 	}
-	val expressions = if (cursor.match(LBRACE)) parseStatements() else emptyList()
+	val expressions = if (cursor.match(LBRACE)) parseStatements() else null
 	val end = cursor.previous.location
 	return FunDeclaration(
 		name = funName,

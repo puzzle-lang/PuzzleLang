@@ -1,12 +1,13 @@
-package puzzle.core.frontend.ast.builtin.generator
+package puzzle.core.frontend.ast.builtin
 
+import puzzle.core.frontend.ast.builtin.generator.*
 import puzzle.core.frontend.model.AstModule
+import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
 
 object BuiltinAstGenerator {
 	
 	fun generate(): AstModule {
-		println("Puzzle 内置 AST 生成中...")
 		val value = measureTimedValue {
 			AstModule(
 				name = "puzzle-builtin-ast",
@@ -14,11 +15,12 @@ object BuiltinAstGenerator {
 					generateBuiltinAnyAst(),
 					generateComparableAst(),
 					generateBuiltinNumberAst(),
+					generateBuiltinCharAst(),
 					generateBuiltinBooleanAst(),
 				)
 			)
 		}
-		println("生成完成，用时: ${value.duration}")
+		println("内建类型生成完成，用时: ${value.duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}")
 		return value.value
 	}
 }

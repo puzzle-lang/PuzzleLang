@@ -22,7 +22,7 @@ import puzzle.core.frontend.token.kinds.ContextualKind.WITH
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseStructDeclaration(header: DeclarationHeader, start: SourceLocation): StructDeclaration {
 	val name = parseIdentifier(IdentifierTarget.STRUCT)
-	val primaryAnnotationCalls = parseAnnotationCalls()
+	val primaryCtorAnnotationCalls = parseAnnotationCalls()
 	val primaryCtorModifiers = parseModifiers()
 	val parameters = parseParameters(ParameterTarget.STRUCT)
 	val superTypes = parseSuperTypes(SuperTypeTarget.STRUCT)
@@ -41,7 +41,7 @@ fun parseStructDeclaration(header: DeclarationHeader, start: SourceLocation): St
 		name = name,
 		docComment = header.docComment,
 		modifiers = header.modifiers,
-		primaryAnnotationCalls = primaryAnnotationCalls,
+		primaryCtorAnnotationCalls = primaryCtorAnnotationCalls,
 		primaryCtorModifiers = primaryCtorModifiers,
 		parameters = parameters,
 		superTypes = superTypes,

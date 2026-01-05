@@ -11,7 +11,7 @@ import puzzle.core.util.PathWrapper
 class AstFile(
 	val name: String,
 	@Contextual
-	val path: PathWrapper?,
+	val sourcePath: PathWrapper?,
 	val isBuiltin: Boolean,
 	val packageDeclaration: PackageDeclaration?,
 	val importDeclarations: List<ImportDeclaration>,

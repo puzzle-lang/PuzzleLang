@@ -3,6 +3,9 @@ package puzzle.core.frontend.ast
 import kotlinx.serialization.json.Json
 import puzzle.core.frontend.model.AstProject
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.path
+import kotlin.time.DurationUnit
+import kotlin.time.measureTime
 
 object AstDebugWriter {
 	
@@ -15,30 +18,33 @@ object AstDebugWriter {
 	}
 	
 	fun write(projectPath: PathWrapper, project: AstProject) {
-		val buildPath = PathWrapper(projectPath, "build", "ast")
-		if (buildPath.exists()) {
-			buildPath.deleteAll()
-		}
-		project.modules.forEach { module ->
-			module.nodes.forEach { node ->
-				if (node.path == null && !node.isBuiltin) return@forEach
-				val astPath = if (node.isBuiltin) {
-					getBuiltinPath(buildPath, module.name, node.name)
-				} else {
-					getAstPath(projectPath, buildPath, node.path!!)
+		val duration = measureTime {
+			val buildAstPath = path(projectPath, "build", "ast")
+			if (buildAstPath.exists()) {
+				buildAstPath.deleteAll()
+			}
+			project.modules.forEach { module ->
+				module.nodes.forEach { node ->
+					if (node.sourcePath == null && !node.isBuiltin) return@forEach
+					val astPath = if (node.isBuiltin) {
+						getBuiltinPath(buildAstPath, module.name, node.name)
+					} else {
+						getAstPath(projectPath, buildAstPath, node.sourcePath!!)
+					}
+					if (astPath.parent == null) return@forEach
+					if (!astPath.parent!!.exists()) {
+						astPath.parent!!.createDirectories()
+					}
+					astPath.writeText(json.encodeToString(node))
 				}
-				if (astPath.parent == null) return@forEach
-				if (!astPath.parent!!.exists()) {
-					astPath.parent!!.createDirectories()
-				}
-				astPath.writeText(json.encodeToString(node))
 			}
 		}
+		println("AST 保存用时: ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}")
 	}
 	
 	private fun getBuiltinPath(buildPath: PathWrapper, moduleName: String, nodeName: String): PathWrapper {
 		val nodeName = nodeName.removeSuffix(".pzl")
-		return PathWrapper(buildPath, moduleName, "src", "main", "puzzle", "$nodeName.json")
+		return path(buildPath, moduleName, "src", "main", "puzzle", "$nodeName.json")
 	}
 	
 	private fun getAstPath(
@@ -47,6 +53,6 @@ object AstDebugWriter {
 		sourcePath: PathWrapper,
 	): PathWrapper {
 		val path = sourcePath.absolutePath.removePrefix(projectPath.absolutePath).removeSuffix(".pzl")
-		return PathWrapper(buildPath, "$path.json")
+		return path(buildPath, "$path.json")
 	}
 }

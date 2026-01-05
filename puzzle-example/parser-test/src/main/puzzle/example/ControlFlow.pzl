@@ -62,19 +62,19 @@ fun main() {
         println("negative, try again")
     }
 
-    loop1# loop {
+    loop1@ loop {
         val num = randomInt()
         if (num % 2 == 0) {
-            break#loop1 num
+            break@loop1 num
         }
     }
 
     loop if (randomInt() % 100 == 0) break
 
     val items = listOf("1", "3", "5")
-    name1# for (item in items) {
+    name1@ for (item in items) {
         println(item)
-        if (item == "1") break#name1
+        if (item == "1") break@name1
     }
     for ([index, item] in items) {
         println("index: " + index + ", item: " + item)
@@ -86,12 +86,12 @@ fun main() {
 
     do i++ while (i < 10)
 
-    val lambda = lambda1# {
-        return#lambda1
+    val lambda = lambda1@ {
+        return@lambda1
     }
 }
 
 fun add(num1: Int, num2: Int): Int {
     if (num1 == num2) return num1 * 2
-    return#add num1 + num2
+    return@add num1 + num2
 }

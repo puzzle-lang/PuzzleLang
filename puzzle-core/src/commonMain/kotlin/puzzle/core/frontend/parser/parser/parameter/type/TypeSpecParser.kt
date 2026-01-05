@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.parser.parameter.type
 
 import puzzle.core.exception.syntaxError
+import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.token.kinds.ContextualKind.REIFIED
 import puzzle.core.frontend.token.kinds.ContextualKind.TYPE
 import puzzle.core.frontend.token.kinds.OperatorKind.LT
@@ -26,7 +26,7 @@ fun TypeSpec.check(target: TypeTarget) {
 	if (!target.allowsVariance) {
 		this.parameters.forEach {
 			if (it.variance != null) {
-				syntaxError("${target.label}声明不支持使用 '${it.variance.kind.value}'", cursor[it.location.start])
+				syntaxError("${target.label}声明不支持使用 '${it.variance.kind.kind.value}'", cursor[it.location.start])
 			}
 		}
 	}

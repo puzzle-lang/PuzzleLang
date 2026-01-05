@@ -61,7 +61,7 @@ class PzlTokenCursor(
 	}
 	
 	fun match(kind1: PzlTokenKind, kind2: PzlTokenKind, vararg kinds: PzlTokenKind): Boolean {
-		val kinds = arrayOf(kind1, kind2) + kinds
+		val kinds = arrayOf(kind1, kind2, *kinds)
 		kinds.forEachIndexed { offset, kind ->
 			val token = offsetOrNull(offset = offset) ?: return false
 			if (token.kind != kind) {

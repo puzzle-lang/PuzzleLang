@@ -6,7 +6,8 @@ import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.processFrontend
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.getCurrentMemoryUsage
-import kotlin.time.measureTime
+import puzzle.core.util.path
+import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
 
 fun main(args: Array<out String>) {
@@ -15,7 +16,7 @@ fun main(args: Array<out String>) {
 		"build" -> {
 			val projectPath = args.drop(1).firstOrNull()
 				?: return println("缺少项目路径, 使用 puzzle help 查看使用手册")
-			build(PathWrapper(projectPath))
+			build(path(projectPath))
 		}
 		
 		"help" -> help()
@@ -26,11 +27,10 @@ fun main(args: Array<out String>) {
 
 private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
 	val value = measureTimedValue { processFrontend(projectPath) }
-	println("执行用时: ${value.duration}")
+	println("执行用时: ${value.duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}")
 	val usage = getCurrentMemoryUsage()
 	println("内存使用: $usage")
-	val writeDuration = measureTime { AstDebugWriter.write(projectPath, value.value) }
-	println("AST 已保存: $writeDuration")
+	AstDebugWriter.write(projectPath, value.value)
 }
 
 private fun help() {

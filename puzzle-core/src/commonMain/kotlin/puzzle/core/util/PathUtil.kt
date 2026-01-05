@@ -7,11 +7,11 @@ import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readString
 import kotlinx.io.writeString
 
-fun PathWrapper(path: String): PathWrapper {
+fun path(path: String): PathWrapper {
 	return PathWrapper.of(path)
 }
 
-fun PathWrapper(base: PathWrapper, vararg parts: String): PathWrapper {
+fun path(base: PathWrapper, vararg parts: String): PathWrapper {
 	return PathWrapper.of(base, *parts)
 }
 

@@ -3,8 +3,8 @@
 package puzzle.core.frontend.ast.parameter
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 class Quantifier(

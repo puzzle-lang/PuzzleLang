@@ -17,9 +17,10 @@ fun parseFile(): AstFile {
 		importDeclarations += parseImportDeclaration()
 	}
 	val declarations = parseDeclarations()
+	val sourcePath = context.sourcePath
 	return AstFile(
-		name = context.sourcePath.name,
-		path = context.sourcePath,
+		name = sourcePath.name.removeSuffix(".pzl"),
+		sourcePath = sourcePath,
 		isBuiltin = false,
 		packageDeclaration = packageDeclaration,
 		importDeclarations = importDeclarations,

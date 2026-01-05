@@ -23,3 +23,5 @@ type<T>
 struct Data(
     val type1: T
 )
+
+struct Int

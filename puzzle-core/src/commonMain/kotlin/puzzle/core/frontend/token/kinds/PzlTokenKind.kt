@@ -6,5 +6,5 @@ sealed interface PzlTokenKind {
 }
 
 class IdentifierKind(
-	override val value: String
+	override val value: String,
 ) : PzlTokenKind
