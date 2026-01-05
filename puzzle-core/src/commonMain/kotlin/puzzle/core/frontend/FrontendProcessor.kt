@@ -57,12 +57,12 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {
 		printDurations(
 			path = path,
 			maxPathLength = maxPathLength,
+			charSize = source.value.size,
+			tokenSize = tokens.value.size,
 			totalDuration = totalDuration,
 			readDuration = source.duration,
 			lexerDuration = tokens.duration,
-			lexerSpeed = source.value.size * 1_000_000L / tokens.duration.inWholeNanoseconds,
 			parserDuration = node.duration,
-			parserSpeed = tokens.value.size * 1_000_000L / node.duration.inWholeNanoseconds
 		)
 		node.value
 	}
@@ -71,27 +71,29 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {
 private fun printDurations(
 	path: PathWrapper,
 	maxPathLength: Int,
+	charSize: Int,
+	tokenSize: Int,
 	totalDuration: Duration,
 	readDuration: Duration,
 	lexerDuration: Duration,
-	lexerSpeed: Long,
 	parserDuration: Duration,
-	parserSpeed: Long,
 ) {
 	val message = buildString {
 		val path = path.absolutePath
 		append(path)
 		append(" ${"-".repeat(maxPathLength - path.length)}--> ")
-		val totalTime = totalDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
-		val readTime = readDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
-		val lexerTime = lexerDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
-		val parserTime = parserDuration.toString(DurationUnit.MILLISECONDS, decimals = 3)
-		append("[TOTAL] ${totalTime.padEnd(10, ' ')}")
-		append("[READ] ${readTime.padEnd(10, ' ')}")
-		append("[LEXER] ${lexerTime.padEnd(10, ' ')}")
-		append("[PARSER] ${parserTime.padEnd(10, ' ')}")
-		append("[LEXER-SPEED] ${lexerSpeed.toString().padStart(5, ' ')} chars/ms  ")
-		append("[PARSER-SPEED] ${parserSpeed.toString().padStart(5, ' ')} tokens/ms\n")
+		val totalTime = totalDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
+		val readTime = readDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
+		val lexerTime = lexerDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
+		val parserTime = parserDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
+		val lexerSpeed = (charSize * 1_000_000L / lexerDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " chars/ms"
+		val parserSpeed = (tokenSize * 1_000_000L / parserDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " tokens/ms"
+		val charSize = charSize.toString().padStart(6, ' ')
+		val tokenSize = tokenSize.toString().padStart(6, ' ')
+		append("[TOTAL] $totalTime  ")
+		append("[READ] $charSize  $readTime  ")
+		append("[LEXER] $tokenSize  $lexerTime  $lexerSpeed  ")
+		append("[PARSER] $parserTime  $parserSpeed\n")
 	}
 	print(message)
 }
