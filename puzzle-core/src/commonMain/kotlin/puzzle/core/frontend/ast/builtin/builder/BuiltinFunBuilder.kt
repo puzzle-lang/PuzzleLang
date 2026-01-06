@@ -90,7 +90,7 @@ class BuiltinFunBuilder {
 		builder: BuiltinTypeArgumentBuilder.() -> Unit = {},
 	) {
 		if (extension != null) {
-			error("extension is already set!")
+			error("extension 不可重复配置")
 		}
 		extension = getTypeReference(
 			type = type,
@@ -104,7 +104,7 @@ class BuiltinFunBuilder {
 		builder: BuiltinTypeParameterBuilder.() -> Unit,
 	) {
 		if (typeSpec != null) {
-			error("typeSpec is already set!")
+			error("typeSpec 不可重复配置")
 		}
 		typeSpec = TypeSpec(
 			reified = reified,
@@ -118,7 +118,7 @@ class BuiltinFunBuilder {
 		builder: BuiltinDeclarationContextReceiverBuilder.() -> Unit,
 	) {
 		if (contextSpec != null) {
-			error("contextSpec is already set!")
+			error("contextSpec 不可重复配置")
 		}
 		contextSpec = DeclarationContextSpec(
 			receivers = BuiltinDeclarationContextReceiverBuilder().apply(builder).contextReceivers,

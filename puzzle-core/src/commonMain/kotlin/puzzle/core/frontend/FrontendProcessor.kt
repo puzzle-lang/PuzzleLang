@@ -15,23 +15,29 @@ import puzzle.core.frontend.parser.PzlParser
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.semantics.PzlSemantics
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.format
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTimedValue
 
 suspend fun processFrontend(projectPath: PathWrapper): AstProject = coroutineScope {
 	val projectSourceValue = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
+	println("项目源收集用时: ${projectSourceValue.duration.format()}")
 	val projectSource = projectSourceValue.value
-	val jobs = projectSource.modules.map { module ->
+	val jobs = projectSource.moduleSources.map { module ->
 		async(Dispatchers.Default) {
-			val jobs = module.paths.map { path ->
+			val jobs = module.sourcePaths.map { path ->
 				async(Dispatchers.Default) {
 					processFile(path, projectSource.maxPathLength)
 				}
 			}
 			val nodes = jobs.awaitAll()
-			AstModule(module.name, nodes)
+			AstModule(
+				name = module.name,
+				path = module.path,
+				isBuiltin = false,
+				nodes = nodes,
+			)
 		}
 	}
 	val projectModules = jobs.awaitAll()
@@ -82,10 +88,10 @@ private fun printDurations(
 		val path = path.absolutePath
 		append(path)
 		append(" ${"-".repeat(maxPathLength - path.length)}--> ")
-		val totalTime = totalDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
-		val readTime = readDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
-		val lexerTime = lexerDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
-		val parserTime = parserDuration.toString(DurationUnit.MILLISECONDS, decimals = 3).padStart(9, ' ')
+		val totalTime = totalDuration.format().padStart(9, ' ')
+		val readTime = readDuration.format().padStart(9, ' ')
+		val lexerTime = lexerDuration.format().padStart(9, ' ')
+		val parserTime = parserDuration.format().padStart(9, ' ')
 		val lexerSpeed = (charSize * 1_000_000L / lexerDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " chars/ms"
 		val parserSpeed = (tokenSize * 1_000_000L / parserDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " tokens/ms"
 		val charSize = charSize.toString().padStart(6, ' ')

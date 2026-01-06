@@ -5,9 +5,9 @@ import kotlinx.coroutines.runBlocking
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.processFrontend
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.format
 import puzzle.core.util.getCurrentMemoryUsage
 import puzzle.core.util.path
-import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
 
 fun main(args: Array<out String>) {
@@ -27,7 +27,7 @@ fun main(args: Array<out String>) {
 
 private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
 	val value = measureTimedValue { processFrontend(projectPath) }
-	println("执行用时: ${value.duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}")
+	println("执行用时: ${value.duration.format()}")
 	val usage = getCurrentMemoryUsage()
 	println("内存使用: $usage")
 	AstDebugWriter.write(projectPath, value.value)
@@ -35,27 +35,27 @@ private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
 
 private fun help() {
 	val message = """
-        ╭───────────────────────────────┬───────────────────────────────────╮
+        ┌───────────────────────────────┬───────────────────────────────────┐
         │ Puzzle CLI                    │ Usage Information                 │
         ├───────────────────────────────┼───────────────────────────────────┤
         │ puzzle build <project-path>   │ Build the Puzzle project          │
         │ puzzle version                │ Show Puzzle version information   │
         │ puzzle help                   │ Show this help message            │
-        ╰───────────────────────────────┴───────────────────────────────────╯
+        └───────────────────────────────┴───────────────────────────────────┘
     """.trimIndent()
 	println(message)
 }
 
 private fun version() {
 	val message = """
-        ╭───────────────────────────┬──────────────╮
+        ┌───────────────────────────┬──────────────┐
         │ Puzzle CLI                │ v0.1.3-dev   │
         ├───────────────────────────┼──────────────┤
         │ kotlin                    │ v2.3.0       │
         │ kotlinx-coroutines-core   │ v1.10.2      │
         │ kotlinx-serialization     │ v1.10-0-RC   │
         │ kotlinx-io-core           │ v0.8.2       │
-        ╰───────────────────────────┴──────────────╯
+        └───────────────────────────┴──────────────┘
     """.trimIndent()
 	println(message)
 }

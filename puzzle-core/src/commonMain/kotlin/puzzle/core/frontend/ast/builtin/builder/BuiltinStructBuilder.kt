@@ -96,7 +96,7 @@ class BuiltinStructBuilder {
 		builder: BuiltinTypeParameterBuilder.() -> Unit,
 	) {
 		if (typeSpec != null) {
-			error("typeSpec is already set!")
+			error("typeSpec 不可重复配置")
 		}
 		typeSpec = TypeSpec(
 			reified = reified,
@@ -110,7 +110,7 @@ class BuiltinStructBuilder {
 		builder: BuiltinDeclarationContextReceiverBuilder.() -> Unit,
 	) {
 		if (contextSpec != null) {
-			error("contextSpec is already set!")
+			error("contextSpec 不可重复配置")
 		}
 		contextSpec = DeclarationContextSpec(
 			receivers = BuiltinDeclarationContextReceiverBuilder().apply(builder).contextReceivers,
@@ -134,7 +134,7 @@ class BuiltinStructBuilder {
 	
 	fun members(builder: BuiltinAstBuilder.() -> Unit) {
 		if (this.members.isNotEmpty()) {
-			error("members is already set!")
+			error("members 不可重复配置")
 		}
 		this.members += BuiltinAstBuilder().apply(builder).declarations
 	}

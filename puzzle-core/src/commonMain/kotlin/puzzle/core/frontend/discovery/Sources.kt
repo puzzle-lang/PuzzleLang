@@ -4,11 +4,12 @@ import puzzle.core.util.PathWrapper
 
 class ProjectSource(
 	val name: String,
-	val modules: List<ModuleSource>,
-	val maxPathLength: Int
+	val moduleSources: List<ModuleSource>,
+	val maxPathLength: Int,
 )
 
 class ModuleSource(
 	val name: String,
-	val paths: List<PathWrapper>,
+	val path: PathWrapper,
+	val sourcePaths: List<PathWrapper>,
 )

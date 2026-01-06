@@ -80,4 +80,8 @@ class PathWrapper private constructor(
 		this.list().forEach { it.deleteAll() }
 		SystemFileSystem.delete(path)
 	}
+	
+	override fun toString(): String {
+		return name
+	}
 }

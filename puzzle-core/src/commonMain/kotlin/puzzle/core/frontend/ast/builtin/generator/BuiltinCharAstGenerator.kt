@@ -33,7 +33,7 @@ fun generateBuiltinCharAst(): AstFile = builtinAst("Char") {
 				returnType("Char")
 			}
 			builtinFun("++") {
-				modifiers(BUILTIN, SUFFIX)
+				modifiers(BUILTIN, POSTFIX)
 				returnType("Char")
 			}
 			builtinFun("--") {
@@ -41,7 +41,7 @@ fun generateBuiltinCharAst(): AstFile = builtinAst("Char") {
 				returnType("Char")
 			}
 			builtinFun("--") {
-				modifiers(BUILTIN, SUFFIX)
+				modifiers(BUILTIN, POSTFIX)
 				returnType("Char")
 			}
 			builtinFun("toInt") {

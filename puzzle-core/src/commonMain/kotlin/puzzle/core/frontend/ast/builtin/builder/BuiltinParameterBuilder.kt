@@ -47,7 +47,7 @@ class BuiltinParameterBuilder {
 	
 	fun quantifier(quantifier: QuantifierKind) {
 		if (this.quantifier != null) {
-			error("quantifier is already set!")
+			error("quantifier 不可重复配置")
 		}
 		this.quantifier = Quantifier(
 			kind = quantifier,

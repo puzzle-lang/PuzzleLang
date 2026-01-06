@@ -3,6 +3,7 @@ package puzzle.core.frontend.ast
 import kotlinx.serialization.json.Json
 import puzzle.core.frontend.model.AstProject
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.format
 import puzzle.core.util.path
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
@@ -39,7 +40,7 @@ object AstDebugWriter {
 				}
 			}
 		}
-		println("AST 保存用时: ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}")
+		println("AST 保存用时: ${duration.format()}")
 	}
 	
 	private fun getBuiltinPath(buildPath: PathWrapper, moduleName: String, nodeName: String): PathWrapper {

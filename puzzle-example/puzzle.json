@@ -3,5 +3,9 @@
   "name": "puzzle-example",
   "modules": [
     "parser-test"
+  ],
+  "entry": "parser-test",
+  "deps": [
+    "../puzzle-source"
   ]
 }
