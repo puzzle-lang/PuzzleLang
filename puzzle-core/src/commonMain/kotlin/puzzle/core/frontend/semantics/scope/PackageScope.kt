@@ -23,6 +23,5 @@ class PackageScope(
 	
 	override fun lookupLocal(name: String): Symbol<*>? {
 		return symbolsMap[name]?.firstOrNull()
-			?: parent?.lookupLocal(name)
 	}
 }
