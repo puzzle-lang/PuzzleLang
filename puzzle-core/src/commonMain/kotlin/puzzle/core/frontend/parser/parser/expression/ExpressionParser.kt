@@ -20,8 +20,8 @@ import puzzle.core.frontend.token.kinds.OperatorKind.AND
 import puzzle.core.frontend.token.kinds.OperatorKind.OR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
-import puzzle.core.frontend.token.kinds.SymbolKind.ARROW
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseExpression(left: Expression? = null): Expression {

@@ -5,7 +5,7 @@ import puzzle.core.frontend.ast.builtin.builder.builtinAst
 import puzzle.core.frontend.token.kinds.ModifierKind.BUILTIN
 import puzzle.core.frontend.token.kinds.ModifierKind.OVERRIDE
 
-fun generateBuiltinBooleanAst(): AstFile = builtinAst("Boolean") {
+fun generateBooleanAst(): AstFile = builtinAst("Boolean") {
 	builtinStruct("Boolean") {
 		modifier(BUILTIN)
 		superType("Comparable") {

@@ -51,7 +51,7 @@ class IdentifierFunName(
 
 @Serializable
 class SymbolFunName(
-	val symbol: Symbol,
+	val symbol: SymbolToken,
 	override val location: SourceLocation = symbol.location,
 ) : FunName
 

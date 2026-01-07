@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.builder.builtinAst
 import puzzle.core.frontend.token.kinds.ModifierKind.BUILTIN
 
-fun generateBuiltinAnyAst(): AstFile = builtinAst("Any") {
+fun generateAnyAst(): AstFile = builtinAst("Any") {
 	builtinTrait("Any") {
 		members {
 			builtinFun("==") {

@@ -14,11 +14,12 @@ object BuiltinAstGenerator {
 				path = null,
 				isBuiltin = true,
 				nodes = listOf(
-					generateBuiltinAnyAst(),
+					generateAnyAst(),
 					generateComparableAst(),
-					generateBuiltinNumberAst(),
-					generateBuiltinCharAst(),
-					generateBuiltinBooleanAst(),
+					generateNumberAst(),
+					generateCharAst(),
+					generateBooleanAst(),
+					generateStringAst()
 				)
 			)
 		}

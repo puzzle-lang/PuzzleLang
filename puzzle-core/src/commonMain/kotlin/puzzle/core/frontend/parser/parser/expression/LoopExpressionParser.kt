@@ -7,7 +7,7 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.statement.parseStatement
 import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
-import puzzle.core.frontend.token.kinds.SymbolKind.AT
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseLoopExpression(): LoopExpression {

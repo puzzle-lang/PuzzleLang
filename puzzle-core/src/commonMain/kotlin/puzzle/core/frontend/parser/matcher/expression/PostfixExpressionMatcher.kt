@@ -8,7 +8,7 @@ import puzzle.core.frontend.parser.parser.expression.checkIdentifier
 import puzzle.core.frontend.parser.parser.expression.parsePostfixExpression
 import puzzle.core.frontend.token.kinds.ContextualKind.SUPER
 import puzzle.core.frontend.token.kinds.ContextualKind.THIS
-import puzzle.core.frontend.token.kinds.SymbolKind.AT
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
 
 object PostfixExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<Expression> {
 	

@@ -9,7 +9,7 @@ import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.ast.type.TypeReference
 
 @Serializable
-class TypealiasDeclaration(
+class TypeAliasDeclaration(
 	val name: Identifier,
 	val docComment: DocComment?,
 	val modifiers: List<Modifier>,

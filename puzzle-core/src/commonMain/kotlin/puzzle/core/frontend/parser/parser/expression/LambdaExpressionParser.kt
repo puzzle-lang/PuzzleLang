@@ -10,7 +10,7 @@ import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.*
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.*
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseLambdaExpression(): LambdaExpression {

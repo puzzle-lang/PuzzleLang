@@ -24,7 +24,7 @@ sealed interface DeclarationMatcher<out D : Declaration> {
 			EnumDeclarationMatcher,
 			AnnotationDeclarationMatcher,
 			ExtensionDeclarationMatcher,
-			TypealiasDeclarationMatcher
+			TypeAliasDeclarationMatcher
 		)
 	}
 	

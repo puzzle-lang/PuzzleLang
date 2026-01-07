@@ -5,7 +5,7 @@ package puzzle.core.frontend.token.kinds
 import puzzle.core.collections.fastSetOf
 import puzzle.core.collections.mergeFastSets
 
-sealed class SymbolKind(
+sealed class SymbolTokenKind(
 	override val value: String,
 ) : PzlTokenKind {
 	
@@ -27,26 +27,26 @@ sealed class SymbolKind(
 		)
 	}
 	
-	object COLON : SymbolKind(":")
+	object COLON : SymbolTokenKind(":")
 	
-	object QUESTION : SymbolKind("?")
+	object QUESTION : SymbolTokenKind("?")
 	
-	object ELVIS : SymbolKind("?:")
+	object ELVIS : SymbolTokenKind("?:")
 	
-	object AT : SymbolKind("@")
+	object AT : SymbolTokenKind("@")
 	
-	object ARROW : SymbolKind("->")
+	object ARROW : SymbolTokenKind("->")
 	
-	object TRIPLE_DOT : SymbolKind("...")
+	object TRIPLE_DOT : SymbolTokenKind("...")
 	
-	object PLUS_DOUBLE_DOT : SymbolKind("+..")
+	object PLUS_DOUBLE_DOT : SymbolTokenKind("+..")
 }
 
 sealed class OperatorKind(
 	value: String,
 	val priority: Int,
 	val assoc: Assoc,
-) : SymbolKind(value) {
+) : SymbolTokenKind(value) {
 	
 	companion object {
 		
@@ -134,7 +134,7 @@ enum class Assoc {
 sealed class AssignmentKind(
 	value: String,
 	val isCompound: Boolean,
-) : SymbolKind(value) {
+) : SymbolTokenKind(value) {
 	
 	companion object {
 		
@@ -159,7 +159,7 @@ sealed class AssignmentKind(
 	object PERCENT_ASSIGN : AssignmentKind("%=", true)
 }
 
-sealed class AccessKind(value: String) : SymbolKind(value) {
+sealed class AccessKind(value: String) : SymbolTokenKind(value) {
 	
 	companion object {
 		
@@ -173,7 +173,7 @@ sealed class AccessKind(value: String) : SymbolKind(value) {
 	object DOUBLE_COLON : AccessKind("::")
 }
 
-sealed class BracketKind(value: String) : SymbolKind(value) {
+sealed class BracketKind(value: String) : SymbolTokenKind(value) {
 	
 	companion object {
 		
@@ -209,7 +209,7 @@ sealed class BracketKind(value: String) : SymbolKind(value) {
 	}
 }
 
-sealed class SeparatorKind(value: String) : SymbolKind(value) {
+sealed class SeparatorKind(value: String) : SymbolTokenKind(value) {
 	
 	companion object {
 		

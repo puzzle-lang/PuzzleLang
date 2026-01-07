@@ -5,18 +5,18 @@ import puzzle.core.frontend.model.span
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.OperatorKind.IN
 import puzzle.core.frontend.token.kinds.OperatorKind.NOT_IN
-import puzzle.core.frontend.token.kinds.SymbolKind
+import puzzle.core.frontend.token.kinds.SymbolTokenKind
 import puzzle.core.util.safeString
 
 object SymbolRecognition : TokenRecognition {
 	
-	private val symbols = SymbolKind.kinds
+	private val symbols = SymbolTokenKind.kinds
 		.groupBy { it.value.length }
 		.mapValues { (_, value) -> value.associateBy { it.value } }
 	
-	private val maxLength = SymbolKind.kinds.maxOf { it.value.length }
+	private val maxLength = SymbolTokenKind.kinds.maxOf { it.value.length }
 	
-	private val starts = SymbolKind.kinds.map { it.value.first() }.toSet()
+	private val starts = SymbolTokenKind.kinds.map { it.value.first() }.toSet()
 	
 	context(_: PzlContext)
 	override fun tryParse(input: CharArray, start: Int): PzlToken? {

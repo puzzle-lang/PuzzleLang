@@ -18,7 +18,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACKET
 import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.parser.isAnonymousBinding
 
 context(_: PzlContext, cursor: PzlTokenCursor)

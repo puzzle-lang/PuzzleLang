@@ -14,7 +14,7 @@ import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
 import puzzle.core.frontend.token.kinds.BracketKind.End.RPAREN
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseLambdaParameters(): List<LambdaParameter> {

@@ -32,7 +32,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ModifierKind.*
 import puzzle.core.frontend.token.kinds.OperatorKind.LT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.isIn
 
 context(_: PzlContext, cursor: PzlTokenCursor)

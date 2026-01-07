@@ -1,11 +1,11 @@
 package puzzle.core.frontend.ast.builtin.builder
 
 import puzzle.core.frontend.ast.AstFile
-import puzzle.core.frontend.ast.Symbol
+import puzzle.core.frontend.ast.SymbolToken
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.token.kinds.SymbolKind
+import puzzle.core.frontend.token.kinds.SymbolTokenKind
 import puzzle.core.util.isIdentifierString
 
 @PzlBuiltinDsl
@@ -35,10 +35,10 @@ class BuiltinAstBuilder {
 				)
 			}
 			
-			SymbolKind.kinds.any { it.value == name } -> {
+			SymbolTokenKind.kinds.any { it.value == name } -> {
 				SymbolFunName(
-					symbol = Symbol(
-						kind = SymbolKind.kinds.first { it.value == name },
+					symbol = SymbolToken(
+						kind = SymbolTokenKind.kinds.first { it.value == name },
 						location = SourceLocation.Builtin
 					)
 				)

@@ -15,7 +15,7 @@ import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
 import puzzle.core.frontend.token.kinds.OperatorKind.BIT_AND
 import puzzle.core.frontend.token.kinds.OperatorKind.GT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseTypeParameters(): List<TypeParameter> {

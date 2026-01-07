@@ -15,7 +15,7 @@ import puzzle.core.frontend.parser.parser.parameter.parameter.ParameterTarget
 import puzzle.core.frontend.parser.parser.parameter.parameter.parseParameters
 import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseCtorDeclaration(

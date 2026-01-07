@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.builder.builtinAst
 import puzzle.core.frontend.token.kinds.ModifierKind.*
 
-fun generateBuiltinNumberAst(): AstFile = builtinAst("Number") {
+fun generateNumberAst(): AstFile = builtinAst("Number") {
 	val signedTypes = arrayOf("Byte", "Short", "Int", "Long", "Float", "Double")
 	
 	builtinTrait("Number") {

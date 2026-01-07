@@ -13,7 +13,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ControlFlowKind.DO
 import puzzle.core.frontend.token.kinds.ControlFlowKind.WHILE
-import puzzle.core.frontend.token.kinds.SymbolKind.AT
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseWhileStatement(): WhileStatement {

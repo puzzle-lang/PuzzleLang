@@ -39,10 +39,10 @@ object ProjectSourceCollector {
 					configError("模块不存在", modulePath.name)
 				}
 				val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
-				val ignores = moduleConfig.ignore ?: emptyList()
-				val ignoreRules = ignoresToIgnoreRules(modulePath.absolutePath, ignores)
+				val ignores = moduleConfig.ignore
+				val ignoreRules = ignores.toIgnoreRules(modulePath)
 				ignoreRulesMessage.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
-				ignoreRulesMessage.append(ignores.joinToString(prefix = "[", postfix = "]") { "\"$it\"" })
+				ignoreRulesMessage.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
 				ignoreRulesMessage.append("\n")
 				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignoreRules)
 			}
@@ -205,17 +205,18 @@ object ProjectSourceCollector {
 		error(message)
 	}
 	
-	private fun ignoresToIgnoreRules(modulePath: String, ignores: List<String>): List<IgnoreRule> {
-		if (ignores.isEmpty()) return emptyList()
-		return ignores.mapIndexed { index, ignore ->
+	private fun List<String>?.toIgnoreRules(modulePath: PathWrapper): List<IgnoreRule> {
+		if (this.isNullOrEmpty()) return emptyList()
+		val path = modulePath.absolutePath
+		return this.mapIndexed { index, ignore ->
 			when {
-				ignore == "**" -> IgnoreRule(modulePath, IgnoreKind.RECURSIVE)
-				ignore == "*" -> IgnoreRule(modulePath, IgnoreKind.CHILDREN)
+				ignore == "**" -> IgnoreRule(path, IgnoreKind.RECURSIVE)
+				ignore == "*" -> IgnoreRule(path, IgnoreKind.CHILDREN)
 				ignore.endsWith("/**") -> IgnoreRule("$modulePath/${ignore.removeSuffix("/**")}", IgnoreKind.RECURSIVE)
 				ignore.endsWith("/*") -> IgnoreRule("$modulePath/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN)
-				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule(modulePath + ignore, IgnoreKind.EXACT)
-				ignore.isBlank() -> configError("规则不能为空", "ignore[$index]", path = "$modulePath/puzzle.json")
-				else -> configError("忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**'", "ignore[$index]", ignore, "$modulePath/puzzle.json")
+				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule(path + ignore, IgnoreKind.EXACT)
+				ignore.isBlank() -> configError("规则不能为空", "ignore[$index]", path = "$path/puzzle.json")
+				else -> configError("忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**'", "ignore[$index]", ignore, "$path/puzzle.json")
 			}
 		}.distinct()
 	}

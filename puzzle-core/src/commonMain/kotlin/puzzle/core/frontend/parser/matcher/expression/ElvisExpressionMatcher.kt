@@ -6,7 +6,7 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.ElvisExpression
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.parser.parser.expression.parseElvisExpression
-import puzzle.core.frontend.token.kinds.SymbolKind.ELVIS
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.ELVIS
 
 object ElvisExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<ElvisExpression> {
 	

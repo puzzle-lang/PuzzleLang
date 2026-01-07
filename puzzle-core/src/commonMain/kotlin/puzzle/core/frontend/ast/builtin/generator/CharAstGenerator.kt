@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.builder.builtinAst
 import puzzle.core.frontend.token.kinds.ModifierKind.*
 
-fun generateBuiltinCharAst(): AstFile = builtinAst("Char") {
+fun generateCharAst(): AstFile = builtinAst("Char") {
 	builtinStruct("Char") {
 		superType("Comparable") {
 			typeArgument("Char")

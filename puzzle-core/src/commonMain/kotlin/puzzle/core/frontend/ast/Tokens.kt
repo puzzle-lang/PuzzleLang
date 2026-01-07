@@ -6,12 +6,12 @@ import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.token.kinds.AssignmentKind
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.OperatorKind
-import puzzle.core.frontend.token.kinds.SymbolKind
+import puzzle.core.frontend.token.kinds.SymbolTokenKind
 
 @Serializable
-class Symbol(
+class SymbolToken(
 	@Contextual
-	val kind: SymbolKind,
+	val kind: SymbolTokenKind,
 	override val location: SourceLocation,
 ) : AstNode
 

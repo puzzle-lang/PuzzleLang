@@ -8,8 +8,8 @@ import puzzle.core.frontend.ast.parameter.TypeExpansionKind
 import puzzle.core.frontend.ast.parameter.VarargKind
 import puzzle.core.frontend.token.kinds.OperatorKind.PLUS
 import puzzle.core.frontend.token.kinds.OperatorKind.STAR
-import puzzle.core.frontend.token.kinds.SymbolKind.PLUS_DOUBLE_DOT
-import puzzle.core.frontend.token.kinds.SymbolKind.TRIPLE_DOT
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.PLUS_DOUBLE_DOT
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.TRIPLE_DOT
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseQuantifier(): Quantifier? {

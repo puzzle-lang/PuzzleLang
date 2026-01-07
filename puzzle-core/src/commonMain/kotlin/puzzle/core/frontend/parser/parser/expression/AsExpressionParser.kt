@@ -5,7 +5,7 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.AsExpression
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
-import puzzle.core.frontend.token.kinds.SymbolKind.QUESTION
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseAsExpression(left: Expression): AsExpression {

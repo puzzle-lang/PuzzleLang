@@ -8,7 +8,7 @@ import puzzle.core.frontend.parser.parser.expression.ArgumentTarget
 import puzzle.core.frontend.parser.parser.expression.parseArguments
 import puzzle.core.frontend.parser.parser.type.parseNamedType
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
-import puzzle.core.frontend.token.kinds.SymbolKind.QUESTION
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseInitStatement(): InitStatement {

@@ -6,7 +6,7 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.Modifier
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.ModifierKind.*
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: PzlContext, cursor: PzlTokenCursor)
 fun parseModifiers(): List<Modifier> {
