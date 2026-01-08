@@ -1,15 +1,15 @@
 package puzzle.core.frontend.parser.parser.declaration
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.declaration.PackageDeclaration
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.PackageDeclaration
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifierString
 import puzzle.core.frontend.token.kinds.AccessKind.DOT
 import puzzle.core.frontend.token.kinds.NamespaceKind.PACKAGE
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePackageDeclaration(): PackageDeclaration? {
 	if (!cursor.match(PACKAGE)) return null
 	val start = cursor.previous.location

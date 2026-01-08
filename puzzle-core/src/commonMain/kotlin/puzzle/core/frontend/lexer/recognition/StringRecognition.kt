@@ -3,7 +3,7 @@ package puzzle.core.frontend.lexer.recognition
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.lexer.TemplateExpressionLexerScanner
 import puzzle.core.frontend.lexer.recognition.StringRecognition.CharType.*
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.MetaKind
@@ -23,7 +23,7 @@ object StringRecognition : TokenRecognition {
 	
 	private const val DOLLAR = '$'
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	override fun tryParse(input: CharArray, start: Int): PzlToken? {
 		val dollarCount = when (input[start]) {
 			QUOTATION -> 0
@@ -45,7 +45,7 @@ object StringRecognition : TokenRecognition {
 		}
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseText(input: CharArray, start: Int, isMultiLine: Boolean): PzlToken {
 		val offset = if (isMultiLine) 3 else 1
 		val textStart = start + offset
@@ -64,7 +64,7 @@ object StringRecognition : TokenRecognition {
 		return PzlToken(kind, start span position + offset)
 	}
 	
-	context(context: PzlContext)
+	context(context: FileContext)
 	private fun parseTemplate(input: CharArray, start: Int, isMultiLine: Boolean, dollarCount: Int): PzlToken {
 		val offset = if (isMultiLine) 3 else 1
 		var textStart = start + dollarCount + offset
@@ -156,7 +156,7 @@ object StringRecognition : TokenRecognition {
 		return this
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	
 	private fun parseCharType(input: CharArray, position: Int, isMultiLine: Boolean, dollarCount: Int = 0): CharType {
 		return when (input[position]) {

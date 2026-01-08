@@ -3,7 +3,7 @@ package puzzle.core.frontend.parser.parser.statement
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.statement.WhileKind
 import puzzle.core.frontend.ast.statement.WhileStatement
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
@@ -15,7 +15,7 @@ import puzzle.core.frontend.token.kinds.ControlFlowKind.DO
 import puzzle.core.frontend.token.kinds.ControlFlowKind.WHILE
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseWhileStatement(): WhileStatement {
 	val containsLabel = cursor.offset(-2).kind == AT
 	val start = if (containsLabel) cursor.offset(-3).location else cursor.previous.location

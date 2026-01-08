@@ -2,7 +2,7 @@ package puzzle.core.frontend.semantics.scope
 
 import puzzle.core.frontend.semantics.symbol.Symbol
 
-class RootScope : Scope<RootScope> {
+class RootScope : Scope<RootScope>() {
 	
 	override val parent: Scope<*>? = null
 	override val owner: Symbol<*>? = null

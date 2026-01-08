@@ -6,7 +6,7 @@ import puzzle.core.frontend.semantics.symbol.Symbol
 class ProjectScope(
 	override val parent: RootScope,
 	override val owner: ProjectSymbol,
-) : Scope<ProjectScope> {
+) : Scope<ProjectScope>() {
 	
 	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<ProjectScope>>>()
 	

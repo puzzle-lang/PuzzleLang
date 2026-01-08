@@ -6,7 +6,7 @@ import puzzle.core.frontend.semantics.symbol.Symbol
 class EnumScope(
 	override val parent: Scope<*>?,
 	override val owner: EnumSymbol<*>,
-) : Scope<EnumScope> {
+) : Scope<EnumScope>() {
 	
 	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<EnumScope>>>()
 	

@@ -5,6 +5,6 @@ import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 class Identifier(
-	val name: String,
+	val value: String,
 	override val location: SourceLocation,
 ) : Expression, DirectAssignable, CompoundAssignable

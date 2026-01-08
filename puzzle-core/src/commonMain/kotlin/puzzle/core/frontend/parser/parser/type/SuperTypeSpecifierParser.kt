@@ -1,19 +1,19 @@
 package puzzle.core.frontend.parser.parser.type
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.type.SuperConstructorCall
 import puzzle.core.frontend.ast.type.SuperType
 import puzzle.core.frontend.ast.type.SuperTypeReference
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.ArgumentTarget
 import puzzle.core.frontend.parser.parser.expression.parseArguments
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseSuperTypes(target: SuperTypeTarget): List<SuperType> {
 	if (!cursor.match(COLON)) {
 		return emptyList()
@@ -31,7 +31,7 @@ fun List<SuperType>.safeAsSuperTypeReferences(): List<SuperTypeReference> {
 	return this as List<SuperTypeReference>
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseSuperType(target: SuperTypeTarget): SuperType {
 	val type = parseNamedType()
 	if (!cursor.match(LPAREN)) {
@@ -45,7 +45,7 @@ private fun parseSuperType(target: SuperTypeTarget): SuperType {
 	return SuperConstructorCall(type, arguments, type.location span end)
 }
 
-context(_: PzlContext)
+context(_: FileContext)
 private fun List<SuperType>.check() {
 	var isUsedConstructorCall = false
 	this.forEach {

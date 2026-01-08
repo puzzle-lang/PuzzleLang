@@ -41,6 +41,7 @@ class BuiltinFunBuilder {
 	fun parameter(
 		name: String,
 		type: String,
+		isMutable: Boolean = false,
 		isNullable: Boolean = false,
 		builder: BuiltinParameterBuilder.() -> Unit = {},
 	) {
@@ -48,9 +49,10 @@ class BuiltinFunBuilder {
 		val type = getTypeReference(type, isNullable, builder.typeArguments)
 		parameters += Parameter(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin,
 			),
+			isMutable = isMutable,
 			modifiers = builder.modifiers,
 			type = type,
 			annotationCalls = builder.annotationCalls,

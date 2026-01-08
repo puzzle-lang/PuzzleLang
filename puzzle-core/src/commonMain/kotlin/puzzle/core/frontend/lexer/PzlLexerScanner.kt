@@ -1,6 +1,6 @@
 package puzzle.core.frontend.lexer
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACE
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
@@ -8,7 +8,7 @@ import puzzle.core.frontend.token.kinds.MetaKind.EOF
 
 object FileLexerScanner {
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	fun scan(input: CharArray): List<PzlToken> {
 		val lexer = PzlLexer(input, position = 0)
 		return buildList {
@@ -23,7 +23,7 @@ object FileLexerScanner {
 
 object TemplateExpressionLexerScanner {
 	
-	context(context: PzlContext)
+	context(context: FileContext)
 	fun scan(input: CharArray, position: Int): List<PzlToken> {
 		val lexer = PzlLexer(input, position)
 		return buildList {

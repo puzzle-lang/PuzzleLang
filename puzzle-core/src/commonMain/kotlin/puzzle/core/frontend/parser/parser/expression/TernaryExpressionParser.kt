@@ -1,13 +1,13 @@
 package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.TernaryExpression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTernaryExpression(condition: Expression): TernaryExpression {
 	val thenExpression = parseExpressionChain()
 	if (!cursor.match(COLON)) {

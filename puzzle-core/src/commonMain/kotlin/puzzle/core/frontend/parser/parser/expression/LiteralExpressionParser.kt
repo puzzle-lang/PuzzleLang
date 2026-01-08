@@ -1,8 +1,8 @@
 package puzzle.core.frontend.parser.parser.expression
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.*
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.BooleanKind.FALSE
 import puzzle.core.frontend.token.kinds.BooleanKind.TRUE
 import puzzle.core.frontend.token.kinds.CharKind
@@ -11,7 +11,7 @@ import puzzle.core.frontend.token.kinds.LiteralKind.NULL
 import puzzle.core.frontend.token.kinds.NumberKind
 import puzzle.core.frontend.token.kinds.StringKind
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseLiteralExpression(): LiteralExpression {
 	val token = cursor.previous
 	return when (val kind = token.kind as LiteralKind) {

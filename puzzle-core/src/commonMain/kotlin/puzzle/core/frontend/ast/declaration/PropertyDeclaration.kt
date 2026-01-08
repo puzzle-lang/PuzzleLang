@@ -14,8 +14,7 @@ import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 class PropertyDeclaration(
-	val name: Identifier,
-	val type: TypeReference?,
+	val propertySpec: PropertySpec,
 	val modifiers: List<Modifier>,
 	val typeSpec: TypeSpec?,
 	val contextSpec: DeclarationContextSpec?,
@@ -26,6 +25,29 @@ class PropertyDeclaration(
 	val getter: PropertyGetter? = null,
 	val setter: PropertySetter? = null,
 ) : TopLevelAllowedDeclaration
+
+@Serializable
+sealed interface PropertySpec : AstNode
+
+@Serializable
+class SinglePropertySpec(
+	val property: Property,
+	override val location: SourceLocation = property.location,
+) : PropertySpec
+
+@Serializable
+class DestructurePropertySpec(
+	val properties: List<Property>,
+	override val location: SourceLocation,
+) : PropertySpec
+
+@Serializable
+class Property(
+	val isMutable: Boolean,
+	val name: Identifier,
+	val type: TypeReference?,
+	override val location: SourceLocation,
+) : AstNode
 
 @Serializable
 class PropertyGetter(

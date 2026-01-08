@@ -1,12 +1,12 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.declaration.EnumDeclaration
+import puzzle.core.frontend.ast.declaration.EnumEntry
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.EnumDeclaration
-import puzzle.core.frontend.ast.declaration.EnumEntry
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -23,7 +23,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseEnumDeclaration(header: DeclarationHeader, start: SourceLocation): EnumDeclaration {
 	val name = parseIdentifier(IdentifierTarget.ENUM)
 	val parameters = parseParameters(ParameterTarget.ENUM)
@@ -71,7 +71,7 @@ fun parseEnumDeclaration(header: DeclarationHeader, start: SourceLocation): Enum
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseEnumEntries(): List<EnumEntry> {
 	return if (cursor.check(SEMICOLON)) emptyList() else buildList {
 		do {
@@ -80,7 +80,7 @@ private fun parseEnumEntries(): List<EnumEntry> {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseEnumEntry(): EnumEntry {
 	val name = parseIdentifier(IdentifierTarget.ENUM_ENTRY)
 	val start = name.location

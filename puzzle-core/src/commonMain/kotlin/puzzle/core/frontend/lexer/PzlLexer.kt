@@ -2,7 +2,7 @@ package puzzle.core.frontend.lexer
 
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.lexer.recognition.*
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.CommentKind.MultiLine
 import puzzle.core.frontend.token.kinds.CommentKind.SingleLine
@@ -26,7 +26,7 @@ class PzlLexer(
 	private var position: Int,
 ) {
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	fun nextToken(): PzlToken {
 		recognitions.forEach {
 			val token = it.tryParse(input, position) ?: return@forEach

@@ -1,9 +1,9 @@
 package puzzle.core.frontend.parser.matcher.declaration.member
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.declaration.CtorDeclaration
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.CtorDeclaration
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.declaration.parseCtorDeclaration
@@ -24,7 +24,7 @@ object MemberCtorDeclarationMatcher : MemberDeclarationMatcher<CtorDeclaration> 
 		return cursor.match(DeclarationKind.CTOR)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(header: DeclarationHeader, start: SourceLocation): CtorDeclaration {
 		return parseCtorDeclaration(header, start)
 	}

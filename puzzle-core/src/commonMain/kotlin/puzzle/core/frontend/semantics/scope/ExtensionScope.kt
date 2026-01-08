@@ -6,7 +6,7 @@ import puzzle.core.frontend.semantics.symbol.Symbol
 class ExtensionScope(
 	override val parent: Scope<*>?,
 	override val owner: ExtensionSymbol<*>,
-) : Scope<ExtensionScope> {
+) : Scope<ExtensionScope>() {
 	
 	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<ExtensionScope>>>()
 	

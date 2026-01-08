@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.statement.parseStatement
 import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -19,7 +19,7 @@ import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.IS
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseMatchExpression(): MatchExpression {
 	return when {
 		cursor.match(LPAREN) -> parseMatchPatternExpression()
@@ -28,7 +28,7 @@ fun parseMatchExpression(): MatchExpression {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseMatchPatternExpression(): MatchPatternExpression {
 	val start = cursor.offset(-2).location
 	val subject = parseExpressionChain()
@@ -80,7 +80,7 @@ private fun parseMatchPatternExpression(): MatchPatternExpression {
 	return MatchPatternExpression(subject, arms, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseMatchConditionExpression(): MatchConditionExpression {
 	val start = cursor.offset(-2).location
 	val cases = mutableListOf<MatchCase>()
@@ -108,7 +108,7 @@ private fun parseMatchConditionExpression(): MatchConditionExpression {
 	return MatchConditionExpression(cases, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseElseStatements(): List<Statement> {
 	cursor.expect(ARROW, "else 缺少 '->'")
 	val elseStatements = if (cursor.match(LBRACE)) {

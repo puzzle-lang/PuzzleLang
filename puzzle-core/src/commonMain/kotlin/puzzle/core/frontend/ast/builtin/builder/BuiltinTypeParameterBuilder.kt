@@ -19,7 +19,7 @@ class BuiltinTypeParameterBuilder {
 	) {
 		typeParameters += TypeParameter(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin,
 			),
 			variance = variance?.let { kind ->

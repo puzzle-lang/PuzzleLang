@@ -1,17 +1,17 @@
 package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.ExpressionSpec
 import puzzle.core.frontend.ast.expression.MultiExpressionSpec
 import puzzle.core.frontend.ast.expression.SingleExpressionSpec
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACKET
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACKET
 import puzzle.core.frontend.token.kinds.SeparatorKind
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseExpressionSpec(): ExpressionSpec? {
 	return if (cursor.match(LBRACKET)) {
 		val start = cursor.previous.location

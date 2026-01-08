@@ -4,9 +4,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
-import puzzle.core.frontend.model.AstModule
-import puzzle.core.frontend.model.AstProject
-import puzzle.core.frontend.model.AstRoot
+import puzzle.core.frontend.model.ModuleContext
+import puzzle.core.frontend.model.ProjectContext
+import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
 import puzzle.core.util.path
@@ -24,7 +24,7 @@ object AstDebugWriter {
 	
 	private val lock = Mutex()
 	
-	suspend fun write(projectPath: PathWrapper, root: AstRoot) = coroutineScope {
+	suspend fun write(projectPath: PathWrapper, root: RootContext) = coroutineScope {
 		val duration = measureTime {
 			val buildAstPath = path(projectPath, "build", "ast")
 			if (buildAstPath.exists()) {
@@ -33,12 +33,13 @@ object AstDebugWriter {
 			val jobs = root.projects.flatMap { project ->
 				project.modules.flatMap { module ->
 					module.files.mapNotNull { file ->
-						if (file.sourcePath == null && !file.builtin) return@mapNotNull null
+						val node = file.node
+						if (node.sourcePath == null && !node.builtin) return@mapNotNull null
 						launch(Dispatchers.IO) {
-							val astPath = if (file.builtin) {
-								getBuiltinAstPath(buildAstPath, project, module, file)
+							val astPath = if (node.builtin) {
+								getBuiltinAstPath(buildAstPath, project, module, node)
 							} else {
-								getAstPath(buildAstPath, project, file)
+								getAstPath(buildAstPath, project, node)
 							}
 							val parent = astPath.parent ?: return@launch
 							lock.withLock {
@@ -47,7 +48,7 @@ object AstDebugWriter {
 								}
 							}
 							val text = withContext(Dispatchers.Default) {
-								json.encodeToString(file)
+								json.encodeToString(node)
 							}
 							astPath.writeText(text)
 						}
@@ -61,20 +62,20 @@ object AstDebugWriter {
 	
 	private fun getBuiltinAstPath(
 		buildAstPath: PathWrapper,
-		project: AstProject,
-		module: AstModule,
-		file: AstFile,
+		project: ProjectContext,
+		module: ModuleContext,
+		node: AstFile,
 	): PathWrapper {
-		val astName = file.name.removeSuffix(".pzl") + ".json"
+		val astName = node.name.removeSuffix(".pzl") + ".json"
 		return path(buildAstPath, project.name, module.name, "src", "main", "puzzle", astName)
 	}
 	
 	private fun getAstPath(
 		buildAstPath: PathWrapper,
-		project: AstProject,
-		file: AstFile,
+		project: ProjectContext,
+		node: AstFile,
 	): PathWrapper {
-		val astPath = file.sourcePath!!.absolutePath.removePrefix(project.path!!.parent!!.absolutePath + "/").removeSuffix(".pzl") + ".json"
+		val astPath = node.sourcePath!!.absolutePath.removePrefix(project.path!!.parent!!.absolutePath + "/").removeSuffix(".pzl") + ".json"
 		return path(buildAstPath, astPath)
 	}
 }

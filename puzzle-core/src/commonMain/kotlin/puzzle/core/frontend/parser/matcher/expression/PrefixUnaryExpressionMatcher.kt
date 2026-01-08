@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.PrefixUnaryExpression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parsePrefixUnaryExpression
 import puzzle.core.frontend.token.kinds.OperatorKind.*
 
@@ -26,12 +26,12 @@ object PrefixUnaryExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParse
 		}
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		syntaxError("'${cursor.previous.value}' 前不允许有表达式", cursor.previous)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(): PrefixUnaryExpression {
 		return parsePrefixUnaryExpression()
 	}

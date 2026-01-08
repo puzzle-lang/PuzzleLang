@@ -5,16 +5,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import puzzle.core.frontend.ast.AstDebugWriter
-import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
 import puzzle.core.frontend.lexer.FileLexerScanner
-import puzzle.core.frontend.model.AstModule
-import puzzle.core.frontend.model.AstProject
-import puzzle.core.frontend.model.AstRoot
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.ModuleContext
+import puzzle.core.frontend.model.ProjectContext
+import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.parser.PzlParser
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.semantics.PzlSemantics
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
@@ -33,56 +31,56 @@ suspend fun processFrontend(projectPath: PathWrapper) = coroutineScope {
 				async(Dispatchers.Default) {
 					val jobs = module.sourcePaths.map { path ->
 						async(Dispatchers.Default) {
-							processFile(path, maxPathLength)
+							context(FileContext()) { processFile(path, maxPathLength) }
 						}
 					}
-					val files = jobs.awaitAll()
-					AstModule(
+					ModuleContext(
 						name = module.name,
 						path = module.path,
 						builtin = false,
-						files = files
+						files = jobs.awaitAll()
 					)
 				}
 			}
-			val modules = jobs.awaitAll()
-			AstProject(
+			ProjectContext(
 				name = project.name,
 				path = project.path,
 				builtin = false,
-				modules = modules
+				modules = jobs.awaitAll()
 			)
 		}
 	}
 	val projects = jobs.awaitAll()
 	val builtinProject = BuiltinAstGenerator.generate()
-	val root = AstRoot(projects + builtinProject)
-	PzlSemantics.analyze(root)
+	val root = RootContext(projects + builtinProject)
 	AstDebugWriter.write(projectPath, root)
 }
 
-private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {
+context(context: FileContext)
+private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
 	val markStart = markNow()
+	context.sourcePath = path
 	val source = measureTimedValue { path.readText().toCharArray() }
-	val lineStarts = source.value.getLineStarts()
-	val context = PzlContext(path, lineStarts)
-	return context(context) {
-		val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
-		val cursor = PzlTokenCursor(tokens.value)
-		val node = measureTimedValue { PzlParser.parse(cursor) }
-		val totalDuration = markStart.elapsedNow()
-		printDurations(
-			path = path,
-			maxPathLength = maxPathLength,
-			charSize = source.value.size,
-			tokenSize = tokens.value.size,
-			totalDuration = totalDuration,
-			readDuration = source.duration,
-			lexerDuration = tokens.duration,
-			parserDuration = node.duration,
-		)
-		node.value
-	}
+	context.lineStarts = source.value.getLineStarts()
+	val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
+	context.tokens = tokens.value
+	val node = measureTimedValue { PzlParser.parse() }
+	context.node = node.value
+	val scope = measureTimedValue { PzlSemantics.analyze() }
+	context.scope = scope.value
+	val totalDuration = markStart.elapsedNow()
+	printDurations(
+		path = path,
+		maxPathLength = maxPathLength,
+		charSize = source.value.size,
+		tokenSize = tokens.value.size,
+		totalDuration = totalDuration,
+		readDuration = source.duration,
+		lexerDuration = tokens.duration,
+		parserDuration = node.duration,
+		scopeDuration = scope.duration
+	)
+	return context
 }
 
 private fun printDurations(
@@ -94,6 +92,7 @@ private fun printDurations(
 	readDuration: Duration,
 	lexerDuration: Duration,
 	parserDuration: Duration,
+	scopeDuration: Duration,
 ) {
 	val message = buildString {
 		val path = path.absolutePath
@@ -107,10 +106,12 @@ private fun printDurations(
 		val parserSpeed = (tokenSize * 1_000_000L / parserDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " tokens/ms"
 		val charSize = charSize.toString().padStart(6, ' ')
 		val tokenSize = tokenSize.toString().padStart(6, ' ')
+		val scopeDuration = scopeDuration.format().padStart(9, ' ')
 		append("[TOTAL] $totalTime  ")
 		append("[READ] $charSize  $readTime  ")
 		append("[LEXER] $tokenSize  $lexerTime  $lexerSpeed  ")
-		append("[PARSER] $parserTime  $parserSpeed\n")
+		append("[PARSER] $parserTime  $parserSpeed  ")
+		append("[SEMANTICS-SCOPE] $scopeDuration\n")
 	}
 	print(message)
 }

@@ -1,7 +1,7 @@
 package puzzle.core.frontend.parser
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.MetaKind.EOF
 import puzzle.core.frontend.token.kinds.PzlTokenKind
@@ -86,7 +86,7 @@ class PzlTokenCursor(
 		return check(current)
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	fun expect(kind: PzlTokenKind, errorMessage: String) {
 		if (current.kind == kind) {
 			position++

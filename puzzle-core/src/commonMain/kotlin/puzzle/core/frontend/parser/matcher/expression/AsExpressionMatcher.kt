@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.AsExpression
 import puzzle.core.frontend.ast.expression.Expression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseAsExpression
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
@@ -16,7 +16,7 @@ object AsExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<As
 		return cursor.match(AS)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		val isSafe = cursor.check(QUESTION)
 		syntaxError(
@@ -25,7 +25,7 @@ object AsExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<As
 		)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(left: Expression): AsExpression {
 		return parseAsExpression(left)
 	}

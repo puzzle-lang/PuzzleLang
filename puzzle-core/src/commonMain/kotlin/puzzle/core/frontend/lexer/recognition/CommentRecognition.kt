@@ -1,14 +1,14 @@
 package puzzle.core.frontend.lexer.recognition
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.CommentKind.*
 
 object CommentRecognition : TokenRecognition {
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	override fun tryParse(input: CharArray, start: Int): PzlToken? {
 		if (start + 1 >= input.size || input[start] != '/') return null
 		return when (input[start + 1]) {
@@ -28,7 +28,7 @@ object CommentRecognition : TokenRecognition {
 		return PzlToken(kind, start span position)
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseDocComment(input: CharArray, start: Int): PzlToken {
 		var position = start + 3
 		var isEnd = false
@@ -52,7 +52,7 @@ object CommentRecognition : TokenRecognition {
 		return PzlToken(kind, start span position + 2)
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseMultiLineComment(input: CharArray, start: Int): PzlToken {
 		var position = start + 2
 		var isEnd = false

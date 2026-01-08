@@ -2,15 +2,21 @@ package puzzle.core.frontend.semantics.scope
 
 import puzzle.core.frontend.semantics.symbol.Symbol
 
-sealed interface Scope<S : Scope<S>> {
+sealed class Scope<S : Scope<S>> {
 	
-	val parent: Scope<*>?
+	abstract val parent: Scope<*>?
 	
-	val owner: Symbol<*>?
+	abstract val owner: Symbol<*>?
 	
-	fun declare(symbol: Symbol<S>)
+	abstract fun declare(symbol: Symbol<S>)
 	
-	fun lookup(name: String): List<Symbol<*>>
+	abstract fun lookup(name: String): List<Symbol<*>>
 	
-	val symbols: Collection<Symbol<S>>
+	abstract val symbols: Collection<Symbol<S>>
+	
+	fun declares(symbols: List<Symbol<S>>) {
+		symbols.forEach { symbol ->
+			declare(symbol)
+		}
+	}
 }

@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.parameter.context
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.parameter.LambdaContextReceiver
 import puzzle.core.frontend.ast.parameter.LambdaContextSpec
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.parser.expression.checkIdentifier
 import puzzle.core.frontend.parser.parser.parameter.parseTypeExpansion
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.NOT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseLambdaContextSpec(): LambdaContextSpec? {
 	if (!cursor.check(CONTEXT) || cursor.nextOrNull?.kind != LPAREN) return null
 	val start = cursor.current.location
@@ -37,7 +37,7 @@ fun parseLambdaContextSpec(): LambdaContextSpec? {
 	return LambdaContextSpec(receivers, isPropagate, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseLambdaContextReceiver(): LambdaContextReceiver {
 	val type = parseTypeReference(allowLambda = true)
 	val typeExpansion = parseTypeExpansion()

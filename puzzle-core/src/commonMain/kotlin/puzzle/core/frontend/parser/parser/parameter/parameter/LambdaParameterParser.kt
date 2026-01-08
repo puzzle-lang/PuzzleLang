@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.parser.parameter.parameter
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.parameter.LambdaParameter
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.parameter.LambdaParameter
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.parseAnnotationCalls
@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseLambdaParameters(): List<LambdaParameter> {
 	if (!cursor.match(LPAREN)) {
 		syntaxError("lambda 缺少 '('", cursor.current)
@@ -32,7 +32,7 @@ fun parseLambdaParameters(): List<LambdaParameter> {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseLambdaParameter(): LambdaParameter {
 	val start = cursor.previous.location
 	val annotationCalls = parseAnnotationCalls()

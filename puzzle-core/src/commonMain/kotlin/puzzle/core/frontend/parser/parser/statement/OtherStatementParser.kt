@@ -1,7 +1,6 @@
 package puzzle.core.frontend.parser.parser.statement
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.Assignment
@@ -12,10 +11,11 @@ import puzzle.core.frontend.ast.statement.CompoundAssignmentStatement
 import puzzle.core.frontend.ast.statement.DirectAssignmentStatement
 import puzzle.core.frontend.ast.statement.ExpressionStatement
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
 import puzzle.core.frontend.token.kinds.AssignmentKind
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseOtherStatement(): Statement {
 	val expression = parseExpressionChain()
 	if (cursor.current.kind !is AssignmentKind) {

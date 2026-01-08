@@ -1,8 +1,8 @@
 package puzzle.core.frontend.parser.matcher.statement
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 
 sealed interface StatementMatcher<S : Statement> {
 	
@@ -25,6 +25,6 @@ sealed interface StatementMatcher<S : Statement> {
 	context(cursor: PzlTokenCursor)
 	fun match(): Boolean
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun parse(): S
 }

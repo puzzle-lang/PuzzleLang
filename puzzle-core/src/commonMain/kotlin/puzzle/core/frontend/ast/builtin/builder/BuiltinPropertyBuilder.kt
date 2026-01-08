@@ -28,7 +28,7 @@ class BuiltinPropertyBuilder {
 		typeArguments += TypeArgument(
 			name = name?.let {
 				Identifier(
-					name = it,
+					value = it,
 					location = SourceLocation.Builtin
 				)
 			},

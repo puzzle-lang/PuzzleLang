@@ -425,6 +425,10 @@ var property7: Int
         property6 = newValue
     }
 
+val [property8, property9] = getProperties()
+val [_, var property10] = getProperties()
+[var property11: Int, val property12] = getProperties()
+
 type<T>
 typealias MyList = List<T>
 

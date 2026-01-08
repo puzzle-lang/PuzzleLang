@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.parameter.context
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.parameter.DeclarationContextReceiver
 import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.NOT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseDeclarationContextSpec(): DeclarationContextSpec? {
 	if (!cursor.match(CONTEXT)) return null
 	val start = cursor.previous.location
@@ -34,7 +34,7 @@ fun parseDeclarationContextSpec(): DeclarationContextSpec? {
 	return DeclarationContextSpec(receivers, isPropagate, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseDeclarationContextReceiver(): DeclarationContextReceiver {
 	val name = parseIdentifier(IdentifierTarget.CONTEXT_RECEIVER)
 	cursor.expect(COLON, "context 参数缺少 ':'")
@@ -42,7 +42,7 @@ private fun parseDeclarationContextReceiver(): DeclarationContextReceiver {
 	return DeclarationContextReceiver(name, type)
 }
 
-context(_: PzlContext)
+context(_: FileContext)
 fun DeclarationContextSpec.check(target: ContextTarget) {
 	if (!target.allowContext) {
 		syntaxError("${target.label}不支持 context 上下文参数", this)

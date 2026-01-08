@@ -2,32 +2,32 @@ package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.expression.Identifier
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.IdentifierKind
 import puzzle.core.frontend.token.kinds.KeywordKind
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseIdentifier(target: IdentifierTarget): Identifier {
 	return tryParseIdentifier(target)
 		?: syntaxError("${target.label}缺少名称", cursor.current)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun tryParseIdentifier(target: IdentifierTarget): Identifier? {
 	return tryParseIdentifierString(target)?.let {
 		Identifier(it, cursor.previous.location)
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseIdentifierString(target: IdentifierTarget): String {
 	return tryParseIdentifierString(target)
 		?: syntaxError("${target.label}缺少名称", cursor.current)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun tryParseIdentifierString(target: IdentifierTarget): String? {
 	if (cursor.match { it.kind is IdentifierKind }) {
 		val value = cursor.previous.value
@@ -72,6 +72,10 @@ enum class IdentifierTarget(
 	PROPERTY(
 		label = "属性声明",
 		allowAnonymousBinding = false,
+	),
+	PROPERTY_DESTRUCTURE(
+		label = "属性解构声明",
+		allowAnonymousBinding = true,
 	),
 	CLASS(
 		label = "类声明",

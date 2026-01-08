@@ -23,11 +23,11 @@ sealed interface SourceLocation {
 		@Transient
 		private var _endPosition: SourcePosition? = null
 		
-		context(_: PzlContext)
+		context(_: FileContext)
 		val startPosition: SourcePosition
 			get() = _startPosition ?: calcPosition(start).also { _startPosition = it }
 		
-		context(_: PzlContext)
+		context(_: FileContext)
 		val endPosition: SourcePosition
 			get() = _endPosition ?: calcPosition(end).also { _endPosition = it }
 	}
@@ -42,7 +42,7 @@ sealed interface SourceLocation {
 	}
 }
 
-context(_: PzlContext)
+context(_: FileContext)
 fun PzlToken.equalsLine(token: PzlToken): Boolean {
 	if (this.location !is SourceLocation.File || token.location !is SourceLocation.File) {
 		return false
@@ -76,7 +76,7 @@ fun SourceLocation.copy(
 	return SourceLocation.File(start, end)
 }
 
-context(context: PzlContext)
+context(context: FileContext)
 fun calcPosition(position: Int): SourcePosition {
 	val line = context.lineStarts.indexOfLast { position >= it }
 	val column = position - context.lineStarts[line]

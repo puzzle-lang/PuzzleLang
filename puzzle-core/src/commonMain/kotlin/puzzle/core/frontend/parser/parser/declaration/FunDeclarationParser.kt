@@ -8,7 +8,7 @@ import puzzle.core.frontend.ast.type.LambdaType
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.ast.type.copy
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.copy
 import puzzle.core.frontend.model.span
@@ -32,7 +32,7 @@ import puzzle.core.frontend.token.kinds.SymbolTokenKind
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseFunDeclaration(header: DeclarationHeader, start: SourceLocation): FunDeclaration {
 	val (extension, funName) = parseExtensionAndFunName()
 	val parameters = parseParameters(ParameterTarget.FUN)
@@ -83,7 +83,7 @@ fun parseFunDeclaration(header: DeclarationHeader, start: SourceLocation): FunDe
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseExtensionAndFunName(): Pair<TypeReference?, FunName> {
 	val name = tryParseIdentifier(IdentifierTarget.FUN) ?: run {
 		val funName = tryParseOperatorFunName()
@@ -148,7 +148,7 @@ private val notOverloadableSymbols = setOf(
 	NOT_EQUALS
 )
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun tryParseOperatorFunName(): FunName? {
 	if (cursor.match { it.kind in overloadableSymbols }) {
 		val token = cursor.previous

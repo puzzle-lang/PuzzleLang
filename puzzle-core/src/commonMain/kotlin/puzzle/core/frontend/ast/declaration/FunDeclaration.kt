@@ -62,8 +62,10 @@ class MagicFunName(
 ) : FunName
 
 @Serializable
-enum class MagicKind {
-	GETTER,
-	SETTER,
-	COMPARE
+enum class MagicKind(
+	val value: String,
+) {
+	GETTER("[]"),
+	SETTER("[]="),
+	COMPARE("<=>")
 }

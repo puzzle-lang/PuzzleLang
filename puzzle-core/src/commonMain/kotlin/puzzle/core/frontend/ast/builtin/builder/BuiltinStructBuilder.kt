@@ -44,6 +44,7 @@ class BuiltinStructBuilder {
 	fun parameter(
 		name: String,
 		type: String,
+		isMutable: Boolean = false,
 		isNullable: Boolean = false,
 		builder: BuiltinParameterBuilder.() -> Unit = {},
 	) {
@@ -55,9 +56,10 @@ class BuiltinStructBuilder {
 		)
 		parameters += Parameter(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin,
 			),
+			isMutable = isMutable,
 			modifiers = builder.modifiers,
 			type = type,
 			annotationCalls = builder.annotationCalls,

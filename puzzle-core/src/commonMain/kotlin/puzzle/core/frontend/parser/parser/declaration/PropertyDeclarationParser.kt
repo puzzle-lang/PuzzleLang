@@ -1,19 +1,18 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.model.copy
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.PropertyDeclaration
-import puzzle.core.frontend.ast.declaration.PropertyGetter
-import puzzle.core.frontend.ast.declaration.PropertySetter
+import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.type.LambdaType
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.ast.type.copy
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.SourceLocation
+import puzzle.core.frontend.model.copy
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
@@ -26,29 +25,54 @@ import puzzle.core.frontend.token.kinds.AccessKind.QUESTION_DOT
 import puzzle.core.frontend.token.kinds.AccessorKind.GET
 import puzzle.core.frontend.token.kinds.AccessorKind.SET
 import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
+import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACKET
 import puzzle.core.frontend.token.kinds.BracketKind.End.RPAREN
-import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
-import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
+import puzzle.core.frontend.token.kinds.BracketKind.Start.*
 import puzzle.core.frontend.token.kinds.ModifierKind.*
 import puzzle.core.frontend.token.kinds.OperatorKind.LT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.isIn
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): PropertyDeclaration {
-	val (extension, name) = parseExtensionAndPropertyName()
-	val type = if (cursor.match(COLON)) parseTypeReference(allowLambda = true) else null
+	var funExtension: TypeReference? = null
+	val (propertySpec, isMutable) = if (cursor.previous.kind == LBRACKET) {
+		val propertySpec = parseDestructurePropertySpec(start)
+		val isMutable = when {
+			propertySpec.properties.all { it.isMutable } -> true
+			propertySpec.properties.all { !it.isMutable } -> false
+			else -> null
+		}
+		propertySpec to isMutable
+	} else {
+		val isMutable = cursor.previous.kind == VAR
+		if (cursor.match(LBRACKET)) {
+			parseDestructurePropertySpec(start, defaultMutable = isMutable)
+		} else {
+			val (extension, name) = parseExtensionAndPropertyName()
+			funExtension = extension
+			parseSinglePropertySpec(start, isMutable, name)
+		} to isMutable
+	}
 	val initializer = if (cursor.match(ASSIGN)) parseExpressionChain() else null
-	val isVal = VAL isIn header.modifiers
 	val isLazy = LAZY isIn header.modifiers
+	val isLate = LATE isIn header.modifiers
 	when {
 		cursor.match(LBRACE) -> {
-			if (!isVal) {
-				if (isLazy) {
-					syntaxError("lazy 延迟初始化必须使用 val 修饰符", header.modifiers.first { it.kind == LAZY })
-				} else {
-					syntaxError("计算属性必须使用 val 修饰符", cursor.previous)
+			if (isLate) {
+				syntaxError("计算属性不支持声明 late 修饰符", header.modifiers.first { it.kind == LATE })
+			}
+			if (isLazy) {
+				val node = { header.modifiers.first { it.kind == LAZY } }
+				when {
+					propertySpec is DestructurePropertySpec -> syntaxError("lazy 延迟初始化属性不支持解构属性列表", node())
+					isMutable!! -> syntaxError("lazy 延迟初始化属性必须使用 val 修饰符", node())
+				}
+			} else {
+				when {
+					propertySpec is DestructurePropertySpec -> syntaxError("计算属性不支持解构属性列表", cursor.previous)
+					isMutable!! -> syntaxError("计算属性必须使用 val 修饰符", cursor.previous)
 				}
 			}
 			if (initializer != null) {
@@ -58,13 +82,12 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 			val body = parseStatements()
 			val end = cursor.previous.location
 			return PropertyDeclaration(
-				name = name,
-				type = type,
+				propertySpec = propertySpec,
 				modifiers = header.modifiers,
 				typeSpec = header.typeSpec,
 				contextSpec = header.contextSpec,
 				annotationCalls = header.annotationCalls,
-				extension = extension,
+				extension = funExtension,
 				location = start span end,
 				getter = PropertyGetter(
 					oldValue = null,
@@ -83,9 +106,23 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 		getter = parsePropertyGetter()
 	}
 	
-	val isLate = LATE isIn header.modifiers
+	if (propertySpec is DestructurePropertySpec || isMutable == null) {
+		if (isLate) {
+			syntaxError("late 延迟初始化属性不支持使用解构参数列表", propertySpec)
+		}
+		if (initializer == null) {
+			syntaxError("解构参数列表必须设置初始化值", propertySpec)
+		}
+		if (getter != null) {
+			syntaxError("get 属性访问器不支持使用解构参数列表", propertySpec)
+		}
+		if (setter != null) {
+			syntaxError("set 属性赋值器不支持使用解构参数列表", propertySpec)
+		}
+	}
+	
 	if (isLate) {
-		if (isVal) {
+		if (!isMutable!!) {
 			syntaxError("late 延迟初始化属性必须使用 var 修饰符", header.modifiers.first { it.kind == VAL })
 		}
 		if (initializer != null) {
@@ -100,11 +137,11 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 	}
 	
 	if (setter == null && getter == null) {
-		if (initializer == null && type == null) {
-			syntaxError("属性缺少类型", name.location.end)
+		if (initializer == null && (propertySpec as SinglePropertySpec).property.type == null) {
+			syntaxError("属性缺少类型", propertySpec.location.end)
 		}
 		if (!isLate && initializer == null) {
-			syntaxError("属性缺少初始化值", type!!.location.end)
+			syntaxError("属性缺少初始化值", propertySpec.location.end)
 		}
 		if (header.contextSpec != null) {
 			syntaxError("普通属性不支持 context 上下文参数", header.contextSpec)
@@ -114,29 +151,14 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 		}
 	}
 	
-	if (isVal) {
-		if (setter != null) {
-			syntaxError("不可变属性不允许使用 set 属性赋值器", setter)
-		}
-		if (initializer != null) {
-			if (extension != null) {
-				syntaxError("扩展属性不允许设置初始化值", initializer)
-			}
-			if (getter != null) {
-				syntaxError("不可变属性不允许同时设置初始化值和 get 属性访问器", initializer)
-			}
-		}
-		if (getter?.oldValue != null) {
-			syntaxError("不可变属性不允许在 get 属性访问器中使用 oldValue 值", getter.oldValue)
-		}
-	} else {
+	if (isMutable == true) {
 		if (initializer == null) {
-			if (extension != null) {
+			if (funExtension != null) {
 				if (getter == null) {
-					syntaxError("扩展属性缺少 get 属性访问器", type ?: name)
+					syntaxError("扩展属性缺少 get 属性访问器", propertySpec)
 				}
 				if (setter == null) {
-					syntaxError("扩展属性缺少 set 属性赋值器", type ?: name)
+					syntaxError("扩展属性缺少 set 属性赋值器", propertySpec)
 				}
 				if (getter.oldValue != null) {
 					syntaxError("扩展属性不允许在 get 属性访问器中使用 oldValue 值", getter.oldValue)
@@ -147,39 +169,54 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 			}
 			if (getter != null) {
 				if (setter == null) {
-					syntaxError("属性缺少初始化值", type ?: name)
+					syntaxError("属性缺少初始化值", propertySpec)
 				}
 				if (getter.oldValue != null) {
-					syntaxError("属性缺少初始化值, 你在 get 属性访问器中使用了 oldValue 值", type ?: name)
+					syntaxError("属性缺少初始化值, 你在 get 属性访问器中使用了 oldValue 值", propertySpec)
 				}
 			}
 			if (setter != null) {
 				if (getter == null) {
-					syntaxError("属性缺少初始化值", type ?: name)
+					syntaxError("属性缺少初始化值", propertySpec)
 				}
 				if (setter.oldValue != null) {
-					syntaxError("属性缺少初始化值, 你在 set 属性赋值器中使用了 oldValue 值", type ?: name)
+					syntaxError("属性缺少初始化值, 你在 set 属性赋值器中使用了 oldValue 值", propertySpec)
 				}
 			}
 		} else {
-			if (extension != null) {
+			if (funExtension != null) {
 				syntaxError("扩展属性不允许设置初始化值", initializer)
 			}
 			if (setter != null && getter != null && (setter.oldValue == null || getter.oldValue == null)) {
 				syntaxError("在 get 属性访问器和 set 属性赋值器中未使用到 oldValue 值, 不允许有初始化值", initializer)
 			}
 		}
+	} else if (isMutable == false) {
+		if (setter != null) {
+			syntaxError("不可变属性不允许使用 set 属性赋值器", setter)
+		}
+		if (initializer != null) {
+			if (funExtension != null) {
+				syntaxError("扩展属性不允许设置初始化值", initializer)
+			}
+			if (getter != null) {
+				syntaxError("不可变属性不允许同时设置初始化值和 get 属性访问器", initializer)
+			}
+		}
+		if (getter?.oldValue != null) {
+			syntaxError("不可变属性不允许在 get 属性访问器中使用 oldValue 值", getter.oldValue)
+		}
 	}
+	
 	val end = cursor.previous.location
 	
 	return PropertyDeclaration(
-		name = name,
-		type = type,
+		propertySpec = propertySpec,
 		modifiers = header.modifiers,
 		typeSpec = header.typeSpec,
 		contextSpec = header.contextSpec,
 		annotationCalls = header.annotationCalls,
-		extension = extension,
+		extension = funExtension,
 		location = start span end,
 		initializer = initializer,
 		getter = getter,
@@ -187,7 +224,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parsePropertyGetter(): PropertyGetter? {
 	if (!cursor.match(GET)) return null
 	val start = cursor.previous.location
@@ -210,7 +247,7 @@ private fun parsePropertyGetter(): PropertyGetter? {
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parsePropertySetter(): PropertySetter? {
 	if (!cursor.match(SET)) return null
 	val start = cursor.previous.location
@@ -238,7 +275,7 @@ private fun parsePropertySetter(): PropertySetter? {
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseExtensionAndPropertyName(): Pair<TypeReference?, Identifier> {
 	var name = parseIdentifier(IdentifierTarget.PROPERTY)
 	if (!cursor.check { it.kind == DOT || it.kind == QUESTION_DOT || it.kind == LT }) {
@@ -269,4 +306,72 @@ private fun parseExtensionAndPropertyName(): Pair<TypeReference?, Identifier> {
 	)
 	name = Identifier(segment, cursor.previous.location)
 	return extension to name
+}
+
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseSinglePropertySpec(
+	start: SourceLocation,
+	isMutable: Boolean,
+	name: Identifier,
+): SinglePropertySpec {
+	val type = if (cursor.match(COLON)) parseTypeReference(allowLambda = true) else null
+	val end = cursor.previous.location
+	return SinglePropertySpec(
+		property = Property(
+			isMutable = isMutable,
+			name = name,
+			type = type,
+			location = start span end
+		)
+	)
+}
+
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseDestructurePropertySpec(
+	start: SourceLocation,
+	defaultMutable: Boolean? = null,
+): DestructurePropertySpec {
+	val properties = buildList {
+		while (!cursor.match(RBRACKET)) {
+			val start = cursor.current.location
+			var isMutable = when {
+				cursor.match(VAR) -> true
+				cursor.match(VAL) -> false
+				else -> null
+			}
+			val name = parseIdentifier(IdentifierTarget.PROPERTY_DESTRUCTURE)
+			when {
+				isMutable == null -> {
+					isMutable = if (name.isAnonymousBinding) false else {
+						defaultMutable ?: syntaxError("解构属性缺少可变修饰符", cursor.current)
+					}
+				}
+				
+				isMutable && name.isAnonymousBinding -> {
+					syntaxError("匿名解构属性不允许使用 var 可变修饰符", cursor.offset(-2))
+				}
+			}
+			val type = if (cursor.match(COLON)) {
+				parseTypeReference(allowLambda = true)
+			} else null
+			val end = cursor.previous.location
+			this += Property(
+				isMutable = isMutable,
+				name = name,
+				type = type,
+				location = start span end
+			)
+			if (!cursor.check(RBRACKET)) {
+				cursor.expect(COMMA, "解构属性列表缺少 ','")
+			}
+		}
+	}
+	if (properties.isEmpty()) {
+		syntaxError("解构属性列表缺少属性", cursor.previous)
+	}
+	if (properties.all { it.name.isAnonymousBinding }) {
+		syntaxError("解构属性列表不允许全部使用匿名绑定", cursor.previous)
+	}
+	val end = cursor.previous.location
+	return DestructurePropertySpec(properties, start span end)
 }

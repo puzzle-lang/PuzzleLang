@@ -1,9 +1,9 @@
 package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Argument
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
 import puzzle.core.frontend.token.kinds.BracketKind
 import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACKET
@@ -13,7 +13,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseArguments(target: ArgumentTarget): List<Argument> {
 	if (cursor.match(target.end)) return emptyList()
 	return buildList {
@@ -30,7 +30,7 @@ fun parseArguments(target: ArgumentTarget): List<Argument> {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseCallArgument(endKind: BracketKind.End): Argument {
 	val name = if (cursor.offsetOrNull(offset = 1)?.kind == ASSIGN) {
 		parseIdentifier(IdentifierTarget.ARGUMENT).also {

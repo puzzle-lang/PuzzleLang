@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.statement.ForDestructurePattern
 import puzzle.core.frontend.ast.statement.ForStatement
 import puzzle.core.frontend.ast.statement.ForValuePattern
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -22,7 +22,7 @@ import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseForStatement(): ForStatement {
 	val containsLabel = cursor.offset(-2).kind == AT
 	val start = if (containsLabel) cursor.offset(-3).location else cursor.previous.location

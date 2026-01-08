@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.parser.declaration
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.declaration.ObjectDeclaration
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.ObjectDeclaration
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
@@ -20,7 +20,7 @@ import puzzle.core.frontend.parser.parser.type.parseSuperTypes
 import puzzle.core.frontend.parser.parser.type.parseWithTypes
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseObjectDeclaration(
 	header: DeclarationHeader,
 	start: SourceLocation,

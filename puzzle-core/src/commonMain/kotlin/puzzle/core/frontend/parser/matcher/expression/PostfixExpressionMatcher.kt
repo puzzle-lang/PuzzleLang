@@ -2,7 +2,7 @@ package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.expression.Expression
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.checkIdentifier
 import puzzle.core.frontend.parser.parser.expression.parsePostfixExpression
@@ -26,12 +26,12 @@ object PostfixExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<Ex
 		}
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		syntaxError("标识符前不允许是标识符", cursor.previous)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(): Expression {
 		return parsePostfixExpression()
 	}

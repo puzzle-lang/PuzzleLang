@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.declaration.AnnotationDeclaration
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -15,7 +15,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.ContextualKind.WITH
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseAnnotationDeclaration(header: DeclarationHeader, start: SourceLocation): AnnotationDeclaration {
 	val name = parseIdentifier(IdentifierTarget.ANNOTATION)
 	val parameters = parseParameters(ParameterTarget.ANNOTATION)

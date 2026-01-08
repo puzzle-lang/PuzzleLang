@@ -1,7 +1,7 @@
 package puzzle.core.frontend.lexer.recognition
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.NumberKind
@@ -13,7 +13,7 @@ import puzzle.core.util.isHex
 
 object NumberRecognition : TokenRecognition {
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	override fun tryParse(input: CharArray, start: Int): PzlToken? {
 		val system = getNumberSystemOrNull(input, start) ?: return null
 		return when (system) {
@@ -23,7 +23,7 @@ object NumberRecognition : TokenRecognition {
 		}
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun getNumberSystemOrNull(input: CharArray, start: Int): NumberSystem? {
 		val first = input[start]
 		if (first != '.' && !first.isDecimal()) return null
@@ -44,7 +44,7 @@ object NumberRecognition : TokenRecognition {
 	private const val BINARY_UINT_MAX_LENGTH = 32
 	private const val BINARY_ULONG_MAX_LENGTH = 64
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseBinaryPzlToken(input: CharArray, start: Int): PzlToken {
 		var position = start + 2
 		var is8Byte = false
@@ -100,7 +100,7 @@ object NumberRecognition : TokenRecognition {
 	private const val DECIMAL_LONG_MAX = Long.MAX_VALUE.toString()
 	private val DECIMAL_ULONG_MAX = ULong.MAX_VALUE.toString()
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseDecimalPzlToken(input: CharArray, start: Int): PzlToken {
 		var position = start
 		var isDecimal = false
@@ -186,7 +186,7 @@ object NumberRecognition : TokenRecognition {
 	private const val HEX_UINT_MAX_LENGTH = 8
 	private const val HEX_ULONG_MAX_LENGTH = 16
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun parseHexPzlToken(input: CharArray, start: Int): PzlToken {
 		var position = start + 2
 		var is8Byte = false
@@ -237,12 +237,12 @@ object NumberRecognition : TokenRecognition {
 		return PzlToken(kind, start span position)
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun numberFormatError(position: Int): Nothing {
 		syntaxError("数字格式错误", position)
 	}
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	private fun numberValueIsOutOfRangeError(position: Int): Nothing {
 		syntaxError("数值超出范围", position)
 	}

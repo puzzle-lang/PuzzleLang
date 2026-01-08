@@ -6,7 +6,7 @@ import puzzle.core.frontend.semantics.symbol.TraitSymbol
 class TraitScope(
 	override val parent: Scope<*>?,
 	override val owner: TraitSymbol<*>,
-) : Scope<TraitScope> {
+) : Scope<TraitScope>() {
 	
 	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<TraitScope>>>()
 	

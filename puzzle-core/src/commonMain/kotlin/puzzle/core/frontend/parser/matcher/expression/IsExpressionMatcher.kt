@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.IsExpression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseIsExpression
 import puzzle.core.frontend.token.kinds.OperatorKind.NOT
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.IS
@@ -16,7 +16,7 @@ object IsExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<Is
 		return cursor.match(NOT, IS) || cursor.match(IS)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		val negated = cursor.offset(-2).kind == NOT
 		syntaxError(
@@ -25,7 +25,7 @@ object IsExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<Is
 		)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(left: Expression): IsExpression {
 		return parseIsExpression(left)
 	}

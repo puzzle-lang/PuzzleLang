@@ -2,7 +2,7 @@ package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.expression.Expression
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.equalsLine
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.matcher.expression.ExpressionMatcher
@@ -23,7 +23,7 @@ import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseExpression(left: Expression? = null): Expression {
 	val matcher = ExpressionMatcher.matchers.find { it.match(left) }
 		?: syntaxError("不支持的表达式", cursor.current)
@@ -42,7 +42,7 @@ fun parseExpression(left: Expression? = null): Expression {
 	}
 }
 
-context(_: PzlContext, _: PzlTokenCursor)
+context(_: FileContext, _: PzlTokenCursor)
 fun parseExpressionChain(left: Expression? = null): Expression {
 	var expression = left
 	while (!isAtExpressionEnd() || expression == null) {
@@ -51,7 +51,7 @@ fun parseExpressionChain(left: Expression? = null): Expression {
 	return expression
 }
 
-context(_: PzlContext, _: PzlTokenCursor)
+context(_: FileContext, _: PzlTokenCursor)
 fun tryParseExpressionChain(): Expression? {
 	var expression: Expression? = null
 	while (!isAtExpressionEnd()) {
@@ -69,7 +69,7 @@ private val endKinds = setOf(
 	GET, SET
 )
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun isAtExpressionEnd(): Boolean {
 	val current = cursor.current
 	if (current.kind in endKinds) return true

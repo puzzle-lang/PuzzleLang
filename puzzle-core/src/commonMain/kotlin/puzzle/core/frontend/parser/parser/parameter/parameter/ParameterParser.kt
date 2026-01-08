@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.parser.parameter.parameter
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.parameter.Parameter
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.parameter.Parameter
 import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
@@ -16,10 +16,12 @@ import puzzle.core.frontend.parser.parser.type.parseTypeReference
 import puzzle.core.frontend.token.kinds.AssignmentKind.ASSIGN
 import puzzle.core.frontend.token.kinds.BracketKind.End.RPAREN
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
+import puzzle.core.frontend.token.kinds.ModifierKind.VAL
+import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseParameters(target: ParameterTarget): List<Parameter> {
 	if (!cursor.match(LPAREN)) {
 		if (target.allowWithoutParen) return emptyList()
@@ -38,7 +40,7 @@ fun parseParameters(target: ParameterTarget): List<Parameter> {
 	return parameters
 }
 
-context(_: PzlContext)
+context(_: FileContext)
 private fun List<Parameter>.check() {
 	var existsTypeQuantifier = false
 	this.forEach {
@@ -50,11 +52,16 @@ private fun List<Parameter>.check() {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseParameter(target: ParameterTarget): Parameter {
 	val start = cursor.current.location
 	val annotationCalls = parseAnnotationCalls()
 	val modifiers = parseModifiers()
+	val isMutable = when {
+		cursor.match(VAR) -> true
+		cursor.match(VAL) -> false
+		else -> false
+	}
 	modifiers.check(target.modifierTarget)
 	val name = parseIdentifier(IdentifierTarget.PARAMETER)
 	cursor.expect(COLON, "型参缺少 ':'")
@@ -72,6 +79,7 @@ private fun parseParameter(target: ParameterTarget): Parameter {
 	val end = cursor.previous.location
 	return Parameter(
 		name = name,
+		isMutable = isMutable,
 		modifiers = modifiers,
 		type = type,
 		annotationCalls = annotationCalls,

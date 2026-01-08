@@ -4,9 +4,13 @@ import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.semantics.symbol.Symbol
 
 class FileScope(
-	override val parent: Scope<*>?,
-	override val owner: FileSymbol<*>,
-) : Scope<FileScope> {
+	override val owner: FileSymbol,
+) : Scope<FileScope>() {
+	
+	var currentParent: Scope<*>? = null
+	
+	override val parent: Scope<*>?
+		get() = currentParent
 	
 	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<FileScope>>>()
 	

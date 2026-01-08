@@ -1,20 +1,23 @@
 package puzzle.core.frontend.parser.parser
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.Modifier
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.ModifierKind.*
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseModifiers(): List<Modifier> {
 	val modifiers = buildList {
 		while (true) {
 			val modifier = parseModifier() ?: break
 			val kind = modifier.kind
-			if (kind == VAR || kind == VAR) break
+			if (kind == VAR || kind == VAL) {
+				cursor.retreat()
+				break
+			}
 			this += modifier
 		}
 	}
@@ -33,7 +36,7 @@ private fun parseModifier(): Modifier? {
 	return null
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun checkModifierOrder(modifiers: List<Modifier>) {
 	if (modifiers.isEmpty()) return
 	var last: Modifier? = null
@@ -58,7 +61,7 @@ private fun checkModifierOrder(modifiers: List<Modifier>) {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun List<Modifier>.check(target: ModifierTarget) {
 	this.forEachIndexed { index, modifier ->
 		if (modifier.kind !in target.supportedModifiers) {

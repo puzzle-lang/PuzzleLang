@@ -13,11 +13,7 @@ class BuiltinAstBuilder {
 	
 	private companion object {
 		
-		private val magicKindMap = mapOf(
-			"[]" to MagicKind.GETTER,
-			"[]=" to MagicKind.SETTER,
-			"<=>" to MagicKind.COMPARE
-		)
+		private val magicKindMap = MagicKind.entries.associateBy { it.value }
 	}
 	
 	val declarations: List<TopLevelAllowedDeclaration>
@@ -48,7 +44,7 @@ class BuiltinAstBuilder {
 			
 			else -> IdentifierFunName(
 				name = Identifier(
-					name = name,
+					value = name,
 					location = SourceLocation.Builtin
 				)
 			)
@@ -88,7 +84,7 @@ class BuiltinAstBuilder {
 		val builder = BuiltinTraitBuilder().apply(builder)
 		declarations += TraitDeclaration(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin
 			),
 			docComment = null,
@@ -109,7 +105,7 @@ class BuiltinAstBuilder {
 		val builder = BuiltinStructBuilder().apply(builder)
 		declarations += StructDeclaration(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin
 			),
 			docComment = null,
@@ -130,19 +126,27 @@ class BuiltinAstBuilder {
 	fun builtinProperty(
 		name: String,
 		type: String,
+		isMutable: Boolean = false,
 		isNullable: Boolean = false,
 		builder: BuiltinPropertyBuilder.() -> Unit = {},
 	) {
 		val builder = BuiltinPropertyBuilder().apply(builder)
 		declarations += PropertyDeclaration(
-			name = Identifier(
-				name = name,
+			propertySpec = SinglePropertySpec(
+				property = Property(
+					isMutable = isMutable,
+					name = Identifier(
+						value = name,
+						location = SourceLocation.Builtin
+					),
+					type = getTypeReference(
+						type = type,
+						isNullable = isNullable,
+						typeArguments = builder.typeArguments,
+					),
+					location = SourceLocation.Builtin
+				),
 				location = SourceLocation.Builtin
-			),
-			type = getTypeReference(
-				type = type,
-				isNullable = isNullable,
-				typeArguments = builder.typeArguments,
 			),
 			modifiers = builder.modifiers,
 			typeSpec = null,
@@ -157,16 +161,15 @@ class BuiltinAstBuilder {
 fun builtinAst(
 	name: String,
 	builder: BuiltinAstBuilder.() -> Unit,
-): AstFile {
-	return AstFile(
-		name = name,
-		sourcePath = null,
-		builtin = true,
-		packageDeclaration = PackageDeclaration(
-			segments = listOf("puzzle"),
-			location = SourceLocation.Builtin,
-		),
-		importDeclarations = emptyList(),
-		declarations = BuiltinAstBuilder().apply(builder).declarations
-	)
-}
+): AstFile = AstFile(
+	name = name,
+	sourcePath = null,
+	builtin = true,
+	packageDeclaration = PackageDeclaration(
+		segments = listOf("puzzle"),
+		location = SourceLocation.Builtin,
+	),
+	importDeclarations = emptyList(),
+	declarations = BuiltinAstBuilder().apply(builder).declarations,
+	location = SourceLocation.Builtin,
+)

@@ -1,6 +1,6 @@
 package puzzle.core.frontend.lexer.recognition
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.OperatorKind.IN
@@ -18,7 +18,7 @@ object SymbolRecognition : TokenRecognition {
 	
 	private val starts = SymbolTokenKind.kinds.map { it.value.first() }.toSet()
 	
-	context(_: PzlContext)
+	context(_: FileContext)
 	override fun tryParse(input: CharArray, start: Int): PzlToken? {
 		if (input[start] !in starts) return null
 		for (length in maxLength downTo 1) {

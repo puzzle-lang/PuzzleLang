@@ -1,21 +1,21 @@
 package puzzle.core.frontend.semantics.scope
 
-import puzzle.core.frontend.semantics.symbol.MixinSymbol
+import puzzle.core.frontend.semantics.symbol.FunSymbol
 import puzzle.core.frontend.semantics.symbol.Symbol
 
-class MixinScope(
+class FunScope(
 	override val parent: Scope<*>?,
-	override val owner: MixinSymbol<*>,
-) : Scope<MixinScope>() {
+	override val owner: FunSymbol<*>,
+) : Scope<FunScope>() {
 	
-	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<MixinScope>>>()
+	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<FunScope>>>()
 	
-	private var cached: List<Symbol<MixinScope>>? = null
+	private var cached: List<Symbol<FunScope>>? = null
 	
-	override val symbols: Collection<Symbol<MixinScope>>
+	override val symbols: Collection<Symbol<FunScope>>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
-	override fun declare(symbol: Symbol<MixinScope>) {
+	override fun declare(symbol: Symbol<FunScope>) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol
 		cached = null

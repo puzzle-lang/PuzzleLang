@@ -18,7 +18,7 @@ class BuiltinDeclarationContextReceiverBuilder {
 	) {
 		contextReceivers += DeclarationContextReceiver(
 			name = Identifier(
-				name = name,
+				value = name,
 				location = SourceLocation.Builtin,
 			),
 			type = getTypeReference(

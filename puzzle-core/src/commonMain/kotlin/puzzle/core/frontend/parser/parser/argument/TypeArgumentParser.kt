@@ -1,8 +1,8 @@
 package puzzle.core.frontend.parser.parser.argument
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.argument.TypeArgument
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -11,7 +11,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.GT
 import puzzle.core.frontend.token.kinds.OperatorKind.LT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTypeArguments(): List<TypeArgument> {
 	if (!cursor.match(LT)) {
 		return emptyList()
@@ -26,7 +26,7 @@ fun parseTypeArguments(): List<TypeArgument> {
 	return arguments
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseTypeArgument(): TypeArgument {
 	val name = if (cursor.offsetOrNull(offset = 1)?.kind == ASSIGN) {
 		parseIdentifier(IdentifierTarget.TYPE_ARGUMENT).also {

@@ -1,13 +1,15 @@
 package puzzle.core.frontend.parser.parser.statement
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.statement.DestructureVariableSpec
 import puzzle.core.frontend.ast.statement.SingleVariableSpec
 import puzzle.core.frontend.ast.statement.Variable
 import puzzle.core.frontend.ast.statement.VariableDeclarationStatement
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.SourceLocation
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -19,19 +21,18 @@ import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
-import puzzle.core.frontend.parser.isAnonymousBinding
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseVariableDeclarationStatement(): VariableDeclarationStatement {
 	val start = cursor.previous.location
 	val variableSpec = if (cursor.previous.kind == LBRACKET) {
-		parseMultiVariableSpec()
+		parseDestructureVariableSpec(start)
 	} else {
 		val isMutable = cursor.previous.kind == VAR
 		if (cursor.match(LBRACKET)) {
-			parseMultiVariableSpec(defaultMutable = isMutable)
+			parseDestructureVariableSpec(start, defaultMutable = isMutable)
 		} else {
-			parseSingleVariableSpec(isMutable)
+			parseSingleVariableSpec(start, isMutable)
 		}
 	}
 	val initializer = if (cursor.match(ASSIGN)) {
@@ -43,7 +44,7 @@ fun parseVariableDeclarationStatement(): VariableDeclarationStatement {
 			}
 			
 			is DestructureVariableSpec -> {
-				syntaxError("解构参数必须赋值", cursor.previous.location.end)
+				syntaxError("解构变量必须赋值", cursor.previous.location.end)
 			}
 			
 			else -> null
@@ -57,9 +58,11 @@ fun parseVariableDeclarationStatement(): VariableDeclarationStatement {
 	)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
-private fun parseSingleVariableSpec(isMutable: Boolean): SingleVariableSpec {
-	val start = cursor.previous.location
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseSingleVariableSpec(
+	start: SourceLocation,
+	isMutable: Boolean,
+): SingleVariableSpec {
 	val name = parseIdentifier(IdentifierTarget.VARIABLE)
 	if (name.isAnonymousBinding && isMutable) {
 		syntaxError("匿名参数不允许使用 var 可变修饰符", cursor.offset(-2))
@@ -72,10 +75,12 @@ private fun parseSingleVariableSpec(isMutable: Boolean): SingleVariableSpec {
 	return SingleVariableSpec(variable)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
-private fun parseMultiVariableSpec(defaultMutable: Boolean? = null): DestructureVariableSpec {
-	val start = cursor.previous.location
-	val varaibles = buildList {
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseDestructureVariableSpec(
+	start: SourceLocation,
+	defaultMutable: Boolean? = null,
+): DestructureVariableSpec {
+	val variables = buildList {
 		while (!cursor.match(RBRACKET)) {
 			val start = cursor.current.location
 			var isMutable = when {
@@ -92,25 +97,30 @@ private fun parseMultiVariableSpec(defaultMutable: Boolean? = null): Destructure
 				}
 				
 				isMutable && name.isAnonymousBinding -> {
-					syntaxError("匿名解构参数不允许使用 var 可变修饰符", cursor.offset(-2))
+					syntaxError("匿名解构变量不允许使用 var 可变修饰符", cursor.offset(-2))
 				}
 			}
 			val type = if (cursor.match(COLON)) {
 				parseTypeReference(allowLambda = true)
 			} else null
 			val end = cursor.previous.location
-			this += Variable(isMutable, name, type, start span end)
+			this += Variable(
+				isMutable = isMutable,
+				name = name,
+				type = type,
+				location = start span end
+			)
 			if (!cursor.check(RBRACKET)) {
 				cursor.expect(COMMA, "解构变量列表缺少 ','")
 			}
 		}
 	}
-	if (varaibles.isEmpty()) {
-		syntaxError("解构列表缺少变量", cursor.previous)
+	if (variables.isEmpty()) {
+		syntaxError("解构变量列表缺少变量", cursor.previous)
 	}
-	if (varaibles.all { it.name.isAnonymousBinding }) {
-		syntaxError("解构列表不允许全部匿名绑定", varaibles.first().name)
+	if (variables.all { it.name.isAnonymousBinding }) {
+		syntaxError("解构变量列表不允许全部使用匿名绑定", variables.first().name)
 	}
 	val end = cursor.previous.location
-	return DestructureVariableSpec(varaibles, start span end)
+	return DestructureVariableSpec(variables, start span end)
 }

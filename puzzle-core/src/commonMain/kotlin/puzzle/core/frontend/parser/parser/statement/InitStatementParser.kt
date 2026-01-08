@@ -1,16 +1,16 @@
 package puzzle.core.frontend.parser.parser.statement
 
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.statement.InitStatement
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.parser.expression.ArgumentTarget
 import puzzle.core.frontend.parser.parser.expression.parseArguments
 import puzzle.core.frontend.parser.parser.type.parseNamedType
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseInitStatement(): InitStatement {
 	val start = cursor.previous.location
 	val isSafe = cursor.match(QUESTION)

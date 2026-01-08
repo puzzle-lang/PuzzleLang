@@ -45,12 +45,3 @@ enum class SymbolKind {
 	MODULE,
 	FILE
 }
-
-enum class Visibility {
-	PRIVATE,
-	FILE,
-	PROTECTED,
-	INTERNAL,
-	MODULE,
-	PUBLIC
-}

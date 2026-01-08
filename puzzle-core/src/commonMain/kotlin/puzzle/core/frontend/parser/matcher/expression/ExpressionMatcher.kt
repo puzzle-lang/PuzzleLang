@@ -1,8 +1,8 @@
 package puzzle.core.frontend.parser.matcher.expression
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Expression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 
 sealed interface ExpressionMatcher {
 	
@@ -32,24 +32,24 @@ sealed interface ExpressionMatcher {
 
 sealed interface RequirePrefixExpressionParser<out E : Expression> {
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun prefixError(): Nothing
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun parse(left: Expression): E
 }
 
 sealed interface NoPrefixExpressionParser<out E : Expression> {
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun prefixError(): Nothing
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun parse(): E
 }
 
 sealed interface OptionalPrefixExpressionParser<out E : Expression> {
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	fun parse(left: Expression?): E
 }

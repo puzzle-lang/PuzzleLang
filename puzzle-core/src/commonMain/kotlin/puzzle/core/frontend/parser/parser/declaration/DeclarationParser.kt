@@ -1,13 +1,13 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.declaration.CtorDeclaration
 import puzzle.core.frontend.ast.declaration.Declaration
 import puzzle.core.frontend.ast.declaration.InitDeclaration
 import puzzle.core.frontend.ast.declaration.TopLevelAllowedDeclaration
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.SourceLocation
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
 import puzzle.core.frontend.parser.matcher.declaration.member.MemberDeclarationMatcher
 import puzzle.core.frontend.parser.matcher.declaration.toplevel.DeclarationMatcher
@@ -21,8 +21,8 @@ import puzzle.core.frontend.parser.parser.parseDocComment
 import puzzle.core.frontend.parser.parser.parseModifiers
 import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACE
 
-context(_: PzlContext, cursor: PzlTokenCursor)
-fun parseDeclarations(): List<Declaration> {
+context(_: FileContext, cursor: PzlTokenCursor)
+fun parseDeclarations(): List<TopLevelAllowedDeclaration> {
 	return buildList {
 		while (!cursor.isAtEnd()) {
 			this += parseDeclaration()
@@ -30,8 +30,8 @@ fun parseDeclarations(): List<Declaration> {
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
-private fun parseDeclaration(): Declaration {
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseDeclaration(): TopLevelAllowedDeclaration {
 	val docComment = parseDocComment()
 	val annotationCalls = parseAnnotationCalls()
 	val typeSpec = parseTypeSpec()
@@ -49,7 +49,7 @@ private fun parseDeclaration(): Declaration {
 	return matcher.parse(header, start)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseMemberDeclarationInfo(): MemberDeclarationInfo {
 	val declarations = if (cursor.match(RBRACE)) emptyList() else {
 		buildList {
@@ -77,7 +77,7 @@ class MemberDeclarationInfo(
 	}
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseMemberDeclaration(): Declaration {
 	val docComment = parseDocComment()
 	val annotationCalls = parseAnnotationCalls()

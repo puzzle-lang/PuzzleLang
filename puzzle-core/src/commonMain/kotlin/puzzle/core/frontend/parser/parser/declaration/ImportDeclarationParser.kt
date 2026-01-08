@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.declaration
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.model.span
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.declaration.ImportDeclaration
 import puzzle.core.frontend.ast.declaration.ImportScope
 import puzzle.core.frontend.ast.expression.Identifier
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.span
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.matchIdentifier
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -15,7 +15,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.DOUBLE_STAR
 import puzzle.core.frontend.token.kinds.OperatorKind.STAR
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseImportDeclaration(): ImportDeclaration {
 	val start = cursor.previous.location
 	val name = parseIdentifierString(IdentifierTarget.IMPORT)

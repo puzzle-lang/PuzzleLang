@@ -1,7 +1,6 @@
 package puzzle.core.frontend.parser.parser.type
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
@@ -13,6 +12,7 @@ import puzzle.core.frontend.ast.type.LambdaType
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.ast.type.Type
 import puzzle.core.frontend.ast.type.TypeReference
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.parser.expression.checkIdentifier
 import puzzle.core.frontend.parser.parser.parameter.context.parseLambdaContextSpec
 import puzzle.core.frontend.parser.parser.parameter.parameter.parseLambdaParameters
@@ -25,7 +25,7 @@ import puzzle.core.frontend.token.kinds.SeparatorKind
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTypeReference(
 	allowLambda: Boolean = false,
 	allowNullable: Boolean = true,
@@ -92,7 +92,7 @@ fun parseTypeReference(
 	return TypeReference(type, isNullable, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseLambdaType(
 	start: SourceLocation,
 	contextSpec: LambdaContextSpec?,
@@ -127,7 +127,7 @@ private fun parseLambdaType(
 	return LambdaType(extension, contextSpec, parameters, returnSpec, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseNullable(allowNullable: Boolean): Boolean {
 	var isNullable = false
 	while (cursor.match(QUESTION)) {

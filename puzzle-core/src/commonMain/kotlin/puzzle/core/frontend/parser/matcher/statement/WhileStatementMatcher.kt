@@ -1,8 +1,8 @@
 package puzzle.core.frontend.parser.matcher.statement
 
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.statement.WhileStatement
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.matchLabel
 import puzzle.core.frontend.parser.parser.statement.parseWhileStatement
 import puzzle.core.frontend.token.kinds.ControlFlowKind.DO
@@ -17,7 +17,7 @@ object WhileStatementMatcher : StatementMatcher<WhileStatement> {
 				|| cursor.matchLabel(WHILE)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(): WhileStatement {
 		return parseWhileStatement()
 	}

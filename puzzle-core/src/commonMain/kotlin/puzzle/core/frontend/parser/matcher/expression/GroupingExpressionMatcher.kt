@@ -1,9 +1,9 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.Expression
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.parser.expression.parseGroupingExpression
 import puzzle.core.frontend.parser.parser.expression.parsePostfixExpression
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
@@ -15,12 +15,12 @@ object GroupingExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<E
 		return cursor.match(LPAREN)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		syntaxError("'(' 前不允许有表达式", cursor.previous)
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(): Expression {
 		val expression = parseGroupingExpression()
 		return parsePostfixExpression(expression)

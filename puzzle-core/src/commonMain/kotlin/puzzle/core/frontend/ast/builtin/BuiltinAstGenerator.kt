@@ -1,29 +1,35 @@
 package puzzle.core.frontend.ast.builtin
 
 import puzzle.core.frontend.ast.builtin.generator.*
-import puzzle.core.frontend.model.AstModule
-import puzzle.core.frontend.model.AstProject
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.ModuleContext
+import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.util.format
 import kotlin.time.measureTimedValue
 
 object BuiltinAstGenerator {
 	
-	fun generate(): AstProject {
+	fun generate(): ProjectContext {
 		val value = measureTimedValue {
-			val puzzleBuiltinCore = AstModule(
+			val nodes = listOf(
+				generateAnyAst(),
+				generateComparableAst(),
+				generateNumberAst(),
+				generateCharAst(),
+				generateBooleanAst(),
+				generateStringAst()
+			)
+			val puzzleBuiltinCore = ModuleContext(
 				name = "puzzle-builtin-core",
 				path = null,
 				builtin = true,
-				files = listOf(
-					generateAnyAst(),
-					generateComparableAst(),
-					generateNumberAst(),
-					generateCharAst(),
-					generateBooleanAst(),
-					generateStringAst()
-				)
+				files = nodes.map { node ->
+					FileContext().also {
+						it.node = node
+					}
+				}
 			)
-			AstProject(
+			ProjectContext(
 				name = "puzzle-builtin",
 				path = null,
 				builtin = true,

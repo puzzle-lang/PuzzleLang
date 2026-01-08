@@ -1,18 +1,18 @@
 package puzzle.core.frontend.parser.parser.expression
 
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.ast.expression.LambdaExpression
+import puzzle.core.frontend.ast.parameter.ParameterReference
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.equalsLine
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.expression.LambdaExpression
-import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.*
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseLambdaExpression(): LambdaExpression {
 	val containsLabel = cursor.offset(-2).kind == AT
 	val start = if (containsLabel) cursor.offset(-3).location else cursor.previous.location
@@ -23,7 +23,7 @@ fun parseLambdaExpression(): LambdaExpression {
 	return LambdaExpression(label, references, body, start span end)
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseLambdaParameterReferences(): List<ParameterReference> {
 	return buildList {
 		while (!cursor.match(ARROW)) {
@@ -56,7 +56,7 @@ private fun parseLambdaParameterReferences(): List<ParameterReference> {
 	}
 }
 
-context(_: PzlContext)
+context(_: FileContext)
 fun PzlTokenCursor.matchLambda(): Boolean {
 	return this.match { it.kind == LBRACE && it.equalsLine(this.previous) } ||
 			this.matchLabel { it.kind == LBRACE && it.equalsLine(this.previous) }

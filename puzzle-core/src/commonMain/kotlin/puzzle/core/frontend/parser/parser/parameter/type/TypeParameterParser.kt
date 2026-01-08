@@ -4,7 +4,7 @@ import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.ast.parameter.Variance
 import puzzle.core.frontend.ast.parameter.VarianceKind
-import puzzle.core.frontend.model.PzlContext
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -17,7 +17,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.GT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTypeParameters(): List<TypeParameter> {
 	val parameters = mutableListOf<TypeParameter>()
 	do {
@@ -29,7 +29,7 @@ fun parseTypeParameters(): List<TypeParameter> {
 	return parameters
 }
 
-context(_: PzlContext, cursor: PzlTokenCursor)
+context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseTypeParameter(): TypeParameter {
 	val start = cursor.current.location
 	val variance = parseVariance()

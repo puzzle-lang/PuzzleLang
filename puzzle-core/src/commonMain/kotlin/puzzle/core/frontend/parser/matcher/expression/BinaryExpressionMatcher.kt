@@ -1,10 +1,10 @@
 package puzzle.core.frontend.parser.matcher.expression
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.model.PzlContext
-import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.ast.expression.BinaryExpression
 import puzzle.core.frontend.ast.expression.Expression
+import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseBinaryExpression
 import puzzle.core.frontend.token.kinds.OperatorKind.*
 
@@ -20,7 +20,7 @@ object BinaryExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParse
 		AND, OR
 	)
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun prefixError(): Nothing {
 		syntaxError("'${cursor.previous.value}' 前未解析到表达式", cursor.previous)
 	}
@@ -30,7 +30,7 @@ object BinaryExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParse
 		return cursor.match { it.kind in operators }
 	}
 	
-	context(_: PzlContext, cursor: PzlTokenCursor)
+	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(left: Expression): BinaryExpression {
 		return parseBinaryExpression(left)
 	}
