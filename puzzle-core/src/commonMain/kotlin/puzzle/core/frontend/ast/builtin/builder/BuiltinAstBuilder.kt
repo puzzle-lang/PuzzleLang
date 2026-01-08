@@ -161,7 +161,7 @@ fun builtinAst(
 	return AstFile(
 		name = name,
 		sourcePath = null,
-		isBuiltin = true,
+		builtin = true,
 		packageDeclaration = PackageDeclaration(
 			segments = listOf("puzzle"),
 			location = SourceLocation.Builtin,

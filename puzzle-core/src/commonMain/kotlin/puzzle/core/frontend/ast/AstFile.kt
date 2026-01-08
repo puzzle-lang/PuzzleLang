@@ -12,7 +12,7 @@ class AstFile(
 	val name: String,
 	@Contextual
 	val sourcePath: PathWrapper?,
-	val isBuiltin: Boolean,
+	val builtin: Boolean,
 	val packageDeclaration: PackageDeclaration?,
 	val importDeclarations: List<ImportDeclaration>,
 	val declarations: List<Declaration>,

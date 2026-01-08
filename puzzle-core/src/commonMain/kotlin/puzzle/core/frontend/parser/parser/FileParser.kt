@@ -21,7 +21,7 @@ fun parseFile(): AstFile {
 	return AstFile(
 		name = sourcePath.name.removeSuffix(".pzl"),
 		sourcePath = sourcePath,
-		isBuiltin = false,
+		builtin = false,
 		packageDeclaration = packageDeclaration,
 		importDeclarations = importDeclarations,
 		declarations = declarations

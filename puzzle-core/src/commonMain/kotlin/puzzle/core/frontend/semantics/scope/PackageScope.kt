@@ -21,7 +21,7 @@ class PackageScope(
 		cached = null
 	}
 	
-	override fun lookupLocal(name: String): Symbol<*>? {
-		return symbolsMap[name]?.firstOrNull()
+	override fun lookup(name: String): List<Symbol<*>> {
+		return symbolsMap[name] ?: emptyList()
 	}
 }

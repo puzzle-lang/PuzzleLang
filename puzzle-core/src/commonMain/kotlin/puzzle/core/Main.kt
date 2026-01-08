@@ -2,13 +2,12 @@ package puzzle.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.processFrontend
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
 import puzzle.core.util.getCurrentMemoryUsage
 import puzzle.core.util.path
-import kotlin.time.measureTimedValue
+import kotlin.time.measureTime
 
 fun main(args: Array<out String>) {
 	val command = args.firstOrNull() ?: return help()
@@ -26,11 +25,10 @@ fun main(args: Array<out String>) {
 }
 
 private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
-	val value = measureTimedValue { processFrontend(projectPath) }
-	println("执行用时: ${value.duration.format()}")
+	val duration = measureTime { processFrontend(projectPath) }
+	println("执行用时: ${duration.format()}")
 	val usage = getCurrentMemoryUsage()
 	println("内存使用: $usage")
-	AstDebugWriter.write(projectPath, value.value)
 }
 
 private fun help() {

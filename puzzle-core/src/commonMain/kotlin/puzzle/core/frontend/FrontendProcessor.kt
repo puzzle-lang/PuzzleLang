@@ -4,12 +4,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
 import puzzle.core.frontend.lexer.FileLexerScanner
 import puzzle.core.frontend.model.AstModule
 import puzzle.core.frontend.model.AstProject
+import puzzle.core.frontend.model.AstRoot
 import puzzle.core.frontend.model.PzlContext
 import puzzle.core.frontend.parser.PzlParser
 import puzzle.core.frontend.parser.PzlTokenCursor
@@ -20,34 +22,43 @@ import kotlin.time.Duration
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTimedValue
 
-suspend fun processFrontend(projectPath: PathWrapper): AstProject = coroutineScope {
-	val projectSourceValue = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
-	println("项目源收集用时: ${projectSourceValue.duration.format()}")
-	val projectSource = projectSourceValue.value
-	val jobs = projectSource.moduleSources.map { module ->
+suspend fun processFrontend(projectPath: PathWrapper) = coroutineScope {
+	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
+	println("项目源收集用时: ${rootSource.duration.format()}")
+	
+	val maxPathLength = rootSource.value.maxPathLength
+	val jobs = rootSource.value.projectSources.map { project ->
 		async(Dispatchers.Default) {
-			val jobs = module.sourcePaths.map { path ->
+			val jobs = project.moduleSources.map { module ->
 				async(Dispatchers.Default) {
-					processFile(path, projectSource.maxPathLength)
+					val jobs = module.sourcePaths.map { path ->
+						async(Dispatchers.Default) {
+							processFile(path, maxPathLength)
+						}
+					}
+					val files = jobs.awaitAll()
+					AstModule(
+						name = module.name,
+						path = module.path,
+						builtin = false,
+						files = files
+					)
 				}
 			}
-			val nodes = jobs.awaitAll()
-			AstModule(
-				name = module.name,
-				path = module.path,
-				isBuiltin = false,
-				nodes = nodes,
+			val modules = jobs.awaitAll()
+			AstProject(
+				name = project.name,
+				path = project.path,
+				builtin = false,
+				modules = modules
 			)
 		}
 	}
-	val projectModules = jobs.awaitAll()
-	val builtinModule = BuiltinAstGenerator.generate()
-	val project = AstProject(
-		name = projectSource.name,
-		modules = projectModules + builtinModule
-	)
-	PzlSemantics.analyze(project)
-	project
+	val projects = jobs.awaitAll()
+	val builtinProject = BuiltinAstGenerator.generate()
+	val root = AstRoot(projects + builtinProject)
+	PzlSemantics.analyze(root)
+	AstDebugWriter.write(projectPath, root)
 }
 
 private fun processFile(path: PathWrapper, maxPathLength: Int): AstFile {

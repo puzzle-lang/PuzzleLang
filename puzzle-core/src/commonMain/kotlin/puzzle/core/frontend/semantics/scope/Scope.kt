@@ -10,7 +10,7 @@ sealed interface Scope<S : Scope<S>> {
 	
 	fun declare(symbol: Symbol<S>)
 	
-	fun lookupLocal(name: String): Symbol<*>?
+	fun lookup(name: String): List<Symbol<*>>
 	
 	val symbols: Collection<Symbol<S>>
 }

@@ -1,11 +1,15 @@
 package puzzle.core.frontend.ast
 
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import puzzle.core.frontend.model.AstModule
 import puzzle.core.frontend.model.AstProject
+import puzzle.core.frontend.model.AstRoot
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
 import puzzle.core.util.path
-import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
 object AstDebugWriter {
@@ -18,42 +22,59 @@ object AstDebugWriter {
 		serializersModule = AstSerializersModule
 	}
 	
-	fun write(projectPath: PathWrapper, project: AstProject) {
+	private val lock = Mutex()
+	
+	suspend fun write(projectPath: PathWrapper, root: AstRoot) = coroutineScope {
 		val duration = measureTime {
 			val buildAstPath = path(projectPath, "build", "ast")
 			if (buildAstPath.exists()) {
 				buildAstPath.deleteAll()
 			}
-			project.modules.forEach { module ->
-				module.nodes.forEach { node ->
-					if (node.sourcePath == null && !node.isBuiltin) return@forEach
-					val astPath = if (node.isBuiltin) {
-						getBuiltinPath(buildAstPath, module.name, node.name)
-					} else {
-						getAstPath(projectPath, buildAstPath, node.sourcePath!!)
+			val jobs = root.projects.flatMap { project ->
+				project.modules.flatMap { module ->
+					module.files.mapNotNull { file ->
+						if (file.sourcePath == null && !file.builtin) return@mapNotNull null
+						launch(Dispatchers.IO) {
+							val astPath = if (file.builtin) {
+								getBuiltinAstPath(buildAstPath, project, module, file)
+							} else {
+								getAstPath(buildAstPath, project, file)
+							}
+							val parent = astPath.parent ?: return@launch
+							lock.withLock {
+								if (!parent.exists()) {
+									parent.createDirectories()
+								}
+							}
+							val text = withContext(Dispatchers.Default) {
+								json.encodeToString(file)
+							}
+							astPath.writeText(text)
+						}
 					}
-					if (astPath.parent == null) return@forEach
-					if (!astPath.parent!!.exists()) {
-						astPath.parent!!.createDirectories()
-					}
-					astPath.writeText(json.encodeToString(node))
 				}
 			}
+			jobs.joinAll()
 		}
 		println("AST 保存用时: ${duration.format()}")
 	}
 	
-	private fun getBuiltinPath(buildPath: PathWrapper, moduleName: String, nodeName: String): PathWrapper {
-		val nodeName = nodeName.removeSuffix(".pzl")
-		return path(buildPath, moduleName, "src", "main", "puzzle", "$nodeName.json")
+	private fun getBuiltinAstPath(
+		buildAstPath: PathWrapper,
+		project: AstProject,
+		module: AstModule,
+		file: AstFile,
+	): PathWrapper {
+		val astName = file.name.removeSuffix(".pzl") + ".json"
+		return path(buildAstPath, project.name, module.name, "src", "main", "puzzle", astName)
 	}
 	
 	private fun getAstPath(
-		projectPath: PathWrapper,
-		buildPath: PathWrapper,
-		sourcePath: PathWrapper,
+		buildAstPath: PathWrapper,
+		project: AstProject,
+		file: AstFile,
 	): PathWrapper {
-		val path = sourcePath.absolutePath.removePrefix(projectPath.absolutePath).removeSuffix(".pzl")
-		return path(buildPath, "$path.json")
+		val astPath = file.sourcePath!!.absolutePath.removePrefix(project.path!!.parent!!.absolutePath + "/").removeSuffix(".pzl") + ".json"
+		return path(buildAstPath, astPath)
 	}
 }

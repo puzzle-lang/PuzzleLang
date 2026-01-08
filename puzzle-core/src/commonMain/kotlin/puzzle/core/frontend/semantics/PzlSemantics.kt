@@ -1,11 +1,11 @@
 package puzzle.core.frontend.semantics
 
 import kotlinx.coroutines.coroutineScope
-import puzzle.core.frontend.model.AstProject
+import puzzle.core.frontend.model.AstRoot
 
 object PzlSemantics {
 	
-	suspend fun analyze(project: AstProject) = coroutineScope {
+	suspend fun analyze(root: AstRoot) = coroutineScope {
 		
 	}
 }

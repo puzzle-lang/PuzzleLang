@@ -21,7 +21,7 @@ object ProjectSourceCollector {
 	
 	private val validGroupRegex = "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)*$".toRegex()
 	
-	fun collect(projectPath: PathWrapper): ProjectSource {
+	fun collect(projectPath: PathWrapper): RootSource {
 		configCheck(projectPath.exists() && projectPath.isDirectory) {
 			configError("项目不存在", projectPath.name)
 		}
@@ -29,9 +29,9 @@ object ProjectSourceCollector {
 		
 		val projectConfigs = listOf(projectPath to projectConfig) + decodeDepProjectConfigs(projectPath, projectConfig.deps)
 		println("忽略规则统计:")
-		val moduleSources = projectConfigs.flatMap { (path, projectConfig) ->
-			val ignoreRulesMessage = StringBuilder()
-			ignoreRulesMessage.append("[${projectConfig.name}]\n")
+		val projectSources = projectConfigs.map { (path, projectConfig) ->
+			val ignoreMessages = StringBuilder()
+			ignoreMessages.append("[${projectConfig.name}]\n")
 			val modules = projectConfig.modules!!
 			val moduleSources = modules.mapIndexed { index, module ->
 				val modulePath = path(path, module)
@@ -41,22 +41,29 @@ object ProjectSourceCollector {
 				val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
 				val ignores = moduleConfig.ignore
 				val ignoreRules = ignores.toIgnoreRules(modulePath)
-				ignoreRulesMessage.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
-				ignoreRulesMessage.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
-				ignoreRulesMessage.append("\n")
+				ignoreMessages.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
+				ignoreMessages.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
+				ignoreMessages.append("\n")
 				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignoreRules)
 			}
-			println(ignoreRulesMessage)
-			moduleSources
+			println(ignoreMessages)
+			ProjectSource(
+				name = projectConfig.name!!,
+				path = path,
+				moduleSources = moduleSources,
+			)
 		}
 		
-		val maxPathLength = moduleSources.maxOfOrNull { module ->
-			module.sourcePaths.maxOfOrNull { it.absolutePath.length } ?: 0
+		val maxPathLength = projectSources.maxOfOrNull { project ->
+			project.moduleSources.maxOfOrNull { module ->
+				module.sourcePaths.maxOfOrNull {
+					it.absolutePath.length
+				} ?: 0
+			} ?: 0
 		} ?: 0
 		
-		return ProjectSource(
-			name = projectConfig.name!!,
-			moduleSources = moduleSources,
+		return RootSource(
+			projectSources = projectSources,
 			maxPathLength = maxPathLength
 		)
 	}
