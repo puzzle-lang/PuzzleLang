@@ -54,10 +54,10 @@ fun main() {
         }
     } while (count < 200)
 
-    val result = loop {
+    val [n1, n2] = loop {
         val x = readInt()
         if (x >= 0) {
-            break x
+            break [1, 2 + 3]
         }
         println("negative, try again")
     }
@@ -88,6 +88,10 @@ fun main() {
 
     val lambda = lambda1@ {
         return@lambda1
+    }
+
+    val [name, age, height] = {
+        ["H", 18, 178]
     }
 }
 

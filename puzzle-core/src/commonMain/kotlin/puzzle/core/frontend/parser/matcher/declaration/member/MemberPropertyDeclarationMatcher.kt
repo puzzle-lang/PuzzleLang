@@ -9,7 +9,6 @@ import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.declaration.parsePropertyDeclaration
 import puzzle.core.frontend.parser.parser.parameter.context.ContextTarget
 import puzzle.core.frontend.parser.parser.parameter.type.TypeTarget
-import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACKET
 import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 
@@ -23,7 +22,7 @@ object MemberPropertyDeclarationMatcher : MemberDeclarationMatcher<PropertyDecla
 	
 	context(cursor: PzlTokenCursor)
 	override fun match(): Boolean {
-		return cursor.match { it.kind == VAR || it.kind == VAL || it.kind == LBRACKET }
+		return cursor.match { it.kind == VAR || it.kind == VAL }
 	}
 	
 	context(_: FileContext, cursor: PzlTokenCursor)

@@ -50,9 +50,9 @@ fun accessTest() {
     val _ = notNeedReturnValue()
     val [var name: String, val _: String] = xxx()
     var [name2] = xxx()
-    [val name3, var age3] = xxx()
-    [val age4] = xxx()
-    [_, val age5] = xxx()
+    val [name3, var age3] = xxx()
+    val [age4] = xxx()
+    var [_, val age5] = xxx()
 }
 
 /**
@@ -427,7 +427,7 @@ var property7: Int
 
 val [property8, property9] = getProperties()
 val [_, var property10] = getProperties()
-[var property11: Int, val property12] = getProperties()
+val [var property11: Int, property12] = getProperties()
 
 type<T>
 typealias MyList = List<T>

@@ -37,23 +37,13 @@ import puzzle.core.frontend.token.kinds.isIn
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): PropertyDeclaration {
 	var funExtension: TypeReference? = null
-	val (propertySpec, isMutable) = if (cursor.previous.kind == LBRACKET) {
-		val propertySpec = parseDestructurePropertySpec(start)
-		val isMutable = when {
-			propertySpec.properties.all { it.isMutable } -> true
-			propertySpec.properties.all { !it.isMutable } -> false
-			else -> null
-		}
-		propertySpec to isMutable
+	val isMutable = cursor.previous.kind == VAR
+	val propertySpec = if (cursor.match(LBRACKET)) {
+		parseDestructurePropertySpec(start, defaultMutable = isMutable)
 	} else {
-		val isMutable = cursor.previous.kind == VAR
-		if (cursor.match(LBRACKET)) {
-			parseDestructurePropertySpec(start, defaultMutable = isMutable)
-		} else {
-			val (extension, name) = parseExtensionAndPropertyName()
-			funExtension = extension
-			parseSinglePropertySpec(start, isMutable, name)
-		} to isMutable
+		val (extension, name) = parseExtensionAndPropertyName()
+		funExtension = extension
+		parseSinglePropertySpec(start, isMutable, name)
 	}
 	val initializer = if (cursor.match(ASSIGN)) parseExpressionChain() else null
 	val isLazy = LAZY isIn header.modifiers
@@ -67,12 +57,12 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 				val node = { header.modifiers.first { it.kind == LAZY } }
 				when {
 					propertySpec is DestructurePropertySpec -> syntaxError("lazy 延迟初始化属性不支持解构属性列表", node())
-					isMutable!! -> syntaxError("lazy 延迟初始化属性必须使用 val 修饰符", node())
+					isMutable -> syntaxError("lazy 延迟初始化属性必须使用 val 修饰符", node())
 				}
 			} else {
 				when {
 					propertySpec is DestructurePropertySpec -> syntaxError("计算属性不支持解构属性列表", cursor.previous)
-					isMutable!! -> syntaxError("计算属性必须使用 val 修饰符", cursor.previous)
+					isMutable -> syntaxError("计算属性必须使用 val 修饰符", cursor.previous)
 				}
 			}
 			if (initializer != null) {
@@ -106,7 +96,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 		getter = parsePropertyGetter()
 	}
 	
-	if (propertySpec is DestructurePropertySpec || isMutable == null) {
+	if (propertySpec is DestructurePropertySpec) {
 		if (isLate) {
 			syntaxError("late 延迟初始化属性不支持使用解构参数列表", propertySpec)
 		}
@@ -122,7 +112,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 	}
 	
 	if (isLate) {
-		if (!isMutable!!) {
+		if (!isMutable) {
 			syntaxError("late 延迟初始化属性必须使用 var 修饰符", header.modifiers.first { it.kind == VAL })
 		}
 		if (initializer != null) {
@@ -151,7 +141,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 		}
 	}
 	
-	if (isMutable == true) {
+	if (isMutable) {
 		if (initializer == null) {
 			if (funExtension != null) {
 				if (getter == null) {
@@ -191,7 +181,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 				syntaxError("在 get 属性访问器和 set 属性赋值器中未使用到 oldValue 值, 不允许有初始化值", initializer)
 			}
 		}
-	} else if (isMutable == false) {
+	} else {
 		if (setter != null) {
 			syntaxError("不可变属性不允许使用 set 属性赋值器", setter)
 		}
@@ -329,7 +319,7 @@ private fun parseSinglePropertySpec(
 context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseDestructurePropertySpec(
 	start: SourceLocation,
-	defaultMutable: Boolean? = null,
+	defaultMutable: Boolean,
 ): DestructurePropertySpec {
 	val properties = buildList {
 		while (!cursor.match(RBRACKET)) {
@@ -340,16 +330,11 @@ private fun parseDestructurePropertySpec(
 				else -> null
 			}
 			val name = parseIdentifier(IdentifierTarget.PROPERTY_DESTRUCTURE)
-			when {
-				isMutable == null -> {
-					isMutable = if (name.isAnonymousBinding) false else {
-						defaultMutable ?: syntaxError("解构属性缺少可变修饰符", cursor.current)
-					}
-				}
-				
-				isMutable && name.isAnonymousBinding -> {
-					syntaxError("匿名解构属性不允许使用 var 可变修饰符", cursor.offset(-2))
-				}
+			if (isMutable == null) {
+				isMutable = if (name.isAnonymousBinding) false else defaultMutable
+			}
+			if (isMutable!! && name.isAnonymousBinding) {
+				syntaxError("匿名解构属性不允许使用 var 可变修饰符", cursor.offset(-2))
 			}
 			val type = if (cursor.match(COLON)) {
 				parseTypeReference(allowLambda = true)

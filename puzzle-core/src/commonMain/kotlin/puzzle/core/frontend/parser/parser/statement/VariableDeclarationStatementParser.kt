@@ -25,15 +25,11 @@ import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseVariableDeclarationStatement(): VariableDeclarationStatement {
 	val start = cursor.previous.location
-	val variableSpec = if (cursor.previous.kind == LBRACKET) {
-		parseDestructureVariableSpec(start)
+	val isMutable = cursor.previous.kind == VAR
+	val variableSpec = if (cursor.match(LBRACKET)) {
+		parseDestructureVariableSpec(start, isMutable)
 	} else {
-		val isMutable = cursor.previous.kind == VAR
-		if (cursor.match(LBRACKET)) {
-			parseDestructureVariableSpec(start, defaultMutable = isMutable)
-		} else {
-			parseSingleVariableSpec(start, isMutable)
-		}
+		parseSingleVariableSpec(start, isMutable)
 	}
 	val initializer = if (cursor.match(ASSIGN)) {
 		parseExpressionChain()
@@ -78,7 +74,7 @@ private fun parseSingleVariableSpec(
 context(_: FileContext, cursor: PzlTokenCursor)
 private fun parseDestructureVariableSpec(
 	start: SourceLocation,
-	defaultMutable: Boolean? = null,
+	defaultMutable: Boolean,
 ): DestructureVariableSpec {
 	val variables = buildList {
 		while (!cursor.match(RBRACKET)) {
@@ -89,16 +85,11 @@ private fun parseDestructureVariableSpec(
 				else -> null
 			}
 			val name = parseIdentifier(IdentifierTarget.VARIABLE_DESTRUCTURE)
-			when {
-				isMutable == null -> {
-					isMutable = if (name.isAnonymousBinding) false else {
-						defaultMutable ?: syntaxError("解构变量缺少可变修饰符", cursor.current)
-					}
-				}
-				
-				isMutable && name.isAnonymousBinding -> {
-					syntaxError("匿名解构变量不允许使用 var 可变修饰符", cursor.offset(-2))
-				}
+			if (isMutable == null) {
+				isMutable = if (name.isAnonymousBinding) false else defaultMutable
+			}
+			if (isMutable!! && name.isAnonymousBinding) {
+				syntaxError("匿名解构变量不允许使用 var 可变修饰符", cursor.offset(-2))
 			}
 			val type = if (cursor.match(COLON)) {
 				parseTypeReference(allowLambda = true)
