@@ -219,11 +219,11 @@ object ProjectSourceCollector {
 			when {
 				ignore == "**" -> IgnoreRule(path, IgnoreKind.RECURSIVE)
 				ignore == "*" -> IgnoreRule(path, IgnoreKind.CHILDREN)
-				ignore.endsWith("/**") -> IgnoreRule("$modulePath/${ignore.removeSuffix("/**")}", IgnoreKind.RECURSIVE)
-				ignore.endsWith("/*") -> IgnoreRule("$modulePath/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN)
-				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule(path + ignore, IgnoreKind.EXACT)
+				ignore.endsWith("/**") -> IgnoreRule("$path/${ignore.removeSuffix("/**")}", IgnoreKind.RECURSIVE)
+				ignore.endsWith("/*") -> IgnoreRule("$path/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN)
+				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule("$path/$ignore", IgnoreKind.EXACT)
 				ignore.isBlank() -> configError("规则不能为空", "ignore[$index]", path = "$path/puzzle.json")
-				else -> configError("忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**'", "ignore[$index]", ignore, "$path/puzzle.json")
+				else -> configError("忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**', 'src/main/puzzle/String.pzl'", "ignore[$index]", ignore, "$path/puzzle.json")
 			}
 		}.distinct()
 	}

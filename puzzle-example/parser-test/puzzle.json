@@ -2,7 +2,7 @@
   "name": "parser-test",
   "group": "puzzle.example",
   "ignore": [
-    "src/main/puzzle/**"
+    "src/main/puzzle/example/**"
   ],
   "deps": [
     "puzzle-source/puzzle-core"
