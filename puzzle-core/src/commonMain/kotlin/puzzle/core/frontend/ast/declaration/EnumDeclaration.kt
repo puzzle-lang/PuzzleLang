@@ -1,9 +1,7 @@
 package puzzle.core.frontend.ast.declaration
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.ast.AnnotationCall
-import puzzle.core.frontend.ast.AstNode
 import puzzle.core.frontend.ast.DocComment
 import puzzle.core.frontend.ast.Modifier
 import puzzle.core.frontend.ast.expression.Identifier
@@ -12,6 +10,7 @@ import puzzle.core.frontend.ast.parameter.Parameter
 import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.ast.type.SuperTypeReference
+import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 class EnumDeclaration(
@@ -37,4 +36,4 @@ class EnumEntry(
 	val inits: List<InitDeclaration>,
 	val members: List<TopLevelAllowedDeclaration>,
 	override val location: SourceLocation,
-) : AstNode
+) : Declaration

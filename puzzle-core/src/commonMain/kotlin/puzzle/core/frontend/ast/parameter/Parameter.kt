@@ -12,7 +12,7 @@ import puzzle.core.frontend.model.SourceLocation
 @Serializable
 class Parameter(
 	val name: Identifier,
-	val isMutable: Boolean,
+	val isMutable: Boolean?,
 	val modifiers: List<Modifier>,
 	val type: TypeReference,
 	val annotationCalls: List<AnnotationCall>,

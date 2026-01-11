@@ -20,6 +20,7 @@ import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.isIn
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseParameters(target: ParameterTarget): List<Parameter> {
@@ -58,10 +59,22 @@ private fun parseParameter(target: ParameterTarget): Parameter {
 	val annotationCalls = parseAnnotationCalls()
 	val modifiers = parseModifiers()
 	val isMutable = when {
-		cursor.match(VAR) -> true
-		cursor.match(VAL) -> false
+		VAR isIn modifiers -> false
+		VAL isIn modifiers -> true
+		
+		target.requireVariability -> {
+			syntaxError("缺少 var 或 val 修饰符", cursor.current)
+		}
+		
+		target.allowProperty -> {
+			if (modifiers.isNotEmpty()) {
+				syntaxError("不能在此处添加修饰符", modifiers.first())
+			} else null
+		}
+		
 		else -> false
 	}
+	
 	modifiers.check(target.modifierTarget)
 	val name = parseIdentifier(IdentifierTarget.PARAMETER)
 	cursor.expect(COLON, "型参缺少 ':'")

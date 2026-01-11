@@ -6,7 +6,7 @@ import puzzle.core.frontend.semantics.scope.ModuleScope
 class FileSymbol(
 	override val name: String,
 	override val node: AstFile,
-) : Symbol<ModuleScope> {
+) : Symbol {
 	
 	var currentOwner: ModuleScope? = null
 	override val owner: ModuleScope

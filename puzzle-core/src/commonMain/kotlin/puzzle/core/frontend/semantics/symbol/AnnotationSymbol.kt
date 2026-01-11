@@ -3,12 +3,12 @@ package puzzle.core.frontend.semantics.symbol
 import puzzle.core.frontend.ast.declaration.AnnotationDeclaration
 import puzzle.core.frontend.semantics.scope.Scope
 
-class AnnotationSymbol<S : Scope<S>>(
+class AnnotationSymbol(
 	override val name: String,
-	override val owner: S,
+	override val owner: Scope,
 	override val node: AnnotationDeclaration,
 	override val visibility: Visibility,
-) : Symbol<S> {
+) : Symbol {
 	
 	override val kind = SymbolKind.ANNOTATION
 }

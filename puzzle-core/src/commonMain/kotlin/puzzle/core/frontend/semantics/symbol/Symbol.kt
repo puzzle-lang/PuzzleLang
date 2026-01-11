@@ -3,13 +3,13 @@ package puzzle.core.frontend.semantics.symbol
 import puzzle.core.frontend.ast.AstNode
 import puzzle.core.frontend.semantics.scope.Scope
 
-sealed interface Symbol<S : Scope<S>> {
+sealed interface Symbol {
 	
-	val name: String
+	val name: String?
 	
 	val kind: SymbolKind
 	
-	val owner: S
+	val owner: Scope
 	
 	val node: AstNode?
 	
@@ -17,7 +17,8 @@ sealed interface Symbol<S : Scope<S>> {
 }
 
 enum class SymbolKind {
-	PACKAGE,
+	FUN,
+	CTOR,
 	
 	CLASS,
 	TRAIT,
@@ -30,16 +31,13 @@ enum class SymbolKind {
 	TYPE_ALIAS,
 	TYPE_PARAMETER,
 	
-	FUN,
-	CTOR,
-	
 	PROPERTY,
+	PROPERTY_GETTER,
+	PROPERTY_SETTER,
+	
 	LOCAL,
-	PARAMETER,
 	
 	ENUM_ENTRY,
-	
-	LABEL,
 	
 	PROJECT,
 	MODULE,

@@ -40,7 +40,6 @@ fun parseCtorDeclaration(
 		docComment = header.docComment,
 		parameters = parameters,
 		modifiers = header.modifiers,
-		contextSpec = header.contextSpec,
 		annotationCalls = header.annotationCalls,
 		body = body,
 		location = start span end

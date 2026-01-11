@@ -7,7 +7,7 @@ fun operatorTest() {
     val num = 0
     val plus = 1 + 2
     val prefixPlus = ++num
-    val suffixPlus = num++
+    val postfixPlus = num++
     val minus = 1 - 2
     val prefixMinus = --num
     val suffixPlus = num--
@@ -320,6 +320,10 @@ class DoubleList : List<T = Int> {
 }
 
 var name: String? = ""
+
+fun a() {
+
+}
 
 val User.age { 1 }
 

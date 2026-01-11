@@ -12,17 +12,15 @@ enum class Visibility {
 	PUBLIC
 }
 
-fun List<Modifier>.getVisibility(): Visibility {
-	this.forEach {
-		when (it.kind) {
-			PRIVATE -> return Visibility.PUBLIC
-			PROTECTED -> return Visibility.PROTECTED
-			FILE -> return Visibility.FILE
-			INTERNAL -> return Visibility.INTERNAL
-			MODULE -> return Visibility.MODULE
-			PUBLIC -> return Visibility.PUBLIC
-			else -> {}
+val List<Modifier>.visibility: Visibility?
+	get() = this.firstNotNullOfOrNull { modifier ->
+		when (modifier.kind) {
+			PRIVATE -> Visibility.PRIVATE
+			PROTECTED -> Visibility.PROTECTED
+			FILE -> Visibility.FILE
+			INTERNAL -> Visibility.INTERNAL
+			MODULE -> Visibility.MODULE
+			PUBLIC -> Visibility.PUBLIC
+			else -> null
 		}
 	}
-	return Visibility.PUBLIC
-}

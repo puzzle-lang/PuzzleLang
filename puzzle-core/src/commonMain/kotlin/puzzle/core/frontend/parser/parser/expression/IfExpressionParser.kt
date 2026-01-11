@@ -31,8 +31,8 @@ fun parseIfExpression(): IfExpression {
 	val end = cursor.previous.location
 	return IfExpression(
 		condition = condition,
-		thenStatements = thenStatements,
-		elseStatements = elseStatements,
+		thenBody = thenStatements,
+		elseBody = elseStatements,
 		location = start span end
 	)
 }

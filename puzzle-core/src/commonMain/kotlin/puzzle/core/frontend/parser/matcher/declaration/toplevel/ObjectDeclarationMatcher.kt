@@ -26,6 +26,6 @@ object ObjectDeclarationMatcher : DeclarationMatcher<ObjectDeclaration> {
 	
 	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(header: DeclarationHeader, start: SourceLocation): ObjectDeclaration {
-		return parseObjectDeclaration(header, start, isMember = false)
+		return parseObjectDeclaration(header, start, isTopLevel = true)
 	}
 }

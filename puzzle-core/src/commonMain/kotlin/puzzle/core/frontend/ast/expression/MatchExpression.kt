@@ -1,10 +1,10 @@
 package puzzle.core.frontend.ast.expression
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.ast.AstNode
-import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.ast.type.TypeReference
+import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 sealed interface MatchExpression : Expression, CompoundAssignable
@@ -13,7 +13,7 @@ sealed interface MatchExpression : Expression, CompoundAssignable
 class MatchConditionExpression(
 	val cases: List<MatchCase>,
 	override val location: SourceLocation,
-	val elseStatements: List<Statement>? = null,
+	val elseBody: List<Statement>? = null,
 ) : MatchExpression
 
 @Serializable
@@ -28,7 +28,7 @@ class MatchPatternExpression(
 	val subject: Expression,
 	val arms: List<MatchArm>,
 	override val location: SourceLocation,
-	val elseStatements: List<Statement>? = null,
+	val elseBody: List<Statement>? = null,
 ) : MatchExpression
 
 @Serializable

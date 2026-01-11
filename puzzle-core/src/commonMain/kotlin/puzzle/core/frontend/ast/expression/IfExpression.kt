@@ -7,7 +7,7 @@ import puzzle.core.frontend.ast.statement.Statement
 @Serializable
 class IfExpression(
 	val condition: Expression,
-	val thenStatements: List<Statement>,
-	val elseStatements: List<Statement>,
+	val thenBody: List<Statement>,
+	val elseBody: List<Statement>,
 	override val location: SourceLocation,
 ) : Expression, CompoundAssignable

@@ -22,11 +22,12 @@ object MemberPropertyDeclarationMatcher : MemberDeclarationMatcher<PropertyDecla
 	
 	context(cursor: PzlTokenCursor)
 	override fun match(): Boolean {
-		return cursor.match { it.kind == VAR || it.kind == VAL }
+		val kind = cursor.previous.kind
+		return kind == VAR || kind == VAL
 	}
 	
 	context(_: FileContext, cursor: PzlTokenCursor)
 	override fun parse(header: DeclarationHeader, start: SourceLocation): PropertyDeclaration {
-		return parsePropertyDeclaration(header, start)
+		return parsePropertyDeclaration(header, start, isTopLevel = false)
 	}
 }

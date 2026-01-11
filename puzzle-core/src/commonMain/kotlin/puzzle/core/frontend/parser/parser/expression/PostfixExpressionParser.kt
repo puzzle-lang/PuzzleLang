@@ -28,7 +28,7 @@ fun parsePostfixExpression(
 			cursor.matchLambda() -> parseTrailingClosureCallExpression(expression)
 			cursor.match { it.kind == LBRACKET && it.equalsLine(cursor.previous) } -> parseIndexAccessExpression(expression)
 			cursor.match { it.kind == NOT && it.equalsLine(cursor.previous) } -> parseNonNullAssertionExpression(expression)
-			cursor.match { (it.kind == DOUBLE_PLUS || it.kind == DOUBLE_MINUS) && it.equalsLine(cursor.previous) } -> parseSuffixUnaryExpression(expression)
+			cursor.match { (it.kind == DOUBLE_PLUS || it.kind == DOUBLE_MINUS) && it.equalsLine(cursor.previous) } -> parsePostfixUnaryExpression(expression)
 			else -> break
 		}
 	}
@@ -91,8 +91,8 @@ private fun parseNonNullAssertionExpression(receiver: Expression): NonNullAssert
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-private fun parseSuffixUnaryExpression(expression: Expression): SuffixUnaryExpression {
+private fun parsePostfixUnaryExpression(expression: Expression): PostfixUnaryExpression {
 	val token = cursor.previous
 	val operator = Operator(token.kind as OperatorKind, token.location)
-	return SuffixUnaryExpression(expression, operator)
+	return PostfixUnaryExpression(expression, operator)
 }

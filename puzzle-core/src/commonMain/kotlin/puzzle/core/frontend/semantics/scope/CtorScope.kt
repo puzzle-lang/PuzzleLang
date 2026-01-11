@@ -1,11 +1,12 @@
 package puzzle.core.frontend.semantics.scope
 
+import puzzle.core.frontend.semantics.symbol.CtorSymbol
 import puzzle.core.frontend.semantics.symbol.Symbol
 
-class RootScope : Scope {
-	
-	override val parent: Scope? = null
-	override val owner: Symbol? = null
+class CtorScope(
+	override val parent: Scope?,
+	override val owner: CtorSymbol,
+) : Scope {
 	
 	private val symbolsMap = mutableMapOf<String?, MutableList<Symbol>>()
 	
@@ -21,6 +22,6 @@ class RootScope : Scope {
 	}
 	
 	override fun lookup(name: String): List<Symbol> {
-		return symbolsMap[name] ?: emptyList()
+		return symbolsMap[name] ?: parent?.lookup(name) ?: emptyList()
 	}
 }

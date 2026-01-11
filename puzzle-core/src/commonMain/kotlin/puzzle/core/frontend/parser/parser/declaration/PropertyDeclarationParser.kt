@@ -3,6 +3,7 @@ package puzzle.core.frontend.parser.parser.declaration
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
+import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.type.LambdaType
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.ast.type.TypeReference
@@ -14,9 +15,12 @@ import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.parser.ModifierTarget
+import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseExpressionChain
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
+import puzzle.core.frontend.parser.parser.parseModifiers
 import puzzle.core.frontend.parser.parser.statement.parseStatement
 import puzzle.core.frontend.parser.parser.statement.parseStatements
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -35,9 +39,13 @@ import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.isIn
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): PropertyDeclaration {
+fun parsePropertyDeclaration(
+	header: DeclarationHeader,
+	start: SourceLocation,
+	isTopLevel: Boolean,
+): PropertyDeclaration {
 	var funExtension: TypeReference? = null
-	val isMutable = cursor.previous.kind == VAR
+	val isMutable = VAR isIn header.modifiers
 	val propertySpec = if (cursor.match(LBRACKET)) {
 		parseDestructurePropertySpec(start, defaultMutable = isMutable)
 	} else {
@@ -80,6 +88,7 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 				extension = funExtension,
 				location = start span end,
 				getter = PropertyGetter(
+					modifiers = emptyList(),
 					oldValue = null,
 					body = body,
 					location = getterStart span end
@@ -89,11 +98,10 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 		
 		isLazy -> syntaxError("lazy 延迟初始化属性缺少 '{'", cursor.previous.location.end)
 	}
-	
-	var getter = parsePropertyGetter()
-	val setter = parsePropertySetter()
+	var getter = parsePropertyGetter(isTopLevel)
+	val setter = parsePropertySetter(isTopLevel)
 	if (getter == null) {
-		getter = parsePropertyGetter()
+		getter = parsePropertyGetter(isTopLevel)
 	}
 	
 	if (propertySpec is DestructurePropertySpec) {
@@ -215,14 +223,28 @@ fun parsePropertyDeclaration(header: DeclarationHeader, start: SourceLocation): 
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-private fun parsePropertyGetter(): PropertyGetter? {
-	if (!cursor.match(GET)) return null
+private fun parsePropertyGetter(isTopLevel: Boolean): PropertyGetter? {
+	val modifiers = parseModifiers()
+	if (!cursor.match(GET)) {
+		if (modifiers.isNotEmpty()) {
+			cursor.retreat(modifiers.size)
+		}
+		return null
+	}
+	if (isTopLevel) {
+		modifiers.check(ModifierTarget.PROPERTY_GETTER)
+	} else {
+		modifiers.check(ModifierTarget.MEMBER_PROPERTY_GETTER)
+	}
 	val start = cursor.previous.location
 	cursor.expect(LPAREN, "get 缺少 '('")
 	val oldValue = if (!cursor.match(RPAREN)) {
-		parseIdentifier(IdentifierTarget.GETTER_PARAMETER).also {
-			cursor.expect(RPAREN, "get 缺少 ')")
-		}
+		val name = parseIdentifier(IdentifierTarget.GETTER_PARAMETER)
+		val type = if (cursor.match(COLON)) {
+			parseTypeReference(allowLambda = true)
+		} else null
+		cursor.expect(RPAREN, "get 缺少 ')")
+		ParameterReference(name, type)
 	} else null
 	val body = when {
 		cursor.match(ASSIGN) -> listOf(parseStatement())
@@ -231,6 +253,7 @@ private fun parsePropertyGetter(): PropertyGetter? {
 	}
 	val end = cursor.previous.location
 	return PropertyGetter(
+		modifiers = modifiers,
 		oldValue = oldValue,
 		body = body,
 		location = start span end
@@ -238,17 +261,32 @@ private fun parsePropertyGetter(): PropertyGetter? {
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-private fun parsePropertySetter(): PropertySetter? {
-	if (!cursor.match(SET)) return null
+private fun parsePropertySetter(isTopLevel: Boolean): PropertySetter? {
+	val modifiers = parseModifiers()
+	if (!cursor.match(SET)) {
+		if (modifiers.isNotEmpty()) {
+			cursor.retreat(modifiers.size)
+		}
+		return null
+	}
+	if (isTopLevel) {
+		modifiers.check(ModifierTarget.PROPERTY_SETTER)
+	} else {
+		modifiers.check(ModifierTarget.MEMBER_PROPERTY_SETTER)
+	}
 	val start = cursor.previous.location
 	cursor.expect(LPAREN, "set 缺少 '('")
-	var newValue = parseIdentifier(IdentifierTarget.SETTER_PARAMETER)
+	val name = parseIdentifier(IdentifierTarget.SETTER_PARAMETER)
+	val type = if (cursor.match(COLON)) {
+		parseTypeReference(allowLambda = true)
+	} else null
+	var newValue = ParameterReference(name, type)
 	val oldValue = when {
 		cursor.match(RPAREN) -> null
 		cursor.match(COMMA) -> newValue.also {
-			newValue = parseIdentifier(IdentifierTarget.SETTER_PARAMETER).also {
-				cursor.expect(RPAREN, "set 缺少 ')'")
-			}
+			val name = parseIdentifier(IdentifierTarget.SETTER_PARAMETER)
+			val type = parseTypeReference(allowLambda = true)
+			newValue = ParameterReference(name, type)
 		}
 		
 		else -> syntaxError("set 缺少 ')'", cursor.current)
@@ -258,6 +296,7 @@ private fun parsePropertySetter(): PropertySetter? {
 	} else syntaxError("set 缺少函数体", cursor.previous)
 	val end = cursor.previous.location
 	return PropertySetter(
+		modifiers = modifiers,
 		oldValue = oldValue,
 		newValue = newValue,
 		body = body,

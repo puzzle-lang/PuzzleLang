@@ -3,15 +3,15 @@ package puzzle.core.frontend.semantics.symbol
 import puzzle.core.frontend.ast.declaration.ExtensionDeclaration
 import puzzle.core.frontend.semantics.scope.Scope
 
-class ExtensionSymbol<S : Scope<S>>(
-	override val owner: S,
+class ExtensionSymbol(
+	override val owner: Scope,
 	override val node: ExtensionDeclaration,
 	override val visibility: Visibility,
-) : Symbol<S> {
+) : Symbol {
 	
 	override val kind = SymbolKind.EXTENSION
 	
-	override val name = ""
+	override val name = null
 	
 	val extendedType get() = node.extendedType
 }

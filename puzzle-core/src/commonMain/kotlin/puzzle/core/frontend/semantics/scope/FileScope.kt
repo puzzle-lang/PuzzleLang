@@ -5,27 +5,27 @@ import puzzle.core.frontend.semantics.symbol.Symbol
 
 class FileScope(
 	override val owner: FileSymbol,
-) : Scope<FileScope>() {
+) : Scope {
 	
-	var currentParent: Scope<*>? = null
+	var currentParent: Scope? = null
 	
-	override val parent: Scope<*>?
+	override val parent: Scope?
 		get() = currentParent
 	
-	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<FileScope>>>()
+	private val symbolsMap = mutableMapOf<String?, MutableList<Symbol>>()
 	
-	private var cached: List<Symbol<FileScope>>? = null
+	private var cached: List<Symbol>? = null
 	
-	override val symbols: Collection<Symbol<FileScope>>
+	override val symbols: Collection<Symbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
-	override fun declare(symbol: Symbol<FileScope>) {
+	override fun declare(symbol: Symbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol
 		cached = null
 	}
 	
-	override fun lookup(name: String): List<Symbol<*>> {
+	override fun lookup(name: String): List<Symbol> {
 		return symbolsMap[name] ?: emptyList()
 	}
 }

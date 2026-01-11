@@ -7,6 +7,7 @@ import puzzle.core.frontend.ast.Modifier
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
+import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.ast.statement.Statement
 import puzzle.core.frontend.ast.type.TypeReference
@@ -51,15 +52,17 @@ class Property(
 
 @Serializable
 class PropertyGetter(
-	val oldValue: Identifier?,
+	val modifiers: List<Modifier>,
+	val oldValue: ParameterReference?,
 	val body: List<Statement>,
 	override val location: SourceLocation,
 ) : AstNode
 
 @Serializable
 class PropertySetter(
-	val oldValue: Identifier?,
-	val newValue: Identifier,
+	val modifiers: List<Modifier>,
+	val oldValue: ParameterReference?,
+	val newValue: ParameterReference,
 	val body: List<Statement>,
 	override val location: SourceLocation,
 ) : AstNode

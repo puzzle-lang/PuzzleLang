@@ -62,10 +62,9 @@ private fun parseTypeParameter(): TypeParameter {
 
 context(cursor: PzlTokenCursor)
 private fun parseVariance(): Variance? {
-	VarianceKind.entries.forEach { kind ->
+	return VarianceKind.entries.firstNotNullOfOrNull { kind ->
 		if (cursor.match(kind.kind)) {
-			return Variance(kind, cursor.previous.location)
-		}
+			Variance(kind, cursor.previous.location)
+		} else null
 	}
-	return null
 }

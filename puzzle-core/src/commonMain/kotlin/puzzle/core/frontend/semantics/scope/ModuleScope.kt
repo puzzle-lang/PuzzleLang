@@ -6,22 +6,22 @@ import puzzle.core.frontend.semantics.symbol.Symbol
 class ModuleScope(
 	override val parent: ProjectScope,
 	override val owner: ModuleSymbol?,
-) : Scope<ModuleScope>() {
+) : Scope {
 	
-	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<ModuleScope>>>()
+	private val symbolsMap = mutableMapOf<String?, MutableList<Symbol>>()
 	
-	private var cached: List<Symbol<ModuleScope>>? = null
+	private var cached: List<Symbol>? = null
 	
-	override val symbols: Collection<Symbol<ModuleScope>>
+	override val symbols: Collection<Symbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
-	override fun declare(symbol: Symbol<ModuleScope>) {
+	override fun declare(symbol: Symbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol
 		cached = null
 	}
 	
-	override fun lookup(name: String): List<Symbol<*>> {
+	override fun lookup(name: String): List<Symbol> {
 		return symbolsMap[name] ?: emptyList()
 	}
 }

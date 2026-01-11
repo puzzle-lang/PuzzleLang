@@ -6,7 +6,7 @@ import puzzle.core.frontend.model.span
 import puzzle.core.frontend.ast.Operator
 
 @Serializable
-class SuffixUnaryExpression(
+class PostfixUnaryExpression(
 	val expression: Expression,
 	val operator: Operator,
 	override val location: SourceLocation = expression.location span operator.location,

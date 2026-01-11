@@ -5,7 +5,7 @@ import puzzle.core.frontend.semantics.scope.RootScope
 class ProjectSymbol(
 	override val name: String,
 	override val owner: RootScope,
-) : Symbol<RootScope> {
+) : Symbol {
 	
 	override val kind = SymbolKind.PROJECT
 	

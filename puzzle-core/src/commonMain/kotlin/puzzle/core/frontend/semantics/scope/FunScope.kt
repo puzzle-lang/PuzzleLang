@@ -4,24 +4,24 @@ import puzzle.core.frontend.semantics.symbol.FunSymbol
 import puzzle.core.frontend.semantics.symbol.Symbol
 
 class FunScope(
-	override val parent: Scope<*>?,
-	override val owner: FunSymbol<*>,
-) : Scope<FunScope>() {
+	override val parent: Scope?,
+	override val owner: FunSymbol,
+) : Scope {
 	
-	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<FunScope>>>()
+	private val symbolsMap = mutableMapOf<String?, MutableList<Symbol>>()
 	
-	private var cached: List<Symbol<FunScope>>? = null
+	private var cached: List<Symbol>? = null
 	
-	override val symbols: Collection<Symbol<FunScope>>
+	override val symbols: Collection<Symbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
-	override fun declare(symbol: Symbol<FunScope>) {
+	override fun declare(symbol: Symbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol
 		cached = null
 	}
 	
-	override fun lookup(name: String): List<Symbol<*>> {
+	override fun lookup(name: String): List<Symbol> {
 		return symbolsMap[name] ?: parent?.lookup(name) ?: emptyList()
 	}
 }

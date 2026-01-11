@@ -7,6 +7,6 @@ import puzzle.core.frontend.model.SourceLocation
 @Serializable
 class IfStatement(
 	val condition: Expression,
-	val thenStatements: List<Statement>,
+	val thenBody: List<Statement>,
 	override val location: SourceLocation,
 ) : Statement

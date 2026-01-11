@@ -4,24 +4,24 @@ import puzzle.core.frontend.semantics.symbol.ObjectSymbol
 import puzzle.core.frontend.semantics.symbol.Symbol
 
 class ObjectScope(
-	override val parent: Scope<*>?,
-	override val owner: ObjectSymbol<*>,
-) : Scope<ObjectScope>() {
+	override val parent: Scope?,
+	override val owner: ObjectSymbol,
+) : Scope {
 	
-	private val symbolsMap = mutableMapOf<String, MutableList<Symbol<ObjectScope>>>()
+	private val symbolsMap = mutableMapOf<String?, MutableList<Symbol>>()
 	
-	private var cached: List<Symbol<ObjectScope>>? = null
+	private var cached: List<Symbol>? = null
 	
-	override val symbols: Collection<Symbol<ObjectScope>>
+	override val symbols: Collection<Symbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
-	override fun declare(symbol: Symbol<ObjectScope>) {
+	override fun declare(symbol: Symbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol
 		cached = null
 	}
 	
-	override fun lookup(name: String): List<Symbol<*>> {
+	override fun lookup(name: String): List<Symbol> {
 		return symbolsMap[name] ?: parent?.lookup(name) ?: emptyList()
 	}
 }

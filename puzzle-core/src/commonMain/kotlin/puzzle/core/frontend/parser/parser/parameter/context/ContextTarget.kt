@@ -50,7 +50,7 @@ enum class ContextTarget(
 	),
 	CTOR(
 		label = "次构造函数",
-		allowContext = true
+		allowContext = false
 	),
 	INIT(
 		label = "初始化块",

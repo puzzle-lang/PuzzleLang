@@ -28,14 +28,15 @@ class PzlLexer(
 	
 	context(_: FileContext)
 	fun nextToken(): PzlToken {
-		recognitions.forEach {
-			val token = it.tryParse(input, position) ?: return@forEach
+		val token = recognitions.firstNotNullOfOrNull { recognition ->
+			val token = recognition.tryParse(input, position)
+				?: return@firstNotNullOfOrNull null
 			position = token.location.end
-			return when (token.kind) {
+			when (token.kind) {
 				is WhiteSpaceKind, is SingleLine, is MultiLine -> nextToken()
 				else -> token
 			}
 		}
-		syntaxError("${input[position]} 无法被识别", position)
+		return token ?: syntaxError("${input[position]} 无法被识别", position)
 	}
 }

@@ -24,12 +24,12 @@ context(_: FileContext, cursor: PzlTokenCursor)
 fun parseObjectDeclaration(
 	header: DeclarationHeader,
 	start: SourceLocation,
-	isMember: Boolean,
+	isTopLevel: Boolean,
 ): ObjectDeclaration {
-	val name = if (isMember) {
-		tryParseIdentifier(IdentifierTarget.OBJECT)
-	} else {
+	val name = if (isTopLevel) {
 		parseIdentifier(IdentifierTarget.OBJECT)
+	} else {
+		tryParseIdentifier(IdentifierTarget.OBJECT)
 	}
 	val primaryCtorAnnotationCalls = parseAnnotationCalls()
 	val primaryCtorModifiers = parseModifiers()

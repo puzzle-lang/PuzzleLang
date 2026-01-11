@@ -5,7 +5,7 @@ import puzzle.core.frontend.semantics.scope.ModuleScope
 class ModuleSymbol(
 	override val name: String,
 	override val owner: ModuleScope,
-) : Symbol<ModuleScope> {
+) : Symbol {
 	
 	override val kind = SymbolKind.MODULE
 	

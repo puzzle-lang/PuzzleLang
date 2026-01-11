@@ -35,8 +35,8 @@ fun parseIfStatement(): Statement {
 		val end = cursor.previous.location
 		var expression: Expression = IfExpression(
 			condition = condition,
-			thenStatements = thenStatements,
-			elseStatements = elseStatements,
+			thenBody = thenStatements,
+			elseBody = elseStatements,
 			location = start span end
 		)
 		expression = parsePostfixExpression(expression)
@@ -46,7 +46,7 @@ fun parseIfStatement(): Statement {
 		val end = cursor.previous.location
 		IfStatement(
 			condition = condition,
-			thenStatements = thenStatements,
+			thenBody = thenStatements,
 			location = start span end,
 		)
 	}

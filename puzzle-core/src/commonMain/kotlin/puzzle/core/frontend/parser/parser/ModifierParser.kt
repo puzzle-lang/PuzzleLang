@@ -13,12 +13,11 @@ fun parseModifiers(): List<Modifier> {
 	val modifiers = buildList {
 		while (true) {
 			val modifier = parseModifier() ?: break
+			this += modifier
 			val kind = modifier.kind
 			if (kind == VAR || kind == VAL) {
-				cursor.retreat()
 				break
 			}
-			this += modifier
 		}
 	}
 	checkModifierOrder(modifiers)
@@ -63,11 +62,12 @@ private fun checkModifierOrder(modifiers: List<Modifier>) {
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun List<Modifier>.check(target: ModifierTarget) {
+	if (this.isEmpty()) return
 	this.forEachIndexed { index, modifier ->
 		if (modifier.kind !in target.supportedModifiers) {
 			syntaxError(
 				message = "${target.label}不支持 '${modifier.kind.value}' 修饰符",
-				token = cursor.offset(offset = -this.size + index - 1)
+				token = cursor.offset(offset = index - this.size)
 			)
 		}
 	}
@@ -91,6 +91,14 @@ enum class ModifierTarget(
 	PROPERTY(
 		label = "属性",
 		supportedModifiers = TopLevelAccessModifiers + setOf(CONST, LATE, LAZY, VAR, VAL)
+	),
+	PROPERTY_GETTER(
+		label = "属性访问器",
+		supportedModifiers = TopLevelAccessModifiers
+	),
+	PROPERTY_SETTER(
+		label = "属性赋值器",
+		supportedModifiers = TopLevelAccessModifiers
 	),
 	CLASS(
 		label = "类",
@@ -133,8 +141,16 @@ enum class ModifierTarget(
 		supportedModifiers = MemberAccessModifiers + setOf(FINAL, OVERRIDE, OPEN, ABSTRACT, PREFIX, POSTFIX)
 	),
 	MEMBER_PROPERTY(
-		label = "属性",
-		supportedModifiers = TopLevelAccessModifiers + setOf(CONST, LATE, LAZY, VAR, VAL)
+		label = "成员属性",
+		supportedModifiers = MemberAccessModifiers + setOf(CONST, LATE, LAZY, VAR, VAL)
+	),
+	MEMBER_PROPERTY_GETTER(
+		label = "成员属性访问器",
+		supportedModifiers = MemberAccessModifiers
+	),
+	MEMBER_PROPERTY_SETTER(
+		label = "成员属性赋值器",
+		supportedModifiers = MemberAccessModifiers
 	),
 	MEMBER_CLASS(
 		label = "成员类",
@@ -150,7 +166,7 @@ enum class ModifierTarget(
 	),
 	MEMBER_MIXIN(
 		label = "成员混入",
-		supportedModifiers = TopLevelAccessModifiers
+		supportedModifiers = MemberAccessModifiers
 	),
 	MEMBER_STRUCT(
 		label = "成员结构体",
@@ -174,7 +190,7 @@ enum class ModifierTarget(
 	),
 	CTOR(
 		label = "次构造函数",
-		supportedModifiers = TopLevelAccessModifiers + setOf(FILE)
+		supportedModifiers = MemberAccessModifiers
 	),
 	INIT(
 		label = "初始化块",

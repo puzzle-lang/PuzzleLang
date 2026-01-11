@@ -5,7 +5,7 @@ import puzzle.core.frontend.ast.Operator
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.expression.MemberAccessExpression
 import puzzle.core.frontend.ast.expression.PrefixUnaryExpression
-import puzzle.core.frontend.ast.expression.SuffixUnaryExpression
+import puzzle.core.frontend.ast.expression.PostfixUnaryExpression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.OperatorKind
@@ -16,7 +16,7 @@ context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePrefixUnaryExpression(): PrefixUnaryExpression {
 	val token = cursor.previous
 	val expression = parseExpression()
-	if (expression is SuffixUnaryExpression) {
+	if (expression is PostfixUnaryExpression) {
 		syntaxError("不能在这里使用后缀操作符 '${expression.operator.kind.value}'", expression.location.end)
 	}
 	if (
