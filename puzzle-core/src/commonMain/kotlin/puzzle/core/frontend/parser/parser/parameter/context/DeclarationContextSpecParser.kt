@@ -1,6 +1,5 @@
 package puzzle.core.frontend.parser.parser.parameter.context
 
-import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.parameter.DeclarationContextReceiver
 import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
 import puzzle.core.frontend.model.FileContext
@@ -40,11 +39,4 @@ private fun parseDeclarationContextReceiver(): DeclarationContextReceiver {
 	cursor.expect(COLON, "context 参数缺少 ':'")
 	val type = parseTypeReference()
 	return DeclarationContextReceiver(name, type)
-}
-
-context(_: FileContext)
-fun DeclarationContextSpec.check(target: ContextTarget) {
-	if (!target.allowContext) {
-		syntaxError("${target.label}不支持 context 上下文参数", this)
-	}
 }

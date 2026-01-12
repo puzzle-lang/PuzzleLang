@@ -23,6 +23,7 @@ enum class SymbolKind {
 	CLASS,
 	TRAIT,
 	OBJECT,
+	ERROR,
 	STRUCT,
 	ENUM,
 	ANNOTATION,

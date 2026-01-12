@@ -108,6 +108,10 @@ enum class ModifierTarget(
 		label = "单例对象",
 		supportedModifiers = TopLevelAccessModifiers
 	),
+	ERROR(
+		label = "错误",
+		supportedModifiers = TopLevelAccessModifiers
+	),
 	TRAIT(
 		label = "特征",
 		supportedModifiers = TopLevelAccessModifiers + setOf(SEALED)
@@ -158,6 +162,10 @@ enum class ModifierTarget(
 	),
 	MEMBER_OBJECT(
 		label = "成员单例对象",
+		supportedModifiers = MemberAccessModifiers
+	),
+	MEMBER_ERROR(
+		label = "成员错误",
 		supportedModifiers = MemberAccessModifiers
 	),
 	MEMBER_TRAIT(
@@ -211,6 +219,10 @@ enum class ModifierTarget(
 	OBJECT_PARAMETER(
 		label = "单例对象参数",
 		supportedModifiers = MemberAccessModifiers + setOf(VAR, VAL),
+	),
+	ERROR_PARAMETER(
+		label = "错误参数",
+		supportedModifiers = setOf(VAL)
 	),
 	STRUCT_PARAMETER(
 		label = "结构体参数",

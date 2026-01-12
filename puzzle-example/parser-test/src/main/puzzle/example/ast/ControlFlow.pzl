@@ -1,4 +1,4 @@
-package puzzle.sample
+package puzzle.example.ast
 
 fun main() {
     val n = 500

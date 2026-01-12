@@ -1,4 +1,4 @@
-package puzzle.example
+package puzzle.example.ast
 
 fun main() {
     val hex1 = 0xFFFFL

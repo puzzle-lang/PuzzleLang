@@ -6,7 +6,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.type.SuperTypeTarget
@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.ContextualKind.WITH
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseTraitDeclaration(header: DeclarationHeader, start: SourceLocation): TraitDeclaration {
+fun parseTraitDeclaration(meta: DeclarationMeta, start: SourceLocation): TraitDeclaration {
 	val name = parseIdentifier(IdentifierTarget.TRAIT)
 	val superTypes = parseSuperTypes(SuperTypeTarget.TRAIT)
 		.safeAsSuperTypeReferences()
@@ -35,11 +35,11 @@ fun parseTraitDeclaration(header: DeclarationHeader, start: SourceLocation): Tra
 	val end = cursor.previous.location
 	return TraitDeclaration(
 		name = name,
-		docComment = header.docComment,
-		modifiers = header.modifiers,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		docComment = meta.docComment,
+		modifiers = meta.modifiers,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		superTypes = superTypes,
 		members = info.members,
 		location = start span end

@@ -81,21 +81,25 @@ enum class IdentifierTarget(
 		label = "类声明",
 		allowAnonymousBinding = false,
 	),
+	OBJECT(
+		label = "单例对象声明",
+		allowAnonymousBinding = false
+	),
+	ERROR(
+		label = "错误声明",
+		allowAnonymousBinding = false
+	),
 	TRAIT(
 		label = "特征声明",
 		allowAnonymousBinding = false,
 	),
 	MIXIN(
-		label = "混入",
+		label = "混入声明",
 		allowAnonymousBinding = false
 	),
 	STRUCT(
 		label = "结构体声明",
 		allowAnonymousBinding = false,
-	),
-	OBJECT(
-		label = "单例对象声明",
-		allowAnonymousBinding = false
 	),
 	ANNOTATION(
 		label = "注解声明",

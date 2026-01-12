@@ -71,6 +71,7 @@ class BuiltinAstBuilder {
 			extension = builder.extension,
 			typeSpec = builder.typeSpec,
 			contextSpec = builder.contextSpec,
+			errorsSpec = builder.errorsSpec,
 			annotationCalls = builder.annotationCalls,
 			body = builder.body,
 			location = SourceLocation.Builtin,

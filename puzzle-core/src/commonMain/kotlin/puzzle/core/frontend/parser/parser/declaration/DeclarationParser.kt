@@ -8,13 +8,12 @@ import puzzle.core.frontend.ast.declaration.TopLevelAllowedDeclaration
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
+import puzzle.core.frontend.parser.matcher.declaration.check
 import puzzle.core.frontend.parser.matcher.declaration.member.MemberDeclarationMatcher
 import puzzle.core.frontend.parser.matcher.declaration.toplevel.DeclarationMatcher
-import puzzle.core.frontend.parser.parser.check
-import puzzle.core.frontend.parser.parser.parameter.context.check
 import puzzle.core.frontend.parser.parser.parameter.context.parseDeclarationContextSpec
-import puzzle.core.frontend.parser.parser.parameter.type.check
+import puzzle.core.frontend.parser.parser.parameter.parseErrorsSpec
 import puzzle.core.frontend.parser.parser.parameter.type.parseTypeSpec
 import puzzle.core.frontend.parser.parser.parseAnnotationCalls
 import puzzle.core.frontend.parser.parser.parseDocComment
@@ -36,15 +35,14 @@ private fun parseDeclaration(): TopLevelAllowedDeclaration {
 	val annotationCalls = parseAnnotationCalls()
 	val typeSpec = parseTypeSpec()
 	val contextSpec = parseDeclarationContextSpec()
+	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
 	val matcher = DeclarationMatcher.matchers.find { it.match() } ?: syntaxError(
 		message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的顶层声明",
 		token = cursor.current
 	)
-	typeSpec?.check(matcher.typeTarget)
-	contextSpec?.check(matcher.contextTarget)
-	modifiers.check(matcher.modifierTarget)
-	val header = DeclarationHeader(docComment, annotationCalls, typeSpec, contextSpec, modifiers)
+	val header = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
+	header.check(matcher.target, matcher.modifierTarget)
 	val start = header.start
 	return matcher.parse(header, start)
 }
@@ -83,21 +81,20 @@ private fun parseMemberDeclaration(): Declaration {
 	val annotationCalls = parseAnnotationCalls()
 	val typeSpec = parseTypeSpec()
 	val contextSpec = parseDeclarationContextSpec()
+	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
 	val matcher = MemberDeclarationMatcher.matchers.find { it.match() } ?: syntaxError(
 		message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的成员声明",
 		token = cursor.current
 	)
-	typeSpec?.check(matcher.typeTarget)
-	contextSpec?.check(matcher.contextTarget)
-	modifiers.check(matcher.modifierTarget)
-	val header = DeclarationHeader(docComment, annotationCalls, typeSpec, contextSpec, modifiers)
+	val header = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
+	header.check(matcher.target, matcher.modifierTarget)
 	val start = header.start
 	return matcher.parse(header, start)
 }
 
 context(cursor: PzlTokenCursor)
-private val DeclarationHeader.start: SourceLocation
+private val DeclarationMeta.start: SourceLocation
 	get() {
 		if (docComment != null) return docComment.location
 		if (annotationCalls.isNotEmpty()) return annotationCalls.first().location

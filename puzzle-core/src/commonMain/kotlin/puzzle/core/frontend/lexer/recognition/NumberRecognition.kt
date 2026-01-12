@@ -106,7 +106,7 @@ object NumberRecognition : TokenRecognition {
 		var isDecimal = false
 		var is8Byte = false
 		var isUnsigned = false
-		var decimal = buildString {
+		val decimal = buildString {
 			while (true) {
 				val char = input.getOrNull(position) ?: break
 				when {

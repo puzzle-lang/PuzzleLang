@@ -7,6 +7,7 @@ import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
 import puzzle.core.frontend.ast.parameter.Parameter
 import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.ast.type.ErrorsSpec
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.model.SourceLocation
 
@@ -20,6 +21,7 @@ class FunDeclaration(
 	val extension: TypeReference?,
 	val typeSpec: TypeSpec?,
 	val contextSpec: DeclarationContextSpec?,
+	val errorsSpec: ErrorsSpec?,
 	val annotationCalls: List<AnnotationCall>,
 	val body: List<Statement>?,
 	override val location: SourceLocation,

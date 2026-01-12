@@ -2,7 +2,6 @@ package puzzle.core.frontend.ast
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.ast.declaration.Declaration
 import puzzle.core.frontend.ast.declaration.ImportDeclaration
 import puzzle.core.frontend.ast.declaration.PackageDeclaration
 import puzzle.core.frontend.ast.declaration.TopLevelAllowedDeclaration
@@ -18,5 +17,5 @@ class AstFile(
 	val packageDeclaration: PackageDeclaration?,
 	val importDeclarations: List<ImportDeclaration>,
 	val declarations: List<TopLevelAllowedDeclaration>,
-	override val location: SourceLocation
+	override val location: SourceLocation,
 ) : AstNode

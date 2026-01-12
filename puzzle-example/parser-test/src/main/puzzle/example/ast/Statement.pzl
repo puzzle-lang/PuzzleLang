@@ -1,4 +1,4 @@
-package puzzle.example
+package puzzle.example.ast
 
 import pzl.**
 import pzl.println as println2

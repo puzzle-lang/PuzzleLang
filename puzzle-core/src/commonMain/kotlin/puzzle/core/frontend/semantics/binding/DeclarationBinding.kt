@@ -19,6 +19,7 @@ fun List<Declaration>.declares(parent: Scope) {
 			is PropertyDeclaration -> it.declare(parent)
 			is ClassDeclaration -> it.declare(parent)
 			is ObjectDeclaration -> it.declare(parent)
+			is ErrorDeclaration -> it.declare(parent)
 			is TraitDeclaration -> it.declare(parent)
 			is MixinDeclaration -> it.declare(parent)
 			is StructDeclaration -> it.declare(parent)
@@ -180,6 +181,17 @@ private fun ObjectDeclaration.declare(parent: Scope) {
 	}
 	this.superTypes.declares(parent)
 	this.members.declares(scope)
+}
+
+context(_: FileContext)
+private fun ErrorDeclaration.declare(parent: Scope) {
+	val symbol = ErrorSymbol(
+		name = this.name.value,
+		owner = parent,
+		node = this,
+		visibility = this.modifiers.visibility ?: Visibility.PUBLIC
+	)
+	parent.declare(symbol)
 }
 
 context(_: FileContext)

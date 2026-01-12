@@ -18,7 +18,8 @@ sealed class SymbolTokenKind(
 			BracketKind.kinds,
 			SeparatorKind.kinds,
 			fastSetOf(
-				COLON, QUESTION, ELVIS,
+				COLON, QUESTION,
+				ELVIS, ORACLE,
 				AT,
 				ARROW,
 				TRIPLE_DOT,
@@ -32,6 +33,8 @@ sealed class SymbolTokenKind(
 	object QUESTION : SymbolTokenKind("?")
 	
 	object ELVIS : SymbolTokenKind("?:")
+	
+	object ORACLE : SymbolTokenKind("|:")
 	
 	object AT : SymbolTokenKind("@")
 	

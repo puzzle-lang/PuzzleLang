@@ -1,4 +1,4 @@
-package puzzle.sample
+package puzzle.example.ast
 
 /**
  * Returns a copy of this string converted to upper case using Unicode mapping rules of the invariant locale.
@@ -8,6 +8,6 @@ package puzzle.sample
  *
  * @sample samples.text.Strings.uppercase
  */
-fun main() {
+fun comment1() {
 
 }

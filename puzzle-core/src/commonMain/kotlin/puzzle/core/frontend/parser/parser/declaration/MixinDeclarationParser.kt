@@ -7,7 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.type.parseNamedType
@@ -17,7 +17,7 @@ import puzzle.core.frontend.token.kinds.ContextualKind.ON
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseMixinDeclaration(header: DeclarationHeader, start: SourceLocation): MixinDeclaration {
+fun parseMixinDeclaration(meta: DeclarationMeta, start: SourceLocation): MixinDeclaration {
 	val name = parseIdentifier(IdentifierTarget.MIXIN)
 	val mixinConstraints = parseMixinConstraints()
 	val withTypes = parseWithTypes()
@@ -33,11 +33,11 @@ fun parseMixinDeclaration(header: DeclarationHeader, start: SourceLocation): Mix
 	val end = cursor.previous.location
 	return MixinDeclaration(
 		name = name,
-		docComment = header.docComment,
-		modifiers = header.modifiers,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		docComment = meta.docComment,
+		modifiers = meta.modifiers,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		mixinConstraints = mixinConstraints,
 		withTypes = withTypes,
 		members = info.members,

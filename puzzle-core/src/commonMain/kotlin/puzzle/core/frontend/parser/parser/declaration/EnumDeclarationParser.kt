@@ -7,7 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
 import puzzle.core.frontend.parser.parser.parameter.parameter.ParameterTarget
@@ -24,7 +24,7 @@ import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseEnumDeclaration(header: DeclarationHeader, start: SourceLocation): EnumDeclaration {
+fun parseEnumDeclaration(meta: DeclarationMeta, start: SourceLocation): EnumDeclaration {
 	val name = parseIdentifier(IdentifierTarget.ENUM)
 	val parameters = parseParameters(ParameterTarget.ENUM)
 	val superTypes = parseSuperTypes(SuperTypeTarget.ENUM)
@@ -34,15 +34,15 @@ fun parseEnumDeclaration(header: DeclarationHeader, start: SourceLocation): Enum
 		val location = start span cursor.previous.location
 		return EnumDeclaration(
 			name = name,
-			docComment = header.docComment,
-			modifiers = header.modifiers,
+			docComment = meta.docComment,
+			modifiers = meta.modifiers,
 			parameters = parameters,
 			entries = emptyList(),
 			superTypes = superTypes,
 			withTypes = withTypes,
-			typeSpec = header.typeSpec,
-			contextSpec = header.contextSpec,
-			annotationCalls = header.annotationCalls,
+			typeSpec = meta.typeSpec,
+			contextSpec = meta.contextSpec,
+			annotationCalls = meta.annotationCalls,
 			location = location
 		)
 	}
@@ -55,15 +55,15 @@ fun parseEnumDeclaration(header: DeclarationHeader, start: SourceLocation): Enum
 	val location = start span cursor.previous.location
 	return EnumDeclaration(
 		name = name,
-		docComment = header.docComment,
-		modifiers = header.modifiers,
+		docComment = meta.docComment,
+		modifiers = meta.modifiers,
 		parameters = parameters,
 		entries = entries,
 		superTypes = superTypes,
 		withTypes = withTypes,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		location = location,
 		inits = info.inits,
 		ctors = info.ctors,

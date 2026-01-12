@@ -7,7 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.type.SuperTypeTarget
 import puzzle.core.frontend.parser.parser.type.parseSuperTypes
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
@@ -15,7 +15,7 @@ import puzzle.core.frontend.parser.parser.type.parseWithTypes
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseExtensionDeclaration(header: DeclarationHeader, start: SourceLocation): ExtensionDeclaration {
+fun parseExtensionDeclaration(meta: DeclarationMeta, start: SourceLocation): ExtensionDeclaration {
 	val extendedType = parseTypeReference()
 	val superTypes = parseSuperTypes(SuperTypeTarget.EXTENSION)
 		.filterIsInstance<SuperTypeReference>()
@@ -32,12 +32,12 @@ fun parseExtensionDeclaration(header: DeclarationHeader, start: SourceLocation):
 	val end = cursor.previous.location
 	return ExtensionDeclaration(
 		extendedType = extendedType,
-		modifiers = header.modifiers,
+		modifiers = meta.modifiers,
 		superTypes = superTypes,
 		withTypes = withTypes,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		members = info.members,
 		location = start span end
 	)

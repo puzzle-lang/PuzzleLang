@@ -38,6 +38,15 @@ enum class ParameterTarget(
 		allowProperty = true,
 		requireVariability = false
 	),
+	ERROR(
+		label = "错误",
+		modifierTarget = ModifierTarget.ERROR_PARAMETER,
+		allowLambda = false,
+		allowWithoutParen = true,
+		allowVarargQuantifier = false,
+		allowProperty = true,
+		requireVariability = true
+	),
 	ANNOTATION(
 		label = "注解",
 		modifierTarget = ModifierTarget.ANNOTATION_PARAMETER,

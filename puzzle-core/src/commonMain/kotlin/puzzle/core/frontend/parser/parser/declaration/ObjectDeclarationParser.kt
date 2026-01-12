@@ -5,7 +5,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -21,11 +21,7 @@ import puzzle.core.frontend.parser.parser.type.parseWithTypes
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseObjectDeclaration(
-	header: DeclarationHeader,
-	start: SourceLocation,
-	isTopLevel: Boolean,
-): ObjectDeclaration {
+fun parseObjectDeclaration(meta: DeclarationMeta, start: SourceLocation, isTopLevel: Boolean): ObjectDeclaration {
 	val name = if (isTopLevel) {
 		parseIdentifier(IdentifierTarget.OBJECT)
 	} else {
@@ -43,15 +39,15 @@ fun parseObjectDeclaration(
 	val end = cursor.previous.location
 	return ObjectDeclaration(
 		name = name,
-		docComment = header.docComment,
-		modifiers = header.modifiers,
+		docComment = meta.docComment,
+		modifiers = meta.modifiers,
 		primaryCtorAnnotationCalls = primaryCtorAnnotationCalls,
 		primaryCtorModifiers = primaryCtorModifiers,
 		parameters = parameters,
 		superTypes = superTypes,
 		withTypes = withTypes,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		inits = info.inits,
 		ctors = info.ctors,
 		members = info.members,

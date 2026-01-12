@@ -14,7 +14,7 @@ import puzzle.core.frontend.model.copy
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.isAnonymousBinding
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -39,13 +39,9 @@ import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.isIn
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parsePropertyDeclaration(
-	header: DeclarationHeader,
-	start: SourceLocation,
-	isTopLevel: Boolean,
-): PropertyDeclaration {
+fun parsePropertyDeclaration(meta: DeclarationMeta, start: SourceLocation, isTopLevel: Boolean): PropertyDeclaration {
 	var funExtension: TypeReference? = null
-	val isMutable = VAR isIn header.modifiers
+	val isMutable = VAR isIn meta.modifiers
 	val propertySpec = if (cursor.match(LBRACKET)) {
 		parseDestructurePropertySpec(start, defaultMutable = isMutable)
 	} else {
@@ -54,15 +50,15 @@ fun parsePropertyDeclaration(
 		parseSinglePropertySpec(start, isMutable, name)
 	}
 	val initializer = if (cursor.match(ASSIGN)) parseExpressionChain() else null
-	val isLazy = LAZY isIn header.modifiers
-	val isLate = LATE isIn header.modifiers
+	val isLazy = LAZY isIn meta.modifiers
+	val isLate = LATE isIn meta.modifiers
 	when {
 		cursor.match(LBRACE) -> {
 			if (isLate) {
-				syntaxError("计算属性不支持声明 late 修饰符", header.modifiers.first { it.kind == LATE })
+				syntaxError("计算属性不支持声明 late 修饰符", meta.modifiers.first { it.kind == LATE })
 			}
 			if (isLazy) {
-				val node = { header.modifiers.first { it.kind == LAZY } }
+				val node = { meta.modifiers.first { it.kind == LAZY } }
 				when {
 					propertySpec is DestructurePropertySpec -> syntaxError("lazy 延迟初始化属性不支持解构属性列表", node())
 					isMutable -> syntaxError("lazy 延迟初始化属性必须使用 val 修饰符", node())
@@ -81,10 +77,10 @@ fun parsePropertyDeclaration(
 			val end = cursor.previous.location
 			return PropertyDeclaration(
 				propertySpec = propertySpec,
-				modifiers = header.modifiers,
-				typeSpec = header.typeSpec,
-				contextSpec = header.contextSpec,
-				annotationCalls = header.annotationCalls,
+				modifiers = meta.modifiers,
+				typeSpec = meta.typeSpec,
+				contextSpec = meta.contextSpec,
+				annotationCalls = meta.annotationCalls,
 				extension = funExtension,
 				location = start span end,
 				getter = PropertyGetter(
@@ -121,7 +117,7 @@ fun parsePropertyDeclaration(
 	
 	if (isLate) {
 		if (!isMutable) {
-			syntaxError("late 延迟初始化属性必须使用 var 修饰符", header.modifiers.first { it.kind == VAL })
+			syntaxError("late 延迟初始化属性必须使用 var 修饰符", meta.modifiers.first { it.kind == VAL })
 		}
 		if (initializer != null) {
 			syntaxError("late 延迟初始化属性不允许有初始化值", initializer)
@@ -141,11 +137,11 @@ fun parsePropertyDeclaration(
 		if (!isLate && initializer == null) {
 			syntaxError("属性缺少初始化值", propertySpec.location.end)
 		}
-		if (header.contextSpec != null) {
-			syntaxError("普通属性不支持 context 上下文参数", header.contextSpec)
+		if (meta.contextSpec != null) {
+			syntaxError("普通属性不支持 context 上下文参数", meta.contextSpec)
 		}
-		if (header.typeSpec != null) {
-			syntaxError("普通属性不支持定义泛型", header.typeSpec)
+		if (meta.typeSpec != null) {
+			syntaxError("普通属性不支持定义泛型", meta.typeSpec)
 		}
 	}
 	
@@ -210,10 +206,10 @@ fun parsePropertyDeclaration(
 	
 	return PropertyDeclaration(
 		propertySpec = propertySpec,
-		modifiers = header.modifiers,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		modifiers = meta.modifiers,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		extension = funExtension,
 		location = start span end,
 		initializer = initializer,

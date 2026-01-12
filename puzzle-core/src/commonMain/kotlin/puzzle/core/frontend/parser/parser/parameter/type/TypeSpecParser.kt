@@ -1,6 +1,5 @@
 package puzzle.core.frontend.parser.parser.parameter.type
 
-import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
@@ -15,20 +14,6 @@ fun parseTypeSpec(): TypeSpec? {
 		cursor.match(REIFIED, TYPE) -> parseTypeSpec(true)
 		cursor.match(TYPE) -> parseTypeSpec(false)
 		else -> null
-	}
-}
-
-context(_: FileContext, cursor: PzlTokenCursor)
-fun TypeSpec.check(target: TypeTarget) {
-	if (!target.allowsType) {
-		syntaxError("${target.label}声明不支持泛型", cursor[this.location.start])
-	}
-	if (!target.allowsVariance) {
-		this.parameters.forEach {
-			if (it.variance != null) {
-				syntaxError("${target.label}声明不支持使用 '${it.variance.kind.kind.value}'", cursor[it.location.start])
-			}
-		}
 	}
 }
 

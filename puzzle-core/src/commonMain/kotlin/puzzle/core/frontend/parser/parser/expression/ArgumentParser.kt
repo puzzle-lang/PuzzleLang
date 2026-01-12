@@ -41,7 +41,7 @@ private fun parseCallArgument(endKind: BracketKind.End): Argument {
 	if (cursor.previous.kind == SEMICOLON) {
 		syntaxError("参数不支持使用 ';' 结束表达式", cursor.previous)
 	}
-	val end = cursor.previous.location
+	cursor.previous.location
 	val currentKind = cursor.current.kind
 	if (currentKind == COMMA) {
 		return Argument(name, expression)

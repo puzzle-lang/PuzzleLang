@@ -1,4 +1,4 @@
-package puzzle.example
+package puzzle.example.ast
 
 fun lambdaTest() {
     val lambda01: (() -> Unit)

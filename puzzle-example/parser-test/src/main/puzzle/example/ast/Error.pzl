@@ -1,0 +1,14 @@
+package puzzle.example.ast
+
+error EmptyKeyError
+
+error NotFoundError(
+    val message: String
+)
+
+errors[EmptyKeyError | NotFoundError]
+fun error1(inputs: Map<String, String>, key: String): String {
+    if (key.isEmpty) return EmptyKeyError
+    if (key !in inputs) return NotFoundError("$key is not found!")
+    return inputs.first { it.key == key }
+}

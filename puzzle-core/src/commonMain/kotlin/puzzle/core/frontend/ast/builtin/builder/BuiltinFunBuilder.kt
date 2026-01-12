@@ -7,6 +7,7 @@ import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
 import puzzle.core.frontend.ast.parameter.Parameter
 import puzzle.core.frontend.ast.parameter.TypeSpec
 import puzzle.core.frontend.ast.statement.Statement
+import puzzle.core.frontend.ast.type.ErrorsSpec
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.token.kinds.ModifierKind
@@ -33,6 +34,9 @@ class BuiltinFunBuilder {
 		private set
 	
 	var contextSpec: DeclarationContextSpec? = null
+		private set
+	
+	var errorsSpec: ErrorsSpec? = null
 		private set
 	
 	var body: List<Statement>? = null
@@ -122,9 +126,27 @@ class BuiltinFunBuilder {
 		if (contextSpec != null) {
 			error("contextSpec 不可重复配置")
 		}
+		val builder = BuiltinDeclarationContextReceiverBuilder().apply(builder)
+		if (builder.contextReceivers.isEmpty()) {
+			error("context 参数不能为空")
+		}
 		contextSpec = DeclarationContextSpec(
-			receivers = BuiltinDeclarationContextReceiverBuilder().apply(builder).contextReceivers,
+			receivers = builder.contextReceivers,
 			isPropagate = isPropagate,
+			location = SourceLocation.Builtin
+		)
+	}
+	
+	fun errors(builder: BuiltinErrorsTypeBuilder.() -> Unit) {
+		if (errorsSpec != null) {
+			error("errorsSpec 不可重复配置")
+		}
+		val builder = BuiltinErrorsTypeBuilder().apply(builder)
+		if (builder.errorTypes.isEmpty()) {
+			error("errors 参数不能为空")
+		}
+		errorsSpec = ErrorsSpec(
+			errorTypes = builder.errorTypes,
 			location = SourceLocation.Builtin
 		)
 	}

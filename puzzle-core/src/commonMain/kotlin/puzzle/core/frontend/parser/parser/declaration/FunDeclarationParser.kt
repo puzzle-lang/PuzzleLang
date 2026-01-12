@@ -13,7 +13,7 @@ import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.copy
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.tryParseIdentifier
 import puzzle.core.frontend.parser.parser.parameter.parameter.ParameterTarget
@@ -33,7 +33,7 @@ import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseFunDeclaration(header: DeclarationHeader, start: SourceLocation): FunDeclaration {
+fun parseFunDeclaration(meta: DeclarationMeta, start: SourceLocation): FunDeclaration {
 	val (extension, funName) = parseExtensionAndFunName()
 	val parameters = parseParameters(ParameterTarget.FUN)
 	val returnSpec = when {
@@ -70,14 +70,15 @@ fun parseFunDeclaration(header: DeclarationHeader, start: SourceLocation): FunDe
 	val end = cursor.previous.location
 	return FunDeclaration(
 		name = funName,
-		docComment = header.docComment,
+		docComment = meta.docComment,
 		parameters = parameters,
-		modifiers = header.modifiers,
+		modifiers = meta.modifiers,
 		returnSpec = returnSpec,
 		extension = extension,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		errorsSpec = meta.errorsSpec,
+		annotationCalls = meta.annotationCalls,
 		body = expressions,
 		location = start span end
 	)

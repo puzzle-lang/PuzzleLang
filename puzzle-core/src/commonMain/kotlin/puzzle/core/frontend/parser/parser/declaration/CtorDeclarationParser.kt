@@ -7,7 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.matcher.statement.ContextualStatementMatcher
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.tryParseIdentifier
@@ -18,10 +18,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseCtorDeclaration(
-	header: DeclarationHeader,
-	start: SourceLocation,
-): CtorDeclaration {
+fun parseCtorDeclaration(meta: DeclarationMeta, start: SourceLocation): CtorDeclaration {
 	val name = tryParseIdentifier(IdentifierTarget.CTOR)
 	val parameters = parseParameters(ParameterTarget.CTOR)
 	val body = buildList<Statement> {
@@ -37,10 +34,10 @@ fun parseCtorDeclaration(
 	val end = cursor.previous.location
 	return CtorDeclaration(
 		name = name,
-		docComment = header.docComment,
+		docComment = meta.docComment,
 		parameters = parameters,
-		modifiers = header.modifiers,
-		annotationCalls = header.annotationCalls,
+		modifiers = meta.modifiers,
+		annotationCalls = meta.annotationCalls,
 		body = body,
 		location = start span end
 	)

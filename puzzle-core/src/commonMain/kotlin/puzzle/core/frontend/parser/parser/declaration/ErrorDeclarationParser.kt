@@ -1,11 +1,11 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
+import puzzle.core.frontend.ast.declaration.ErrorDeclaration
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.ast.declaration.AnnotationDeclaration
-import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -16,20 +16,20 @@ import puzzle.core.frontend.token.kinds.ContextualKind.WITH
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseAnnotationDeclaration(meta: DeclarationMeta, start: SourceLocation): AnnotationDeclaration {
-	val name = parseIdentifier(IdentifierTarget.ANNOTATION)
-	val parameters = parseParameters(ParameterTarget.ANNOTATION)
+fun parseErrorDeclaration(meta: DeclarationMeta, start: SourceLocation): ErrorDeclaration {
+	val name = parseIdentifier(IdentifierTarget.ERROR)
+	val parameters = parseParameters(ParameterTarget.ERROR)
 	if (cursor.match(COLON)) {
-		syntaxError("注解不支持 ':'", cursor.previous)
+		syntaxError("错误不支持 ':'", cursor.previous)
 	}
 	if (cursor.match(WITH)) {
-		syntaxError("注解不支持 with", cursor.previous)
+		syntaxError("错误不支持 with", cursor.previous)
 	}
 	if (cursor.match(LBRACE)) {
-		syntaxError("注解不支持 '{'", cursor.previous)
+		syntaxError("错误不支持 '{'", cursor.previous)
 	}
 	val end = cursor.previous.location
-	return AnnotationDeclaration(
+	return ErrorDeclaration(
 		name = name,
 		docComment = meta.docComment,
 		modifiers = meta.modifiers,

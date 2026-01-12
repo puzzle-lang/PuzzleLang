@@ -1,4 +1,4 @@
-package puzzle.example
+package puzzle.example.ast
 
 import aaa.bbb.type
 
@@ -7,6 +7,7 @@ fun main() {
 }
 
 type<T>
+context(name: String)
 fun test1() {
 
 }

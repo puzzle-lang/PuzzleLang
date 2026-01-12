@@ -5,7 +5,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationHeader
+import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -20,7 +20,7 @@ import puzzle.core.frontend.parser.parser.type.parseWithTypes
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseClassDeclaration(header: DeclarationHeader, start: SourceLocation): ClassDeclaration {
+fun parseClassDeclaration(meta: DeclarationMeta, start: SourceLocation): ClassDeclaration {
 	val name = parseIdentifier(IdentifierTarget.CLASS)
 	val primaryCtorAnnotationCalls = parseAnnotationCalls()
 	val primaryCtorModifiers = parseModifiers()
@@ -34,14 +34,14 @@ fun parseClassDeclaration(header: DeclarationHeader, start: SourceLocation): Cla
 	val end = cursor.previous.location
 	return ClassDeclaration(
 		name = name,
-		docComment = header.docComment,
-		modifiers = header.modifiers,
+		docComment = meta.docComment,
+		modifiers = meta.modifiers,
 		primaryCtorAnnotationCalls = primaryCtorAnnotationCalls,
 		primaryCtorModifiers = primaryCtorModifiers,
 		parameters = parameters,
-		typeSpec = header.typeSpec,
-		contextSpec = header.contextSpec,
-		annotationCalls = header.annotationCalls,
+		typeSpec = meta.typeSpec,
+		contextSpec = meta.contextSpec,
+		annotationCalls = meta.annotationCalls,
 		superTypes = superTypes,
 		withTypes = withTypes,
 		ctors = info.ctors,
