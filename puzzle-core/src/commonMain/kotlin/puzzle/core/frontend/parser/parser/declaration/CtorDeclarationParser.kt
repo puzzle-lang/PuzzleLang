@@ -7,8 +7,8 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
-import puzzle.core.frontend.parser.matcher.statement.ContextualStatementMatcher
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
+import puzzle.core.frontend.parser.dispatcher.statement.ContextualStatementMatcher
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.tryParseIdentifier
 import puzzle.core.frontend.parser.parser.parameter.parameter.ParameterTarget

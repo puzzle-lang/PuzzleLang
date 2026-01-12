@@ -5,10 +5,10 @@ import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.equalsLine
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.expression.ExpressionMatcher
-import puzzle.core.frontend.parser.matcher.expression.NoPrefixExpressionParser
-import puzzle.core.frontend.parser.matcher.expression.OptionalPrefixExpressionParser
-import puzzle.core.frontend.parser.matcher.expression.RequirePrefixExpressionParser
+import puzzle.core.frontend.parser.dispatcher.expression.ExpressionMatcher
+import puzzle.core.frontend.parser.dispatcher.expression.NoPrefixExpressionParser
+import puzzle.core.frontend.parser.dispatcher.expression.OptionalPrefixExpressionParser
+import puzzle.core.frontend.parser.dispatcher.expression.RequirePrefixExpressionParser
 import puzzle.core.frontend.token.kinds.AccessKind
 import puzzle.core.frontend.token.kinds.AccessorKind.GET
 import puzzle.core.frontend.token.kinds.AccessorKind.SET

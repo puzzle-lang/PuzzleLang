@@ -8,10 +8,10 @@ import puzzle.core.frontend.ast.declaration.TopLevelAllowedDeclaration
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
-import puzzle.core.frontend.parser.matcher.declaration.check
-import puzzle.core.frontend.parser.matcher.declaration.member.MemberDeclarationMatcher
-import puzzle.core.frontend.parser.matcher.declaration.toplevel.DeclarationMatcher
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
+import puzzle.core.frontend.parser.dispatcher.declaration.check
+import puzzle.core.frontend.parser.dispatcher.declaration.member.*
+import puzzle.core.frontend.parser.dispatcher.declaration.toplevel.*
 import puzzle.core.frontend.parser.parser.parameter.context.parseDeclarationContextSpec
 import puzzle.core.frontend.parser.parser.parameter.parseErrorsSpec
 import puzzle.core.frontend.parser.parser.parameter.type.parseTypeSpec
@@ -19,6 +19,10 @@ import puzzle.core.frontend.parser.parser.parseAnnotationCalls
 import puzzle.core.frontend.parser.parser.parseDocComment
 import puzzle.core.frontend.parser.parser.parseModifiers
 import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACE
+import puzzle.core.frontend.token.kinds.ContextualKind.INIT
+import puzzle.core.frontend.token.kinds.DeclarationKind.*
+import puzzle.core.frontend.token.kinds.ModifierKind.VAL
+import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseDeclarations(): List<TopLevelAllowedDeclaration> {
@@ -37,14 +41,34 @@ private fun parseDeclaration(): TopLevelAllowedDeclaration {
 	val contextSpec = parseDeclarationContextSpec()
 	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
-	val matcher = DeclarationMatcher.matchers.find { it.match() } ?: syntaxError(
-		message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的顶层声明",
-		token = cursor.current
-	)
-	val header = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
-	header.check(matcher.target, matcher.modifierTarget)
-	val start = header.start
-	return matcher.parse(header, start)
+	val dispatcher = getDispatcher()
+	cursor.advance()
+	val meta = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
+	meta.check(dispatcher.target, dispatcher.modifierTarget)
+	val start = meta.start
+	return dispatcher.parse(meta, start)
+}
+
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun getDispatcher(): DeclarationDispatcher<*> {
+	return when (cursor.current.kind) {
+		FUN -> FunDeclarationDispatcher
+		VAR, VAL -> PropertyDeclarationDispatcher
+		CLASS -> ClassDeclarationDispatcher
+		OBJECT -> ObjectDeclarationDispatcher
+		ERROR -> ErrorDeclarationDispatcher
+		TRAIT -> TraitDeclarationDispatcher
+		MIXIN -> MixinDeclarationDispatcher
+		STRUCT -> StructDeclarationDispatcher
+		ENUM -> EnumDeclarationDispatcher
+		ANNOTATION -> AnnotationDeclarationDispatcher
+		EXTENSION -> ExtensionDeclarationDispatcher
+		TYPEALIAS -> TypeAliasDeclarationDispatcher
+		else -> syntaxError(
+			message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的顶层声明",
+			token = cursor.current
+		)
+	}
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
@@ -83,14 +107,36 @@ private fun parseMemberDeclaration(): Declaration {
 	val contextSpec = parseDeclarationContextSpec()
 	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
-	val matcher = MemberDeclarationMatcher.matchers.find { it.match() } ?: syntaxError(
-		message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的成员声明",
-		token = cursor.current
-	)
-	val header = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
-	header.check(matcher.target, matcher.modifierTarget)
-	val start = header.start
-	return matcher.parse(header, start)
+	val dispatcher = getMemberDispatcher()
+	cursor.advance()
+	val meta = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
+	meta.check(dispatcher.target, dispatcher.modifierTarget)
+	val start = meta.start
+	return dispatcher.parse(meta, start)
+}
+
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun getMemberDispatcher(): MemberDeclarationDispatcher<*> {
+	return when (cursor.current.kind) {
+		FUN -> MemberFunDeclarationDispatcher
+		VAR, VAL -> MemberPropertyDeclarationDispatcher
+		CLASS -> MemberClassDeclarationDispatcher
+		OBJECT -> MemberObjectDeclarationDispatcher
+		ERROR -> MemberErrorDeclarationDispatcher
+		TRAIT -> MemberTraitDeclarationDispatcher
+		MIXIN -> MemberMixinDeclarationDispatcher
+		STRUCT -> MemberStructDeclarationDispatcher
+		ENUM -> MemberEnumDeclarationDispatcher
+		ANNOTATION -> MemberAnnotationDeclarationDispatcher
+		EXTENSION -> MemberExtensionDeclarationDispatcher
+		TYPEALIAS -> MemberTypeAliasDeclarationDispatcher
+		CTOR -> MemberCtorDeclarationDispatcher
+		INIT -> MemberInitDeclarationDispatcher
+		else -> syntaxError(
+			message = if (cursor.isAtEnd()) "结尾缺少 '}'" else "未知的顶层声明",
+			token = cursor.current
+		)
+	}
 }
 
 context(cursor: PzlTokenCursor)

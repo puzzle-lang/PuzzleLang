@@ -16,6 +16,7 @@ fun parseModifiers(): List<Modifier> {
 			this += modifier
 			val kind = modifier.kind
 			if (kind == VAR || kind == VAL) {
+				cursor.retreat()
 				break
 			}
 		}

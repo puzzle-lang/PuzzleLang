@@ -9,7 +9,7 @@ import puzzle.core.util.getCurrentMemoryUsage
 import puzzle.core.util.path
 import kotlin.time.measureTime
 
-fun main(args: Array<out String>) {
+fun main(vararg args: String) {
 	val command = args.firstOrNull() ?: return help()
 	when (command) {
 		"build" -> {
@@ -60,4 +60,21 @@ private fun version() {
 
 private fun unknown() {
 	println("未知命令, 请使用: puzzle -h 或 puzzle --help 查看使用帮助")
+}
+
+interface Parent {
+	
+	fun match(value: Int): Boolean
+	
+	fun parse()
+}
+
+class Child : Parent {
+	override fun match(value: Int): Boolean {
+		return value % 20 == 0
+	}
+	
+	override fun parse() {
+	
+	}
 }

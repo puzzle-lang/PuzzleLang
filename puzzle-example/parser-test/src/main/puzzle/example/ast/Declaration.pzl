@@ -408,6 +408,8 @@ fun initLocalContext(context: Context) {
     LocalContext.run()              // 这里就可以运行了，因为上方初始化了
 }
 
+var a: Int = true
+
 val property1 = 10
 
 val property2: Int = 10

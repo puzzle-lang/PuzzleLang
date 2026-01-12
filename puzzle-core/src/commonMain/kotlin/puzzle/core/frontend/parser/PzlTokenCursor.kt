@@ -37,7 +37,7 @@ class PzlTokenCursor(
 	}
 	
 	fun advance(count: Int = 1) {
-		require(count > 0) { "count 必须大于 0" }
+		require(count >= 0) { "count 必须大于等于 0" }
 		if (position <= tokens.size - count) {
 			position += count
 		} else {
@@ -46,7 +46,7 @@ class PzlTokenCursor(
 	}
 	
 	fun retreat(count: Int = 1) {
-		require(count > 0) { "count 必须大于 0" }
+		require(count >= 0) { "count 必须大于等于 0" }
 		if (position >= count) {
 			position -= count
 		} else {

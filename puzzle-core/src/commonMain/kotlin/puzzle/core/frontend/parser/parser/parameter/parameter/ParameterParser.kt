@@ -20,7 +20,6 @@ import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
-import puzzle.core.frontend.token.kinds.isIn
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseParameters(target: ParameterTarget): List<Parameter> {
@@ -59,9 +58,8 @@ private fun parseParameter(target: ParameterTarget): Parameter {
 	val annotationCalls = parseAnnotationCalls()
 	val modifiers = parseModifiers()
 	val isMutable = when {
-		VAR isIn modifiers -> false
-		VAL isIn modifiers -> true
-		
+		cursor.match(VAR) -> true
+		cursor.match(VAL) -> false
 		target.requireVariability -> {
 			syntaxError("缺少 var 或 val 修饰符", cursor.current)
 		}

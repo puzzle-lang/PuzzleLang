@@ -19,6 +19,8 @@ fun Expression.declare(parent: Scope) {
 		is GroupingExpression -> this.declare(parent)
 		is IfExpression -> this.declare(parent)
 		is InvokeExpression -> this.declare(parent)
+		is ReturnExpression -> this.declare(parent)
+		is BreakExpression -> this.declare(parent)
 		is IsExpression -> this.declare(parent)
 		is LambdaExpression -> this.declare(parent)
 		is StringLiteral.Template -> this.declare(parent)
@@ -71,6 +73,16 @@ context(_: FileContext)
 private fun InvokeExpression.declare(parent: Scope) {
 	this.callee.declare(parent)
 	this.arguments.declares(parent)
+}
+
+context(_: FileContext)
+private fun ReturnExpression.declare(parent: Scope) {
+	this.expression?.declare(parent)
+}
+
+context(_: FileContext)
+private fun BreakExpression.declare(parent: Scope) {
+	this.expression?.declare(parent)
 }
 
 context(_: FileContext)

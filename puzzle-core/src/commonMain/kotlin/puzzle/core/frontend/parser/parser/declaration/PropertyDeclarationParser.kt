@@ -13,8 +13,8 @@ import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.copy
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.isAnonymousBinding
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
@@ -41,7 +41,7 @@ import puzzle.core.frontend.token.kinds.isIn
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePropertyDeclaration(meta: DeclarationMeta, start: SourceLocation, isTopLevel: Boolean): PropertyDeclaration {
 	var funExtension: TypeReference? = null
-	val isMutable = VAR isIn meta.modifiers
+	val isMutable = cursor.previous.kind == VAR
 	val propertySpec = if (cursor.match(LBRACKET)) {
 		parseDestructurePropertySpec(start, defaultMutable = isMutable)
 	} else {
@@ -203,7 +203,6 @@ fun parsePropertyDeclaration(meta: DeclarationMeta, start: SourceLocation, isTop
 	}
 	
 	val end = cursor.previous.location
-	
 	return PropertyDeclaration(
 		propertySpec = propertySpec,
 		modifiers = meta.modifiers,
@@ -223,7 +222,11 @@ private fun parsePropertyGetter(isTopLevel: Boolean): PropertyGetter? {
 	val modifiers = parseModifiers()
 	if (!cursor.match(GET)) {
 		if (modifiers.isNotEmpty()) {
-			cursor.retreat(modifiers.size)
+			if (VAR isIn modifiers || VAL isIn modifiers) {
+				cursor.retreat(modifiers.size - 1)
+			} else {
+				cursor.retreat(modifiers.size)
+			}
 		}
 		return null
 	}
@@ -261,7 +264,11 @@ private fun parsePropertySetter(isTopLevel: Boolean): PropertySetter? {
 	val modifiers = parseModifiers()
 	if (!cursor.match(SET)) {
 		if (modifiers.isNotEmpty()) {
-			cursor.retreat(modifiers.size)
+			if (VAR isIn modifiers || VAL isIn modifiers) {
+				cursor.retreat(modifiers.size - 1)
+			} else {
+				cursor.retreat(modifiers.size)
+			}
 		}
 		return null
 	}

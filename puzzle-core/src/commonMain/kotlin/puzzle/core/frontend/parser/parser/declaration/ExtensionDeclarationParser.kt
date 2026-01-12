@@ -7,7 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.matcher.declaration.DeclarationMeta
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.type.SuperTypeTarget
 import puzzle.core.frontend.parser.parser.type.parseSuperTypes
 import puzzle.core.frontend.parser.parser.type.parseTypeReference
