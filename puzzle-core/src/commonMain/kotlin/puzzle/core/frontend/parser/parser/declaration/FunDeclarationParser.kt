@@ -36,13 +36,18 @@ context(_: FileContext, cursor: PzlTokenCursor)
 fun parseFunDeclaration(meta: DeclarationMeta, start: SourceLocation): FunDeclaration {
 	val (extension, funName) = parseExtensionAndFunName()
 	val parameters = parseParameters(ParameterTarget.FUN)
+	val containsErrorsSpec = meta.errorsSpec != null
 	val returnSpec = when {
 		!cursor.match(COLON) -> null
 		cursor.match(LBRACKET) -> {
 			val start = cursor.previous.location
 			val types = buildList {
 				while (!cursor.match(RBRACKET)) {
-					this += parseTypeReference(allowLambda = true)
+					val type = parseTypeReference(allowLambda = true)
+					if (containsErrorsSpec && type.isNullable) {
+						syntaxError("使用 errors 后不能返回可空类型", type.location.end)
+					}
+					this += type
 					if (!cursor.check(RBRACKET)) {
 						cursor.expect(COMMA, "多返回值类型列表缺少 ','")
 					}
@@ -63,6 +68,9 @@ fun parseFunDeclaration(meta: DeclarationMeta, start: SourceLocation): FunDeclar
 		
 		else -> {
 			val type = parseTypeReference(allowLambda = true)
+			if (containsErrorsSpec && type.isNullable) {
+				syntaxError("使用 errors 后不能返回可空类型", type.location.end)
+			}
 			SingleReturnSpec(type)
 		}
 	}

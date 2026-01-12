@@ -34,6 +34,7 @@ class MatchPatternExpression(
 @Serializable
 class MatchArm(
 	val patterns: List<MatchPattern>,
+	val alias: Identifier?,
 	val guard: Expression?,
 	val body: List<Statement>,
 	override val location: SourceLocation,
@@ -48,6 +49,6 @@ class ExpressionMatchPattern(
 ) : MatchPattern
 
 @Serializable
-class IsTypeMatchPattern(
+class IsMatchPattern(
 	val type: TypeReference,
 ) : MatchPattern

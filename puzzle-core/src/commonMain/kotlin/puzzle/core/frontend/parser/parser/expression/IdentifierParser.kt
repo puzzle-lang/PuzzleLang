@@ -166,7 +166,11 @@ enum class IdentifierTarget(
 		allowAnonymousBinding = false,
 	),
 	IMPORT_AS(
-		label = "导入别名",
+		label = "符号别名",
+		allowAnonymousBinding = false,
+	),
+	MATCH_AS(
+		label = "模式绑定名",
 		allowAnonymousBinding = false,
 	),
 	ACCESS_OPERATOR(

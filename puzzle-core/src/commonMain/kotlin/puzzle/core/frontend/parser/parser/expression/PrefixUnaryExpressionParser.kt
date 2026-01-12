@@ -2,10 +2,7 @@ package puzzle.core.frontend.parser.parser.expression
 
 import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.Operator
-import puzzle.core.frontend.ast.expression.Identifier
-import puzzle.core.frontend.ast.expression.MemberAccessExpression
-import puzzle.core.frontend.ast.expression.PrefixUnaryExpression
-import puzzle.core.frontend.ast.expression.PostfixUnaryExpression
+import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.OperatorKind
@@ -17,7 +14,10 @@ fun parsePrefixUnaryExpression(): PrefixUnaryExpression {
 	val token = cursor.previous
 	val expression = parseExpression()
 	if (expression is PostfixUnaryExpression) {
-		syntaxError("不能在这里使用后缀操作符 '${expression.operator.kind.value}'", expression.location.end)
+		syntaxError("不能在这里使用后缀操作符 '${expression.operator.kind.value}'", expression)
+	}
+	if (expression is JumpExpression) {
+		syntaxError("前缀运算符 '${token.kind.value}' 后不允许使用 ${expression.type}", expression)
 	}
 	if (
 		expression !is Identifier && expression !is MemberAccessExpression &&

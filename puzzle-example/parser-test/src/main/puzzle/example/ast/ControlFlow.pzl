@@ -38,6 +38,10 @@ fun main() {
             "else"
         }
     }
+    val result3 = match ("Hello") {
+        is String as name -> name
+        else -> ""
+    }
 
     var count = 0
     while (count < 100) {

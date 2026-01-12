@@ -1,5 +1,7 @@
 package puzzle.core.frontend.semantics.binding
 
+import puzzle.core.frontend.ast.expression.BreakExpression
+import puzzle.core.frontend.ast.expression.ReturnExpression
 import puzzle.core.frontend.ast.statement.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
@@ -12,12 +14,12 @@ fun List<Statement>.declares(parent: Scope) {
 	this.forEach {
 		when (it) {
 			is AssignmentStatement -> it.declare(parent)
-			is BreakStatement -> it.declare(parent)
+			is BreakExpression -> it.declare(parent)
 			is ContextualStatement -> it.declare(parent)
 			is ForStatement -> it.declare(parent)
 			is IfStatement -> it.declare(parent)
 			is InitStatement -> it.declare(parent)
-			is ReturnStatement -> it.declare(parent)
+			is ReturnExpression -> it.declare(parent)
 			is VariableDeclarationStatement -> it.declare(parent)
 			is WhileStatement -> it.declare(parent)
 			is ExpressionStatement -> it.declare(parent)
@@ -33,12 +35,12 @@ private fun AssignmentStatement.declare(parent: Scope) {
 }
 
 context(_: FileContext)
-private fun BreakStatement.declare(parent: Scope) {
+private fun BreakExpression.declare(parent: Scope) {
 	this.expression?.declare(parent)
 }
 
 context(_: FileContext)
-private fun ReturnStatement.declare(parent: Scope) {
+private fun ReturnExpression.declare(parent: Scope) {
 	this.expression?.declare(parent)
 }
 

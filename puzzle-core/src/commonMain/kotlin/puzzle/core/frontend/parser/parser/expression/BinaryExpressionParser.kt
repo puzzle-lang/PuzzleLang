@@ -4,6 +4,7 @@ import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.Operator
 import puzzle.core.frontend.ast.expression.BinaryExpression
 import puzzle.core.frontend.ast.expression.Expression
+import puzzle.core.frontend.ast.expression.JumpExpression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.Assoc
@@ -14,6 +15,9 @@ fun parseBinaryExpression(left: Expression): BinaryExpression {
 	val previous = cursor.previous
 	val operator = Operator(previous.kind as OperatorKind, previous.location)
 	val right = parseExpression()
+	if (right is JumpExpression) {
+		syntaxError("二元运算符后不允许使用 ${right.type}", right)
+	}
 	if (left !is BinaryExpression) {
 		return BinaryExpression(left, operator, right)
 	}

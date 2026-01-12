@@ -17,6 +17,7 @@ import puzzle.core.frontend.token.kinds.ControlFlowKind.ELSE
 import puzzle.core.frontend.token.kinds.ControlFlowKind.IF
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
+import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.IS
 
 context(_: FileContext, cursor: PzlTokenCursor)
@@ -42,18 +43,27 @@ private fun parseMatchPatternExpression(): MatchPatternExpression {
 			return MatchPatternExpression(subject, arms, start span end, elseStatements)
 		}
 		var guard: Expression? = null
+		var alias: Identifier? = null
 		val patterns = buildList {
 			do {
 				when {
 					cursor.match(IS) -> {
 						val type = parseTypeReference()
-						this += IsTypeMatchPattern(type)
+						this += IsMatchPattern(type)
 					}
 					
 					else -> {
 						val expression = parseExpressionChain()
 						this += ExpressionMatchPattern(expression)
 					}
+				}
+				if (cursor.match(AS)) {
+					alias = parseIdentifier(IdentifierTarget.MATCH_AS)
+					if (cursor.match(IF)) {
+						guard = parseExpressionChain()
+					}
+					cursor.expect(ARROW, "match 匹配分支缺少 '->'")
+					break
 				}
 				if (cursor.match(IF)) {
 					guard = parseExpressionChain()
@@ -71,13 +81,23 @@ private fun parseMatchPatternExpression(): MatchPatternExpression {
 			listOf(parseStatement())
 		}
 		val end = cursor.previous.location
-		arms += MatchArm(patterns, guard, body, start span end)
+		arms += MatchArm(
+			patterns = patterns,
+			alias = alias,
+			guard = guard,
+			body = body,
+			location = start span end
+		)
 	}
 	if (arms.isEmpty()) {
 		syntaxError("match 不允许没有匹配分支", cursor.previous)
 	}
 	val end = cursor.previous.location
-	return MatchPatternExpression(subject, arms, start span end)
+	return MatchPatternExpression(
+		subject = subject,
+		arms = arms,
+		location = start span end
+	)
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
