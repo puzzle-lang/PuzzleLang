@@ -14,7 +14,7 @@ fun getNicknameByUsername(inputs: Map<String, String>, key: String): String {
 }
 
 errors[NotFoundError]
-fun test(): [Int, String?] {
+fun test(): [Int, String] {
     return NotFoundError
 }
 
