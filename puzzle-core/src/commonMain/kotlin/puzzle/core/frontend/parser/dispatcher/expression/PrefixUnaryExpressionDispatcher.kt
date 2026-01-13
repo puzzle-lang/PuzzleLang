@@ -8,9 +8,9 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parsePrefixUnaryExpression
 import puzzle.core.frontend.token.kinds.OperatorKind.*
 
-object PrefixUnaryExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<PrefixUnaryExpression> {
+object PrefixUnaryExpressionDispatcher : ExpressionDispatcher<PrefixUnaryExpression> {
 	
-	private val kinds = setOf(
+	val kinds = setOf(
 		PLUS,
 		MINUS,
 		NOT,
@@ -19,20 +19,11 @@ object PrefixUnaryExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParse
 		DOUBLE_MINUS
 	)
 	
-	context(cursor: PzlTokenCursor)
-	override fun match(left: Expression?): Boolean {
-		return cursor.match {
-			it.kind in kinds && (left == null || (it.kind != PLUS && it.kind != MINUS))
+	context(_: FileContext, cursor: PzlTokenCursor)
+	override fun parse(left: Expression?): PrefixUnaryExpression {
+		if (left != null) {
+			syntaxError("'${cursor.previous.value}' 前不允许有表达式", cursor.previous)
 		}
-	}
-	
-	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun prefixError(): Nothing {
-		syntaxError("'${cursor.previous.value}' 前不允许有表达式", cursor.previous)
-	}
-	
-	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun parse(): PrefixUnaryExpression {
 		return parsePrefixUnaryExpression()
 	}
 }

@@ -5,41 +5,82 @@ import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.equalsLine
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.parser.dispatcher.expression.ExpressionMatcher
-import puzzle.core.frontend.parser.dispatcher.expression.NoPrefixExpressionParser
-import puzzle.core.frontend.parser.dispatcher.expression.OptionalPrefixExpressionParser
-import puzzle.core.frontend.parser.dispatcher.expression.RequirePrefixExpressionParser
+import puzzle.core.frontend.parser.dispatcher.expression.*
 import puzzle.core.frontend.token.kinds.AccessKind
+import puzzle.core.frontend.token.kinds.AccessKind.DOUBLE_COLON
 import puzzle.core.frontend.token.kinds.AccessorKind.GET
 import puzzle.core.frontend.token.kinds.AccessorKind.SET
 import puzzle.core.frontend.token.kinds.AssignmentKind
 import puzzle.core.frontend.token.kinds.BracketKind.End.*
+import puzzle.core.frontend.token.kinds.BracketKind.Start.*
+import puzzle.core.frontend.token.kinds.ContextualKind.SUPER
+import puzzle.core.frontend.token.kinds.ContextualKind.THIS
 import puzzle.core.frontend.token.kinds.ControlFlowKind.*
+import puzzle.core.frontend.token.kinds.JumpKind.*
+import puzzle.core.frontend.token.kinds.LiteralKind
 import puzzle.core.frontend.token.kinds.MetaKind.EOF
-import puzzle.core.frontend.token.kinds.OperatorKind.AND
-import puzzle.core.frontend.token.kinds.OperatorKind.OR
+import puzzle.core.frontend.token.kinds.OperatorKind.*
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SeparatorKind.SEMICOLON
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolTokenKind.*
+import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
+import puzzle.core.frontend.token.kinds.TypeOperatorKind.IS
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseExpression(left: Expression? = null): Expression {
-	val matcher = ExpressionMatcher.matchers.find { it.match(left) }
-		?: syntaxError("不支持的表达式", cursor.current)
-	return when (matcher) {
-		is RequirePrefixExpressionParser<*> -> {
-			if (left == null) matcher.prefixError()
-			matcher.parse(left)
+	val dispatcher = parseExpressionDispatcher(left)
+	return dispatcher.parse(left)
+}
+
+context(_: FileContext, cursor: PzlTokenCursor)
+private fun parseExpressionDispatcher(left: Expression?): ExpressionDispatcher<*> {
+	val kind = cursor.current.kind
+	var dispatcher = when (kind) {
+		LPAREN -> GroupingExpressionDispatcher
+		DOUBLE_COLON -> MemberReferenceExpressionDispatcher
+		in PrefixUnaryExpressionDispatcher.kinds if (left == null || (kind != PLUS && kind != MINUS)) -> PrefixUnaryExpressionDispatcher
+		is LiteralKind -> LiteralExpressionDispatcher
+		in BinaryExpressionDispatcher.operators -> BinaryExpressionDispatcher
+		ELVIS -> ElvisExpressionDispatcher
+		ORACLE -> OracleExpressionDispatcher
+		RETURN -> ReturnExpressionDispatcher
+		BREAK -> BreakExpressionDispatcher
+		CONTINUE -> ContinueExpressionDispatcher
+		QUESTION -> TernaryExpressionDispatcher
+		IS -> IsExpressionDispatcher
+		NOT if cursor.nextOrNull?.kind == IS -> {
+			cursor.advance()
+			IsExpressionDispatcher
 		}
 		
-		is NoPrefixExpressionParser<*> -> {
-			if (left != null) matcher.prefixError()
-			matcher.parse()
-		}
+		AS -> AsExpressionDispatcher
+		IF -> IfExpressionDispatcher
+		MATCH -> MatchExpressionDispatcher
+		LOOP -> LoopExpressionDispatcher
+		LBRACE -> LambdaExpressionDispatcher
+		LBRACKET -> MultiValueExpressionDispatcher
+		THIS, SUPER -> PostfixExpressionDispatcher
 		
-		is OptionalPrefixExpressionParser<*> -> matcher.parse(left)
+		else -> null
 	}
+	if (dispatcher != null) {
+		cursor.advance()
+		return dispatcher
+	}
+	
+	if (!cursor.matchIdentifier()) {
+		syntaxError("不支持的表达式", cursor.current)
+	}
+	if (!cursor.match(AT)) {
+		return PostfixExpressionDispatcher
+	}
+	dispatcher = when (cursor.current.kind) {
+		LOOP -> LoopExpressionDispatcher
+		LBRACE -> LambdaExpressionDispatcher
+		else -> syntaxError("不支持的表达式", cursor.current)
+	}
+	cursor.advance()
+	return dispatcher
 }
 
 context(_: FileContext, _: PzlTokenCursor)

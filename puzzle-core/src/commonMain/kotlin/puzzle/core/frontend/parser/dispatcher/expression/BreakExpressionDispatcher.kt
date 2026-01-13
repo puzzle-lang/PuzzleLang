@@ -6,22 +6,14 @@ import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseBreakExpression
-import puzzle.core.frontend.token.kinds.JumpKind.BREAK
 
-object BreakExpressionMatcher : ExpressionMatcher, NoPrefixExpressionParser<BreakExpression> {
-	
-	context(cursor: PzlTokenCursor)
-	override fun match(left: Expression?): Boolean {
-		return cursor.match(BREAK)
-	}
+object BreakExpressionDispatcher : ExpressionDispatcher<BreakExpression> {
 	
 	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun prefixError(): Nothing {
-		syntaxError("break 前不允许有表达式", cursor.previous)
-	}
-	
-	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun parse(): BreakExpression {
+	override fun parse(left: Expression?): BreakExpression {
+		if (left != null) {
+			syntaxError("break 前不允许有表达式", cursor.previous)
+		}
 		return parseBreakExpression()
 	}
 }

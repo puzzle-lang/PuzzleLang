@@ -41,7 +41,7 @@ private fun parseDeclaration(): TopLevelAllowedDeclaration {
 	val contextSpec = parseDeclarationContextSpec()
 	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
-	val dispatcher = getDispatcher()
+	val dispatcher = parseDeclarationDispatcher()
 	cursor.advance()
 	val meta = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
 	meta.check(dispatcher.target, dispatcher.modifierTarget)
@@ -50,7 +50,7 @@ private fun parseDeclaration(): TopLevelAllowedDeclaration {
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-private fun getDispatcher(): DeclarationDispatcher<*> {
+private fun parseDeclarationDispatcher(): DeclarationDispatcher<*> {
 	return when (cursor.current.kind) {
 		FUN -> FunDeclarationDispatcher
 		VAR, VAL -> PropertyDeclarationDispatcher
@@ -107,7 +107,7 @@ private fun parseMemberDeclaration(): Declaration {
 	val contextSpec = parseDeclarationContextSpec()
 	val errorsSpec = parseErrorsSpec()
 	val modifiers = parseModifiers()
-	val dispatcher = getMemberDispatcher()
+	val dispatcher = parseMemberDeclarationDispatcher()
 	cursor.advance()
 	val meta = DeclarationMeta(docComment, annotationCalls, typeSpec, contextSpec, errorsSpec, modifiers)
 	meta.check(dispatcher.target, dispatcher.modifierTarget)
@@ -116,7 +116,7 @@ private fun parseMemberDeclaration(): Declaration {
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-private fun getMemberDispatcher(): MemberDeclarationDispatcher<*> {
+private fun parseMemberDeclarationDispatcher(): MemberDeclarationDispatcher<*> {
 	return when (cursor.current.kind) {
 		FUN -> MemberFunDeclarationDispatcher
 		VAR, VAL -> MemberPropertyDeclarationDispatcher

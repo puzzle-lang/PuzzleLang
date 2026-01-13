@@ -8,9 +8,9 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseBinaryExpression
 import puzzle.core.frontend.token.kinds.OperatorKind.*
 
-object BinaryExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParser<BinaryExpression> {
+object BinaryExpressionDispatcher : ExpressionDispatcher<BinaryExpression> {
 	
-	private val operators = setOf(
+	val operators = setOf(
 		PLUS, MINUS, STAR, SLASH, PERCENT, DOUBLE_STAR,
 		RANGE_TO, RANGE_UNTIL,
 		SHL, SHR, USHR,
@@ -21,17 +21,10 @@ object BinaryExpressionMatcher : ExpressionMatcher, RequirePrefixExpressionParse
 	)
 	
 	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun prefixError(): Nothing {
-		syntaxError("'${cursor.previous.value}' 前未解析到表达式", cursor.previous)
-	}
-	
-	context(cursor: PzlTokenCursor)
-	override fun match(left: Expression?): Boolean {
-		return cursor.match { it.kind in operators }
-	}
-	
-	context(_: FileContext, cursor: PzlTokenCursor)
-	override fun parse(left: Expression): BinaryExpression {
+	override fun parse(left: Expression?): BinaryExpression {
+		if (left == null) {
+			syntaxError("'${cursor.previous.value}' 前未解析到表达式", cursor.previous)
+		}
 		return parseBinaryExpression(left)
 	}
 }
