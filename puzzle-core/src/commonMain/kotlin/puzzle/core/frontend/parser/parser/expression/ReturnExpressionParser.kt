@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.expression.ReturnExpression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
+import puzzle.core.frontend.token.kinds.SymbolKind.AT
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseReturnExpression(): ReturnExpression {

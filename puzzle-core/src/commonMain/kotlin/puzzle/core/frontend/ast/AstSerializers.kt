@@ -10,7 +10,7 @@ import kotlinx.serialization.modules.contextual
 import puzzle.core.frontend.token.kinds.AssignmentKind
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.OperatorKind
-import puzzle.core.frontend.token.kinds.SymbolTokenKind
+import puzzle.core.frontend.token.kinds.SymbolKind
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.path
 
@@ -39,20 +39,20 @@ private object DotStringListSerializer : KSerializer<List<String>> {
 	}
 }
 
-private object SymbolKindSerializer : KSerializer<SymbolTokenKind> {
+private object SymbolKindSerializer : KSerializer<SymbolKind> {
 	
 	override val descriptor = PrimitiveSerialDescriptor(
 		SymbolKindSerializer::class.qualifiedName!!,
 		PrimitiveKind.STRING
 	)
 	
-	override fun serialize(encoder: Encoder, value: SymbolTokenKind) {
+	override fun serialize(encoder: Encoder, value: SymbolKind) {
 		encoder.encodeString(value.value)
 	}
 	
-	override fun deserialize(decoder: Decoder): SymbolTokenKind {
+	override fun deserialize(decoder: Decoder): SymbolKind {
 		val symbol = decoder.decodeString()
-		return SymbolTokenKind.kinds.first { it.value == symbol }
+		return SymbolKind.kinds.first { it.value == symbol }
 	}
 }
 

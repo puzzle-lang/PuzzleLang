@@ -28,9 +28,9 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACKET
 import puzzle.core.frontend.token.kinds.OperatorKind.*
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolTokenKind
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
+import puzzle.core.frontend.token.kinds.SymbolKind
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.QUESTION
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseFunDeclaration(meta: DeclarationMeta, start: SourceLocation): FunDeclaration {
@@ -161,7 +161,7 @@ context(_: FileContext, cursor: PzlTokenCursor)
 private fun tryParseOperatorFunName(): FunName? {
 	if (cursor.match { it.kind in overloadableSymbols }) {
 		val token = cursor.previous
-		return SymbolFunName(SymbolToken(token.kind as SymbolTokenKind, token.location))
+		return SymbolFunName(SymbolToken(token.kind as SymbolKind, token.location))
 	}
 	when {
 		cursor.match(LBRACKET, RBRACKET, ASSIGN) -> {

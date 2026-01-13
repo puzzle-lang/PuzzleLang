@@ -1,18 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.AstFile
-import puzzle.core.frontend.semantics.scope.ModuleScope
+import puzzle.core.frontend.semantics.scope.FileScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class FileSymbol(
-	override val name: String,
+	override val name: String?,
 	override val node: AstFile,
-) : Symbol {
+) : PzlSymbol {
 	
-	var currentOwner: ModuleScope? = null
-	override val owner: ModuleScope
-		get() = currentOwner!!
+	override lateinit var owner: PzlScope
 	
-	override val kind = SymbolKind.FILE
+	override lateinit var scope: FileScope
 	
-	override val visibility = null
+	override val kind = PzlSymbolKind.FILE
 }

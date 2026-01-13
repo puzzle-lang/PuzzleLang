@@ -18,7 +18,7 @@ import puzzle.core.frontend.token.kinds.BracketKind
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.ContextualKind.SUPER
 import puzzle.core.frontend.token.kinds.ContextualKind.THIS
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseCtorDeclaration(meta: DeclarationMeta, start: SourceLocation): CtorDeclaration {

@@ -5,7 +5,7 @@ package puzzle.core.frontend.token.kinds
 import puzzle.core.collections.fastSetOf
 import puzzle.core.collections.mergeFastSets
 
-sealed class SymbolTokenKind(
+sealed class SymbolKind(
 	override val value: String,
 ) : PzlTokenKind {
 	
@@ -28,28 +28,28 @@ sealed class SymbolTokenKind(
 		)
 	}
 	
-	object COLON : SymbolTokenKind(":")
+	object COLON : SymbolKind(":")
 	
-	object QUESTION : SymbolTokenKind("?")
+	object QUESTION : SymbolKind("?")
 	
-	object ELVIS : SymbolTokenKind("?:")
+	object ELVIS : SymbolKind("?:")
 	
-	object ORACLE : SymbolTokenKind("|:")
+	object ORACLE : SymbolKind("|:")
 	
-	object AT : SymbolTokenKind("@")
+	object AT : SymbolKind("@")
 	
-	object ARROW : SymbolTokenKind("->")
+	object ARROW : SymbolKind("->")
 	
-	object TRIPLE_DOT : SymbolTokenKind("...")
+	object TRIPLE_DOT : SymbolKind("...")
 	
-	object PLUS_DOUBLE_DOT : SymbolTokenKind("+..")
+	object PLUS_DOUBLE_DOT : SymbolKind("+..")
 }
 
 sealed class OperatorKind(
 	value: String,
 	val priority: Int,
 	val assoc: Assoc,
-) : SymbolTokenKind(value) {
+) : SymbolKind(value) {
 	
 	companion object {
 		
@@ -137,7 +137,7 @@ enum class Assoc {
 sealed class AssignmentKind(
 	value: String,
 	val isCompound: Boolean,
-) : SymbolTokenKind(value) {
+) : SymbolKind(value) {
 	
 	companion object {
 		
@@ -162,7 +162,7 @@ sealed class AssignmentKind(
 	object PERCENT_ASSIGN : AssignmentKind("%=", true)
 }
 
-sealed class AccessKind(value: String) : SymbolTokenKind(value) {
+sealed class AccessKind(value: String) : SymbolKind(value) {
 	
 	companion object {
 		
@@ -176,7 +176,7 @@ sealed class AccessKind(value: String) : SymbolTokenKind(value) {
 	object DOUBLE_COLON : AccessKind("::")
 }
 
-sealed class BracketKind(value: String) : SymbolTokenKind(value) {
+sealed class BracketKind(value: String) : SymbolKind(value) {
 	
 	companion object {
 		
@@ -212,7 +212,7 @@ sealed class BracketKind(value: String) : SymbolTokenKind(value) {
 	}
 }
 
-sealed class SeparatorKind(value: String) : SymbolTokenKind(value) {
+sealed class SeparatorKind(value: String) : SymbolKind(value) {
 	
 	companion object {
 		

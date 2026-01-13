@@ -6,32 +6,32 @@ import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.token.kinds.AssignmentKind
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.OperatorKind
-import puzzle.core.frontend.token.kinds.SymbolTokenKind
+import puzzle.core.frontend.token.kinds.SymbolKind
 
 @Serializable
 class SymbolToken(
 	@Contextual
-	val kind: SymbolTokenKind,
+	val kind: SymbolKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class Modifier(
 	@Contextual
 	val kind: ModifierKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class Operator(
 	@Contextual
 	val kind: OperatorKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class Assignment(
 	@Contextual
 	val kind: AssignmentKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode

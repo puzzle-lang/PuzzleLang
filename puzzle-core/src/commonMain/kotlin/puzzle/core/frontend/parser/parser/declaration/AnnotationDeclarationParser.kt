@@ -13,7 +13,7 @@ import puzzle.core.frontend.parser.parser.parameter.parameter.ParameterTarget
 import puzzle.core.frontend.parser.parser.parameter.parameter.parseParameters
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.ContextualKind.WITH
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseAnnotationDeclaration(meta: DeclarationMeta, start: SourceLocation): AnnotationDeclaration {

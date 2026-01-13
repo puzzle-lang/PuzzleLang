@@ -1,6 +1,6 @@
 package puzzle.core.exception
 
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.SourcePosition
@@ -25,7 +25,7 @@ fun syntaxError(message: String, token: PzlToken): Nothing {
 }
 
 context(context: FileContext)
-fun syntaxError(message: String, node: AstNode): Nothing {
+fun syntaxError(message: String, node: PzlAstNode): Nothing {
 	val position = (node.location as? SourceLocation.File)?.startPosition
 	val message = buildSyntaxExceptionMessage(message, context.sourcePath, position, null)
 	throw SyntaxException(message)

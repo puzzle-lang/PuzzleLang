@@ -6,7 +6,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.ModifierKind
 import puzzle.core.frontend.token.kinds.ModifierKind.*
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseModifiers(): List<Modifier> {

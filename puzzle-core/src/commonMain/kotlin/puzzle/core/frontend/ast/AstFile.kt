@@ -18,4 +18,4 @@ class AstFile(
 	val importDeclarations: List<ImportDeclaration>,
 	val declarations: List<TopLevelAllowedDeclaration>,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode

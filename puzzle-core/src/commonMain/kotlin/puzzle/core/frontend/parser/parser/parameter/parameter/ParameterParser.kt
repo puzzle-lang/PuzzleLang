@@ -19,7 +19,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseParameters(target: ParameterTarget): List<Parameter> {

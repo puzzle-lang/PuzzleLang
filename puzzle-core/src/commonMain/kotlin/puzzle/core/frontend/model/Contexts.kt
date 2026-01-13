@@ -2,7 +2,7 @@ package puzzle.core.frontend.model
 
 import kotlinx.serialization.Contextual
 import puzzle.core.frontend.ast.AstFile
-import puzzle.core.frontend.semantics.scope.FileScope
+import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.util.PathWrapper
 
@@ -25,7 +25,9 @@ class ModuleContext(
 	val files: List<FileContext>,
 )
 
-class FileContext {
+class FileContext(
+	val builtin: Boolean
+) {
 	
 	lateinit var sourcePath: PathWrapper
 	
@@ -35,5 +37,5 @@ class FileContext {
 	
 	lateinit var node: AstFile
 	
-	lateinit var scope: FileScope
+	lateinit var symbol: FileSymbol
 }

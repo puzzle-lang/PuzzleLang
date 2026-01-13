@@ -11,7 +11,7 @@ import puzzle.core.frontend.token.kinds.ContextualKind.*
 import puzzle.core.frontend.token.kinds.ControlFlowKind.*
 import puzzle.core.frontend.token.kinds.ModifierKind.VAL
 import puzzle.core.frontend.token.kinds.ModifierKind.VAR
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
+import puzzle.core.frontend.token.kinds.SymbolKind.AT
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseStatement(): Statement {

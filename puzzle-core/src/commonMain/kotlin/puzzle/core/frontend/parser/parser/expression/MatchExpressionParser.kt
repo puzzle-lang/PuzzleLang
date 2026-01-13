@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ControlFlowKind.ELSE
 import puzzle.core.frontend.token.kinds.ControlFlowKind.IF
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
+import puzzle.core.frontend.token.kinds.SymbolKind.ARROW
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.IS
 

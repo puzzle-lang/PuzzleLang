@@ -1,7 +1,7 @@
 package puzzle.core.frontend.ast.parameter
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.model.SourceLocation
@@ -14,7 +14,7 @@ class TypeSpec(
 	val reified: Boolean,
 	val parameters: List<TypeParameter>,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class TypeParameter(
@@ -24,13 +24,13 @@ class TypeParameter(
 	val typeExpansion: TypeExpansion?,
 	val defaultType: TypeReference?,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class Variance(
 	val kind: VarianceKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 enum class VarianceKind(

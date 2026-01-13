@@ -1,14 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.ClassDeclaration
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.ClassScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class ClassSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: ClassDeclaration,
 	override val visibility: Visibility,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.CLASS
+	override val kind = PzlSymbolKind.CLASS
+	
+	override var scope: ClassScope? = null
 }

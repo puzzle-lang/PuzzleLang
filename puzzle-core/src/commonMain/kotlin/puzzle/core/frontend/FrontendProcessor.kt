@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import puzzle.core.cli.PathOption
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
@@ -13,17 +14,18 @@ import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.parser.PzlParser
-import puzzle.core.frontend.semantics.PzlSemantics
+import puzzle.core.frontend.semantics.PzlSymbolBuilder
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
+import puzzle.core.util.path
 import kotlin.time.Duration
 import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTimedValue
 
-suspend fun processFrontend(projectPath: PathWrapper) = coroutineScope {
+suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
+	val projectPath = path(pathOption.path)
 	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
 	println("项目源收集用时: ${rootSource.duration.format()}")
-	
 	val maxPathLength = rootSource.value.maxPathLength
 	val jobs = rootSource.value.projectSources.map { project ->
 		async(Dispatchers.Default) {
@@ -31,7 +33,7 @@ suspend fun processFrontend(projectPath: PathWrapper) = coroutineScope {
 				async(Dispatchers.Default) {
 					val jobs = module.sourcePaths.map { path ->
 						async(Dispatchers.Default) {
-							context(FileContext()) { processFile(path, maxPathLength) }
+							processFile(path, maxPathLength)
 						}
 					}
 					ModuleContext(
@@ -53,33 +55,39 @@ suspend fun processFrontend(projectPath: PathWrapper) = coroutineScope {
 	val projects = jobs.awaitAll()
 	val builtinProject = BuiltinAstGenerator.generate()
 	val root = RootContext(projects + builtinProject)
+	context(root) {
+		val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
+		println("程序符号表创建用时: ${rootSymbol.duration.format()}")
+	}
 	AstDebugWriter.write(projectPath, root)
 }
 
-context(context: FileContext)
 private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
-	val markStart = markNow()
-	context.sourcePath = path
-	val source = measureTimedValue { path.readText().toCharArray() }
-	context.lineStarts = source.value.getLineStarts()
-	val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
-	context.tokens = tokens.value
-	val node = measureTimedValue { PzlParser.parse() }
-	context.node = node.value
-	val scope = measureTimedValue { PzlSemantics.analyze() }
-	context.scope = scope.value
-	val totalDuration = markStart.elapsedNow()
-	printDurations(
-		path = path,
-		maxPathLength = maxPathLength,
-		charSize = source.value.size,
-		tokenSize = tokens.value.size,
-		totalDuration = totalDuration,
-		readDuration = source.duration,
-		lexerDuration = tokens.duration,
-		parserDuration = node.duration,
-		scopeDuration = scope.duration
-	)
+	val context = FileContext(false)
+	context(context) {
+		val markStart = markNow()
+		context.sourcePath = path
+		val source = measureTimedValue { path.readText().toCharArray() }
+		context.lineStarts = source.value.getLineStarts()
+		val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
+		context.tokens = tokens.value
+		val node = measureTimedValue { PzlParser.parse() }
+		context.node = node.value
+		val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
+		context.symbol = symbol.value
+		val totalDuration = markStart.elapsedNow()
+		printDurations(
+			path = path,
+			maxPathLength = maxPathLength,
+			charSize = source.value.size,
+			tokenSize = tokens.value.size,
+			totalDuration = totalDuration,
+			readDuration = source.duration,
+			lexerDuration = tokens.duration,
+			parserDuration = node.duration,
+			scopeDuration = symbol.duration
+		)
+	}
 	return context
 }
 
@@ -107,11 +115,11 @@ private fun printDurations(
 		val charSize = charSize.toString().padStart(6, ' ')
 		val tokenSize = tokenSize.toString().padStart(6, ' ')
 		val scopeDuration = scopeDuration.format().padStart(9, ' ')
-		append("[TOTAL] $totalTime  ")
-		append("[READ] $charSize  $readTime  ")
-		append("[LEXER] $tokenSize  $lexerTime  $lexerSpeed  ")
-		append("[PARSER] $parserTime  $parserSpeed  ")
-		append("[SEMANTICS-SCOPE] $scopeDuration\n")
+		append("[用时] $totalTime  ")
+		append("[读取] $charSize  $readTime  ")
+		append("[词法] $tokenSize  $lexerTime  $lexerSpeed  ")
+		append("[语法] $parserTime  $parserSpeed  ")
+		append("[语义] $scopeDuration\n")
 	}
 	print(message)
 }

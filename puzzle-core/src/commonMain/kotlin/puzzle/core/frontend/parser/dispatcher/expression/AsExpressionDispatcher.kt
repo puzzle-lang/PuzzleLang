@@ -6,7 +6,7 @@ import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.expression.parseAsExpression
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
+import puzzle.core.frontend.token.kinds.SymbolKind.QUESTION
 
 object AsExpressionDispatcher : ExpressionDispatcher<AsExpression> {
 	

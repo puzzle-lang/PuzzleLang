@@ -1,15 +1,13 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.parameter.TypeParameter
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class TypeParameterSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: TypeParameter,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.TYPE_PARAMETER
-	
-	override val visibility = null
+	override val kind = PzlSymbolKind.TYPE_PARAMETER
 }

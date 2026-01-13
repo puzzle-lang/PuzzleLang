@@ -5,7 +5,7 @@ import puzzle.core.frontend.ast.SymbolToken
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.token.kinds.SymbolTokenKind
+import puzzle.core.frontend.token.kinds.SymbolKind
 import puzzle.core.util.isIdentifierString
 
 @PzlBuiltinDsl
@@ -31,10 +31,10 @@ class BuiltinAstBuilder {
 				)
 			}
 			
-			SymbolTokenKind.kinds.any { it.value == name } -> {
+			SymbolKind.kinds.any { it.value == name } -> {
 				SymbolFunName(
 					symbol = SymbolToken(
-						kind = SymbolTokenKind.kinds.first { it.value == name },
+						kind = SymbolKind.kinds.first { it.value == name },
 						location = SourceLocation.Builtin
 					)
 				)

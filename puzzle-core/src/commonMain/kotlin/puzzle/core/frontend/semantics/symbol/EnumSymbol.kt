@@ -1,14 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.EnumDeclaration
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.EnumScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class EnumSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: EnumDeclaration,
 	override val visibility: Visibility,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.ENUM
+	override val kind = PzlSymbolKind.ENUM
+	
+	override var scope: EnumScope? = null
 }

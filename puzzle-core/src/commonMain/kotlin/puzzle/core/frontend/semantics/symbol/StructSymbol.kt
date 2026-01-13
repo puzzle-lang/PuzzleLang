@@ -1,14 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.StructDeclaration
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.StructScope
 
 class StructSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: StructDeclaration,
 	override val visibility: Visibility,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.STRUCT
+	override val kind = PzlSymbolKind.STRUCT
+	
+	override var scope: StructScope? = null
 }

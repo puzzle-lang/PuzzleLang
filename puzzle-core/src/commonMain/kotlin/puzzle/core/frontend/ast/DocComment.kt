@@ -7,4 +7,4 @@ import puzzle.core.frontend.model.SourceLocation
 class DocComment(
 	val value: String,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode

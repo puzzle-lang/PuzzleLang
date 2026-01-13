@@ -13,7 +13,7 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ContextualKind.CONTEXT
 import puzzle.core.frontend.token.kinds.OperatorKind.NOT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseDeclarationContextSpec(): DeclarationContextSpec? {

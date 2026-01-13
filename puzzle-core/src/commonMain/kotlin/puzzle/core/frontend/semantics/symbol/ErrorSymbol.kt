@@ -1,14 +1,14 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.ErrorDeclaration
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class ErrorSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: ErrorDeclaration,
 	override val visibility: Visibility,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.ERROR
+	override val kind = PzlSymbolKind.ERROR
 }

@@ -4,6 +4,7 @@ import puzzle.core.frontend.ast.builtin.generator.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
+import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.util.format
 import kotlin.time.measureTimedValue
 
@@ -24,8 +25,9 @@ object BuiltinAstGenerator {
 				path = null,
 				builtin = true,
 				files = nodes.map { node ->
-					FileContext().also {
-						it.node = node
+					FileContext(true).apply {
+						this.node = node
+						this.symbol = FileSymbol(null, node)
 					}
 				}
 			)
@@ -36,7 +38,7 @@ object BuiltinAstGenerator {
 				modules = listOf(puzzleBuiltinCore)
 			)
 		}
-		println("内建类型生成完成, 用时: ${value.duration.format()}")
+		println("内建类型生成用时: ${value.duration.format()}")
 		return value.value
 	}
 }

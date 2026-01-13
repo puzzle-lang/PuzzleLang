@@ -1,14 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.MixinDeclaration
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.MixinScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class MixinSymbol(
 	override val name: String,
-	override val owner: Scope,
+	override val owner: PzlScope,
 	override val node: MixinDeclaration,
 	override val visibility: Visibility,
-) : Symbol {
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.MIXIN
+	override val kind = PzlSymbolKind.MIXIN
+	
+	override var scope: MixinScope? = null
 }

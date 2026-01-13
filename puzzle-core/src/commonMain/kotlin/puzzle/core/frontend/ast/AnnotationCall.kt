@@ -10,4 +10,4 @@ class AnnotationCall(
 	val type: NamedType,
 	override val location: SourceLocation,
 	val arguments: List<Argument> = emptyList(),
-) : AstNode
+) : PzlAstNode

@@ -2,7 +2,7 @@ package puzzle.core.frontend.ast.declaration
 
 import kotlinx.serialization.Serializable
 import puzzle.core.frontend.ast.AnnotationCall
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.ast.Modifier
 import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.Identifier
@@ -28,7 +28,7 @@ class PropertyDeclaration(
 ) : TopLevelAllowedDeclaration
 
 @Serializable
-sealed interface PropertySpec : AstNode
+sealed interface PropertySpec : PzlAstNode
 
 @Serializable
 class SinglePropertySpec(
@@ -48,7 +48,7 @@ class Property(
 	val name: Identifier,
 	val type: TypeReference?,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class PropertyGetter(
@@ -56,7 +56,7 @@ class PropertyGetter(
 	val oldValue: ParameterReference?,
 	val body: List<Statement>,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class PropertySetter(
@@ -65,4 +65,4 @@ class PropertySetter(
 	val newValue: ParameterReference,
 	val body: List<Statement>,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode

@@ -8,10 +8,10 @@ import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.semantics.scope.PzlScope
 import puzzle.core.frontend.semantics.symbol.*
 
-fun List<Parameter>.declareParameters(parent: Scope) {
+fun List<Parameter>.declareParameters(parent: PzlScope) {
 	this.forEach {
 		val symbol = LocalSymbol(
 			name = it.name.value,
@@ -22,7 +22,7 @@ fun List<Parameter>.declareParameters(parent: Scope) {
 	}
 }
 
-fun List<Parameter>.declarePrimaryConstructorProperties(parent: Scope) {
+fun List<Parameter>.declarePrimaryConstructorProperties(parent: PzlScope) {
 	this.forEach {
 		val isMutable = it.isMutable ?: return@forEach
 		val symbol = PropertySymbol(
@@ -40,7 +40,7 @@ fun List<Parameter>.declarePrimaryConstructorProperties(parent: Scope) {
 	}
 }
 
-fun List<TypeParameter>.declares(parent: Scope) {
+fun List<TypeParameter>.declares(parent: PzlScope) {
 	this.forEach {
 		val symbol = TypeParameterSymbol(
 			name = it.name.value,
@@ -51,11 +51,11 @@ fun List<TypeParameter>.declares(parent: Scope) {
 	}
 }
 
-fun List<ParameterReference>.declares(parent: Scope) {
+fun List<ParameterReference>.declares(parent: PzlScope) {
 	this.forEach { it.declare(parent) }
 }
 
-fun ParameterReference.declare(parent: Scope) {
+fun ParameterReference.declare(parent: PzlScope) {
 	if (this.name.isAnonymousBinding) return
 	val symbol = LocalSymbol(
 		name = this.name.value,
@@ -65,7 +65,7 @@ fun ParameterReference.declare(parent: Scope) {
 	parent.declare(symbol)
 }
 
-fun List<DeclarationContextReceiver>.declares(parent: Scope) {
+fun List<DeclarationContextReceiver>.declares(parent: PzlScope) {
 	this.forEach {
 		val symbol = LocalSymbol(
 			name = it.name.value,
@@ -77,7 +77,7 @@ fun List<DeclarationContextReceiver>.declares(parent: Scope) {
 }
 
 context(_: FileContext)
-fun List<Argument>.declares(parent: Scope) {
+fun List<Argument>.declares(parent: PzlScope) {
 	this.forEach {
 		it.expression.declare(parent)
 	}

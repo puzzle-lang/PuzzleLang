@@ -8,7 +8,7 @@ error NotFoundError(
 
 errors[EmptyKeyError | NotFoundError]
 fun getNicknameByUsername(inputs: Map<String, String>, key: String): String {
-    if (key.isEmpty) return EmptyKeyError
+    if (key.isEmpty()) return EmptyKeyError
     if (key !in inputs) return NotFoundError("$key is not found!")
     return inputs.first { it.key == key }
 }

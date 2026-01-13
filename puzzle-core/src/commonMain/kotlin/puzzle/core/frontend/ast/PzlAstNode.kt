@@ -2,7 +2,7 @@ package puzzle.core.frontend.ast
 
 import puzzle.core.frontend.model.SourceLocation
 
-interface AstNode {
+interface PzlAstNode {
 	
 	val location: SourceLocation
 }

@@ -3,7 +3,7 @@ package puzzle.core.frontend.parser.parser.expression
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.frontend.token.kinds.PzlTokenKind
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.AT
+import puzzle.core.frontend.token.kinds.SymbolKind.AT
 
 fun PzlTokenCursor.matchLabel(kind: PzlTokenKind): Boolean {
 	if (!checkIdentifier()) return false

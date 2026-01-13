@@ -2,30 +2,27 @@ package puzzle.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import puzzle.core.cli.PathOption
+import puzzle.core.cli.parseCLIOptions
 import puzzle.core.frontend.processFrontend
-import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
 import puzzle.core.util.getCurrentMemoryUsage
-import puzzle.core.util.path
 import kotlin.time.measureTime
 
 fun main(vararg args: String) {
-	val command = args.firstOrNull() ?: return help()
-	when (command) {
-		"build" -> {
-			val projectPath = args.drop(1).firstOrNull()
-				?: return println("缺少项目路径, 使用 puzzle help 查看使用手册")
-			build(path(projectPath))
-		}
-		
+	val mode = args.firstOrNull() ?: return help()
+	when (mode) {
+		"build" -> build(args.drop(1))
 		"help" -> help()
 		"version" -> version()
 		else -> unknown()
 	}
 }
 
-private fun build(projectPath: PathWrapper) = runBlocking(Dispatchers.Default) {
-	val duration = measureTime { processFrontend(projectPath) }
+private fun build(args: List<String>) = runBlocking(Dispatchers.Default) {
+	val options = parseCLIOptions(args)
+	val pathOption = options.find { it is PathOption } as? PathOption ?: error("缺少 --path=<path> 选项")
+	val duration = measureTime { processFrontend(pathOption) }
 	println("执行用时: ${duration.format()}")
 	val usage = getCurrentMemoryUsage()
 	println("内存使用: $usage")
@@ -60,21 +57,4 @@ private fun version() {
 
 private fun unknown() {
 	println("未知命令, 请使用: puzzle -h 或 puzzle --help 查看使用帮助")
-}
-
-interface Parent {
-	
-	fun match(value: Int): Boolean
-	
-	fun parse()
-}
-
-class Child : Parent {
-	override fun match(value: Int): Boolean {
-		return value % 20 == 0
-	}
-	
-	override fun parse() {
-	
-	}
 }

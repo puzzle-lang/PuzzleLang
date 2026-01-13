@@ -5,7 +5,7 @@ import puzzle.core.frontend.ast.expression.Expression
 import puzzle.core.frontend.ast.expression.TernaryExpression
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.COLON
+import puzzle.core.frontend.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTernaryExpression(condition: Expression): TernaryExpression {

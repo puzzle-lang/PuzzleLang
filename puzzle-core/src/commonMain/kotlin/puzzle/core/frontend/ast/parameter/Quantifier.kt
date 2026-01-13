@@ -3,20 +3,20 @@
 package puzzle.core.frontend.ast.parameter
 
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.model.SourceLocation
 
 @Serializable
 class Quantifier(
 	val kind: QuantifierKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 class TypeExpansion(
 	val kind: TypeExpansionKind,
 	override val location: SourceLocation,
-) : AstNode
+) : PzlAstNode
 
 @Serializable
 sealed interface QuantifierKind {

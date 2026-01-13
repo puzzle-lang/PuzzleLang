@@ -1,15 +1,13 @@
 package puzzle.core.frontend.semantics.symbol
 
-import puzzle.core.frontend.ast.AstNode
-import puzzle.core.frontend.semantics.scope.Scope
+import puzzle.core.frontend.ast.PzlAstNode
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 class LocalSymbol(
 	override val name: String,
-	override val owner: Scope,
-	override val node: AstNode,
-) : Symbol {
+	override val owner: PzlScope,
+	override val node: PzlAstNode,
+) : PzlSymbol {
 	
-	override val kind = SymbolKind.LOCAL
-	
-	override val visibility = null
+	override val kind = PzlSymbolKind.LOCAL
 }

@@ -2,11 +2,11 @@ package puzzle.core.frontend.ast.type
 
 import kotlinx.serialization.Serializable
 import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.ast.expression.Argument
 
 @Serializable
-sealed interface SuperType : AstNode {
+sealed interface SuperType : PzlAstNode {
 	val type: NamedType
 }
 

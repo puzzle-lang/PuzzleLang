@@ -28,7 +28,7 @@ class FunDeclaration(
 ) : TopLevelAllowedDeclaration
 
 @Serializable
-sealed interface ReturnSpec : AstNode
+sealed interface ReturnSpec : PzlAstNode
 
 @Serializable
 class SingleReturnSpec(
@@ -43,7 +43,7 @@ class MultiReturnSpec(
 ) : ReturnSpec
 
 @Serializable
-sealed interface FunName : AstNode
+sealed interface FunName : PzlAstNode
 
 @Serializable
 class IdentifierFunName(

@@ -8,8 +8,8 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.token.kinds.OperatorKind.PLUS
 import puzzle.core.frontend.token.kinds.OperatorKind.STAR
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.PLUS_DOUBLE_DOT
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.TRIPLE_DOT
+import puzzle.core.frontend.token.kinds.SymbolKind.PLUS_DOUBLE_DOT
+import puzzle.core.frontend.token.kinds.SymbolKind.TRIPLE_DOT
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseQuantifier(): Quantifier? {

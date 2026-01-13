@@ -22,8 +22,8 @@ import puzzle.core.frontend.token.kinds.BracketKind.End.RBRACKET
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACKET
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.SeparatorKind
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.ARROW
-import puzzle.core.frontend.token.kinds.SymbolTokenKind.QUESTION
+import puzzle.core.frontend.token.kinds.SymbolKind.ARROW
+import puzzle.core.frontend.token.kinds.SymbolKind.QUESTION
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseTypeReference(

@@ -2,7 +2,7 @@ package puzzle.core.frontend.ast.expression
 
 import kotlinx.serialization.Serializable
 import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.ast.AstNode
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.token.kinds.NumericType
 import puzzle.core.frontend.token.kinds.NumberSystem
 import puzzle.core.frontend.ast.expression.Expression as PzlExpression
@@ -34,7 +34,7 @@ sealed interface StringLiteral : LiteralExpression {
 	) : StringLiteral {
 		
 		@Serializable
-		sealed interface Part : AstNode {
+		sealed interface Part : PzlAstNode {
 			
 			@Serializable
 			class Text(
