@@ -18,6 +18,7 @@ import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.parser.PzlParser
 import puzzle.core.frontend.semantics.PzlSymbolBuilder
+import puzzle.core.util.CHINESE_SPACE
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.format
 import puzzle.core.util.path
@@ -31,7 +32,7 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	val projectPath = path(pathOption.path)
 	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
 	whenEnableReportProgress {
-		println("项目源收集用时: ${rootSource.duration.format()}")
+		println("项目源收集用时${CHINESE_SPACE.repeat(4)}: ${rootSource.duration.format()}")
 	}
 	val processStart = markNow()
 	val maxPathLength = rootSource.value.maxPathLength
@@ -63,24 +64,24 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	val projects = jobs.awaitAll()
 	val processDuration = processStart.elapsedNow()
 	whenEnableReportProgress {
-		println("项目源代码处理用时: ${processDuration.format()}")
+		println("项目源代码分析用时${CHINESE_SPACE.repeat(2)}: ${processDuration.format()}")
 	}
 	
 	val builtinProject = measureTimedValue { BuiltinAstGenerator.generate() }
 	whenEnableReportProgress {
-		println("内建类型生成用时: ${builtinProject.duration.format()}")
+		println("内建类型生成用时${CHINESE_SPACE.repeat(3)}: ${builtinProject.duration.format()}")
 	}
 	root.projects = projects + builtinProject.value
 	
 	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
 	whenEnableReportProgress {
-		println("程序符号表创建用时: ${rootSymbol.duration.format()}")
+		println("全局符号表创建用时${CHINESE_SPACE.repeat(2)}: ${rootSymbol.duration.format()}")
 	}
 	
 	whenEnableDebugFeatureOutputAstJson {
 		val writeDuration = measureTime { AstDebugWriter.write(projectPath) }
 		whenEnableReportProgress {
-			println("ast json 导出用时: ${writeDuration.format()}")
+			println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
 		}
 	}
 }
@@ -132,15 +133,15 @@ private fun printDurations(
 		val path = path.absolutePath
 		append(path)
 		append(" ${"-".repeat(maxPathLength - path.length)}--> ")
-		val totalTime = totalDuration.format().padStart(9, ' ')
-		val readTime = readDuration.format().padStart(9, ' ')
-		val lexerTime = lexerDuration.format().padStart(9, ' ')
-		val parserTime = parserDuration.format().padStart(9, ' ')
-		val lexerSpeed = (charSize * 1_000_000L / lexerDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " chars/ms"
-		val parserSpeed = (tokenSize * 1_000_000L / parserDuration.inWholeNanoseconds).toString().padStart(5, ' ') + " tokens/ms"
-		val charSize = charSize.toString().padStart(6, ' ')
-		val tokenSize = tokenSize.toString().padStart(6, ' ')
-		val scopeDuration = scopeDuration.format().padStart(9, ' ')
+		val totalTime = totalDuration.format()
+		val readTime = readDuration.format()
+		val lexerTime = lexerDuration.format()
+		val parserTime = parserDuration.format()
+		val lexerSpeed = (charSize * 1_000_000L / lexerDuration.inWholeNanoseconds).toString().padStart(5) + " chars/ms"
+		val parserSpeed = (tokenSize * 1_000_000L / parserDuration.inWholeNanoseconds).toString().padStart(5) + " tokens/ms"
+		val charSize = charSize.toString().padStart(6)
+		val tokenSize = tokenSize.toString().padStart(6)
+		val scopeDuration = scopeDuration.format()
 		append("[用时] $totalTime  ")
 		append("[读取] $charSize  $readTime  ")
 		append("[词法] $tokenSize  $lexerTime  $lexerSpeed  ")

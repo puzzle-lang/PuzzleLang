@@ -48,3 +48,5 @@ fun String.isIdentifierString(): Boolean {
 	if (this in KeywordKind.hardKeywords) return false
 	return this.drop(1).all { it.isIdentifierPart() }
 }
+
+const val CHINESE_SPACE = "\u3000"

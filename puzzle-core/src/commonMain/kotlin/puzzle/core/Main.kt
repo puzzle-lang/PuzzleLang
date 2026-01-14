@@ -10,6 +10,7 @@ import puzzle.core.exception.PzlException
 import puzzle.core.exception.cliError
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.processFrontend
+import puzzle.core.util.CHINESE_SPACE
 import puzzle.core.util.format
 import puzzle.core.util.getCurrentMemoryUsage
 import kotlin.time.measureTime
@@ -40,9 +41,9 @@ private suspend fun build(args: List<String>) {
 	context(root) {
 		val duration = measureTime { processFrontend(pathOption) }
 		whenEnableReportProgress {
-			println("执行用时: ${duration.format()}")
+			println("执行用时${CHINESE_SPACE.repeat(7)}: ${duration.format()}")
 			val usage = getCurrentMemoryUsage()
-			println("内存使用: $usage")
+			println("内存使用 ${"[$usage]".padStart(22)}")
 		}
 	}
 	println("执行完成")
