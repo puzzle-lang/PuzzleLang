@@ -55,13 +55,16 @@ private fun help() {
 		puzzle build
 		    --path=<project-path>                     * 项目路径
 		    --debug-features=<option1,option2,...>      DEBUG 功能选项
-		        ignore-rule                             查看项目的全部忽略规则
-		        statistical-time                        统计程序各阶段用时
 		        output-ast-json                         输出 AST json 文件
 		        all                                     开启以上全部功能
-		
+			
+			--infos=<option1,option2,...>               日志信息选项
+				progress                                显示程序进度
+				ignore                                  显示忽略规则
+				file                                    文件分析详情
+				all                                     开启以上全部功能
+				
 		puzzle version                                  查看 Puzzle CLI 以及第三方依赖版本信息
-		
 		puzzle help                                     查看 Puzzle CLI 帮助文档
 		
 		注: * 表示必传参数
