@@ -8,9 +8,7 @@ import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
-import puzzle.core.util.format
 import puzzle.core.util.path
-import kotlin.time.measureTime
 
 object AstDebugWriter {
 	
@@ -24,40 +22,48 @@ object AstDebugWriter {
 	
 	private val lock = Mutex()
 	
-	suspend fun write(projectPath: PathWrapper, root: RootContext) = coroutineScope {
-		val duration = measureTime {
-			val buildAstPath = path(projectPath, "build", "ast")
-			if (buildAstPath.exists()) {
-				buildAstPath.deleteAll()
-			}
-			val jobs = root.projects.flatMap { project ->
-				project.modules.flatMap { module ->
-					module.files.mapNotNull { file ->
-						val node = file.node
-						if (node.sourcePath == null && !node.builtin) return@mapNotNull null
-						launch(Dispatchers.IO) {
-							val astPath = if (node.builtin) {
-								getBuiltinAstPath(buildAstPath, project, module, node)
-							} else {
-								getAstPath(buildAstPath, project, node)
-							}
-							val parent = astPath.parent ?: return@launch
-							lock.withLock {
-								if (!parent.exists()) {
-									parent.createDirectories()
+	context(context: RootContext, scope: CoroutineScope)
+	suspend fun write(projectPath: PathWrapper) {
+		val buildAstPath = path(projectPath, "build", "ast")
+		if (buildAstPath.exists()) {
+			buildAstPath.deleteAll()
+		}
+		val jobs = context.projects.flatMap { project ->
+			project.modules.flatMap { module ->
+				module.files.mapNotNull { file ->
+					val node = file.node
+					if (node.sourcePath == null && !node.builtin) return@mapNotNull null
+					scope.launch(Dispatchers.IO) {
+						val astPath = if (node.builtin) {
+							getBuiltinAstPath(buildAstPath, project, module, node)
+						} else {
+							getAstPath(buildAstPath, project, node)
+						}
+						val parent = astPath.parent ?: return@launch
+						lock.withLock {
+							if (!parent.exists()) {
+								var count = 0
+								while (true) {
+									try {
+										parent.createDirectories()
+									} catch (_: Exception) {
+										count++
+										if (count >= 10) return@launch
+										continue
+									}
+									break
 								}
 							}
-							val text = withContext(Dispatchers.Default) {
-								json.encodeToString(node)
-							}
-							astPath.writeText(text)
 						}
+						val text = withContext(Dispatchers.Default) {
+							json.encodeToString(node)
+						}
+						astPath.writeText(text)
 					}
 				}
 			}
-			jobs.joinAll()
 		}
-		println("AST 保存用时: ${duration.format()}")
+		jobs.joinAll()
 	}
 	
 	private fun getBuiltinAstPath(

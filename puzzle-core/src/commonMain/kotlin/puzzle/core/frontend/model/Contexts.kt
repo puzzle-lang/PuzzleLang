@@ -1,14 +1,18 @@
 package puzzle.core.frontend.model
 
 import kotlinx.serialization.Contextual
+import puzzle.core.cli.PzlCliOption
 import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.util.PathWrapper
 
-class RootContext(
-	val projects: List<ProjectContext>,
-)
+class RootContext {
+	
+	lateinit var options: List<PzlCliOption>
+	
+	lateinit var projects: List<ProjectContext>
+}
 
 class ProjectContext(
 	val name: String,
@@ -26,7 +30,7 @@ class ModuleContext(
 )
 
 class FileContext(
-	val builtin: Boolean
+	val builtin: Boolean,
 ) {
 	
 	lateinit var sourcePath: PathWrapper

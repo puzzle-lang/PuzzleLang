@@ -15,7 +15,6 @@ fun main() {
     val num = str as? Int
     val isStr = str is String
     println(3 + if (true) 1 else 2)
-
     val result1 = "start: " + match (value) {
         1 -> "1"
         2, 2 + 3 -> { "2 or 5" }

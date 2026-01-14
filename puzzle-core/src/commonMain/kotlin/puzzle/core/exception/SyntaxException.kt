@@ -8,7 +8,7 @@ import puzzle.core.frontend.model.calcPosition
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.util.PathWrapper
 
-private class SyntaxException(message: String) : Exception(message)
+class SyntaxException(message: String) : PzlException(message)
 
 context(context: FileContext)
 fun syntaxError(message: String, position: Int): Nothing {

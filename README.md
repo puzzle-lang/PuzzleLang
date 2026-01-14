@@ -20,7 +20,7 @@ Puzzle 试图在**表达力、可读性与工程可控性**之间取得平衡，
 构建项目
 
 ```shell
-puzzle build <project-path>
+puzzle build --path=<project-path> --debug-features=all
 ```
 
 查看版本信息
@@ -68,6 +68,12 @@ Puzzle 提供统一、强表达力的声明系统，**所有声明均支持在�
     * 行为抽象单位
     * 支持方法与属性声明
     * 可被类或 object 实现
+
+* **`error` 错误**
+
+    * 错误类型
+    * 支持 `match` 获取异常
+    * 支持 `|:` 忽略异常，类似: `?:` 的用法
 
 * **`mixin` 混入**
 
@@ -117,9 +123,9 @@ age++
 * **支持解构变量**
 
 ```puzzle
-val [name, age] = getInfo()
-val [_, age: Int] = getInfo()               // 解构变量支持匿名绑定
-[var name, _, val height: Int] = getInfo()  // 支持无默认可变性修饰符，但需要指定全部非匿名变量
+val [name, age] = getInfo()                     // 强制解构
+val [_, age: Int] = getInfo()                   // 支持匿名绑定
+var [name: String, val age: Int] = getInfo()    // 支持默认可变性，并单独为属性设置类型和可变性
 ```
 
 ## 🧩 属性系统（Property System）

@@ -5,6 +5,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import puzzle.core.cli.PathOption
+import puzzle.core.cli.whenEnableDebugFeatureOutputAstJson
+import puzzle.core.cli.whenEnableReportFile
+import puzzle.core.cli.whenEnableReportProgress
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
@@ -20,12 +23,17 @@ import puzzle.core.util.format
 import puzzle.core.util.path
 import kotlin.time.Duration
 import kotlin.time.TimeSource.Monotonic.markNow
+import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
+context(root: RootContext)
 suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	val projectPath = path(pathOption.path)
 	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
-	println("项目源收集用时: ${rootSource.duration.format()}")
+	whenEnableReportProgress {
+		println("项目源收集用时: ${rootSource.duration.format()}")
+	}
+	val processStart = markNow()
 	val maxPathLength = rootSource.value.maxPathLength
 	val jobs = rootSource.value.projectSources.map { project ->
 		async(Dispatchers.Default) {
@@ -53,15 +61,31 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 		}
 	}
 	val projects = jobs.awaitAll()
-	val builtinProject = BuiltinAstGenerator.generate()
-	val root = RootContext(projects + builtinProject)
-	context(root) {
-		val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
+	val processDuration = processStart.elapsedNow()
+	whenEnableReportProgress {
+		println("项目源代码处理用时: ${processDuration.format()}")
+	}
+	
+	val builtinProject = measureTimedValue { BuiltinAstGenerator.generate() }
+	whenEnableReportProgress {
+		println("内建类型生成用时: ${builtinProject.duration.format()}")
+	}
+	root.projects = projects + builtinProject.value
+	
+	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
+	whenEnableReportProgress {
 		println("程序符号表创建用时: ${rootSymbol.duration.format()}")
 	}
-	AstDebugWriter.write(projectPath, root)
+	
+	whenEnableDebugFeatureOutputAstJson {
+		val writeDuration = measureTime { AstDebugWriter.write(projectPath) }
+		whenEnableReportProgress {
+			println("ast json 导出用时: ${writeDuration.format()}")
+		}
+	}
 }
 
+context(_: RootContext)
 private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
 	val context = FileContext(false)
 	context(context) {
@@ -76,17 +100,19 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
 		val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
 		context.symbol = symbol.value
 		val totalDuration = markStart.elapsedNow()
-		printDurations(
-			path = path,
-			maxPathLength = maxPathLength,
-			charSize = source.value.size,
-			tokenSize = tokens.value.size,
-			totalDuration = totalDuration,
-			readDuration = source.duration,
-			lexerDuration = tokens.duration,
-			parserDuration = node.duration,
-			scopeDuration = symbol.duration
-		)
+		whenEnableReportFile {
+			printDurations(
+				path = path,
+				maxPathLength = maxPathLength,
+				charSize = source.value.size,
+				tokenSize = tokens.value.size,
+				totalDuration = totalDuration,
+				readDuration = source.duration,
+				lexerDuration = tokens.duration,
+				parserDuration = node.duration,
+				scopeDuration = symbol.duration
+			)
+		}
 	}
 	return context
 }

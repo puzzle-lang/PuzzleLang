@@ -65,7 +65,7 @@ fun String.removeIndent(
 		when (char) {
 			' ' -> col++
 			'\t' -> col += tabSize - (col % tabSize)
-			else -> error("不支持移除缩进长度为: $indentWidth 的字符串")
+			else -> error("改字符串不支持移除长度为: $indentWidth 的公共前缀")
 		}
 	}
 	return sb.toString()

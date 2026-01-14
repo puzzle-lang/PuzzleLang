@@ -3,6 +3,9 @@
 package puzzle.core.frontend.discovery
 
 import kotlinx.serialization.json.Json
+import puzzle.core.cli.whenEnableReportIgnore
+import puzzle.core.exception.configError
+import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
 import puzzle.core.util.path
 import kotlin.contracts.ExperimentalContracts
@@ -21,6 +24,7 @@ object ProjectSourceCollector {
 	
 	private val validGroupRegex = "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)*$".toRegex()
 	
+	context(_: RootContext)
 	fun collect(projectPath: PathWrapper): RootSource {
 		configCheck(projectPath.exists() && projectPath.isDirectory) {
 			configError("项目不存在", projectPath.name)
@@ -28,10 +32,11 @@ object ProjectSourceCollector {
 		val projectConfig = decodeProjectConfig(projectPath, isRootProject = true)
 		
 		val projectConfigs = listOf(projectPath to projectConfig) + decodeDepProjectConfigs(projectPath, projectConfig.deps)
-		println("忽略规则统计:")
+		whenEnableReportIgnore {
+			println("忽略规则统计:")
+		}
 		val projectSources = projectConfigs.map { (path, projectConfig) ->
-			val ignoreMessages = StringBuilder()
-			ignoreMessages.append("[${projectConfig.name}]\n")
+			val ignoreMessages = whenEnableReportIgnore { StringBuilder("[${projectConfig.name}]\n") }
 			val modules = projectConfig.modules!!
 			val moduleSources = modules.mapIndexed { index, module ->
 				val modulePath = path(path, module)
@@ -41,12 +46,16 @@ object ProjectSourceCollector {
 				val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
 				val ignores = moduleConfig.ignore
 				val ignoreRules = ignores.toIgnoreRules(modulePath)
-				ignoreMessages.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
-				ignoreMessages.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
-				ignoreMessages.append("\n")
+				whenEnableReportIgnore {
+					ignoreMessages!!.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
+					ignoreMessages.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
+					ignoreMessages.append("\n")
+				}
 				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignoreRules)
 			}
-			println(ignoreMessages)
+			whenEnableReportIgnore {
+				println(ignoreMessages)
+			}
 			ProjectSource(
 				name = projectConfig.name!!,
 				path = path,
@@ -188,28 +197,11 @@ object ProjectSourceCollector {
 	
 	private fun String.isValidGroup(): Boolean = this matches validGroupRegex
 	
-	private fun configCheck(value: Boolean, error: () -> Nothing) {
+	private fun configCheck(value: Boolean, lazyError: () -> Nothing) {
 		contract {
 			returns() implies value
 		}
-		if (!value) error()
-	}
-	
-	private fun configError(message: String, name: String? = null, value: String? = null, path: String? = null): Nothing {
-		val message = buildString {
-			append("错误:")
-			if (name != null) {
-				append(" $name")
-				if (value != null) {
-					append(": '$value'")
-				}
-			}
-			append(" $message")
-			if (path != null) {
-				append("\n错误位置: $path")
-			}
-		}
-		error(message)
+		if (!value) lazyError()
 	}
 	
 	private fun List<String>?.toIgnoreRules(modulePath: PathWrapper): List<IgnoreRule> {
@@ -223,7 +215,12 @@ object ProjectSourceCollector {
 				ignore.endsWith("/*") -> IgnoreRule("$path/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN)
 				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule("$path/$ignore", IgnoreKind.EXACT)
 				ignore.isBlank() -> configError("规则不能为空", "ignore[$index]", path = "$path/puzzle.json")
-				else -> configError("忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**', 'src/main/puzzle/String.pzl'", "ignore[$index]", ignore, "$path/puzzle.json")
+				else -> configError(
+					"忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**', 'src/main/puzzle/String.pzl'",
+					"ignore[$index]",
+					ignore,
+					"$path/puzzle.json"
+				)
 			}
 		}.distinct()
 	}
