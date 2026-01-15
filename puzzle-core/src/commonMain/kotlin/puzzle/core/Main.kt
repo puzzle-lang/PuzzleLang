@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import puzzle.core.cli.PathOption
 import puzzle.core.cli.findOption
 import puzzle.core.cli.parseCliOptions
-import puzzle.core.cli.whenEnableReportProgress
+import puzzle.core.cli.whenEnableInfoProgress
 import puzzle.core.exception.PzlException
 import puzzle.core.exception.cliError
 import puzzle.core.frontend.model.RootContext
@@ -40,7 +40,7 @@ private suspend fun build(args: List<String>) {
 	val pathOption = options.findOption<PathOption>() ?: cliError("缺少 --path 选项")
 	context(root) {
 		val duration = measureTime { processFrontend(pathOption) }
-		whenEnableReportProgress {
+		whenEnableInfoProgress {
 			println("执行用时${CHINESE_SPACE.repeat(7)}: ${duration.format()}")
 			val usage = getCurrentMemoryUsage()
 			println("内存使用 ${"[$usage]".padStart(22)}")

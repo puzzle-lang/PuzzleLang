@@ -20,9 +20,9 @@ fun parseCliOptions(args: List<String>): List<PzlCliOption> {
 					parseDebugFeatureOption(arg)
 				}
 				
-				arg.startsWith("--reports=") -> {
-					if (this.any { it is ReportOption }) {
-						cliError("重复的选项: --reports")
+				arg.startsWith("--infos=") -> {
+					if (this.any { it is InfoOption }) {
+						cliError("重复的选项: --infos")
 					}
 					parseReportOption(arg)
 				}
@@ -74,14 +74,14 @@ private val availableReports = setOf(
 	"file"
 )
 
-private fun parseReportOption(arg: String): ReportOption {
-	val logInfosString = arg.removePrefix("--reports=")
-	if (logInfosString == "all") return ReportOption.All
-	if (logInfosString.isBlank()) cliError("--reports=<option1,option2,...> 缺少参数")
+private fun parseReportOption(arg: String): InfoOption {
+	val logInfosString = arg.removePrefix("--infos=")
+	if (logInfosString == "all") return InfoOption.All
+	if (logInfosString.isBlank()) cliError("--infos=<option1,option2,...> 缺少参数")
 	val logInfos = logInfosString.split(",")
 	logInfos.forEach { info ->
 		if (info !in availableReports) {
-			cliError("--reports=$info 不可用的参数")
+			cliError("--infos=$info 不可用的参数")
 		}
 	}
 	logInfos.groupingBy { it }
@@ -89,11 +89,11 @@ private fun parseReportOption(arg: String): ReportOption {
 		.filter { it.value > 1 }
 		.keys
 		.firstOrNull()
-		?.let { cliError("--reports=$it 重复的参数") }
+		?.let { cliError("--infos=$it 重复的参数") }
 	val enableProgress = "progress" in logInfos
 	val enableIgnore = "ignore" in logInfos
 	val enableFile = "file" in logInfos
-	return ReportOption(
+	return InfoOption(
 		enableProgress = enableProgress,
 		enableIgnore = enableIgnore,
 		enableFile = enableFile

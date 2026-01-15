@@ -3,7 +3,7 @@
 package puzzle.core.frontend.discovery
 
 import kotlinx.serialization.json.Json
-import puzzle.core.cli.whenEnableReportIgnore
+import puzzle.core.cli.whenEnableInfoIgnore
 import puzzle.core.exception.configError
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
@@ -32,11 +32,11 @@ object ProjectSourceCollector {
 		val projectConfig = decodeProjectConfig(projectPath, isRootProject = true)
 		
 		val projectConfigs = listOf(projectPath to projectConfig) + decodeDepProjectConfigs(projectPath, projectConfig.deps)
-		whenEnableReportIgnore {
+		whenEnableInfoIgnore {
 			println("忽略规则统计:")
 		}
 		val projectSources = projectConfigs.map { (path, projectConfig) ->
-			val ignoreMessages = whenEnableReportIgnore { StringBuilder("[${projectConfig.name}]\n") }
+			val ignoreMessages = whenEnableInfoIgnore { StringBuilder("[${projectConfig.name}]\n") }
 			val modules = projectConfig.modules!!
 			val moduleSources = modules.mapIndexed { index, module ->
 				val modulePath = path(path, module)
@@ -46,14 +46,14 @@ object ProjectSourceCollector {
 				val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
 				val ignores = moduleConfig.ignore
 				val ignoreRules = ignores.toIgnoreRules(modulePath)
-				whenEnableReportIgnore {
+				whenEnableInfoIgnore {
 					ignoreMessages!!.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
 					ignoreMessages.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
 					ignoreMessages.append("\n")
 				}
 				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignoreRules)
 			}
-			whenEnableReportIgnore {
+			whenEnableInfoIgnore {
 				println(ignoreMessages)
 			}
 			ProjectSource(

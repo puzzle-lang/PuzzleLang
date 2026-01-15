@@ -24,7 +24,7 @@ class DebugFeatureOption(
 	}
 }
 
-class ReportOption(
+class InfoOption(
 	val enableProgress: Boolean,
 	val enableIgnore: Boolean,
 	val enableFile: Boolean,
@@ -32,13 +32,13 @@ class ReportOption(
 	
 	companion object {
 		
-		val All = ReportOption(
+		val All = InfoOption(
 			enableProgress = true,
 			enableIgnore = true,
 			enableFile = true,
 		)
 		
-		val None = ReportOption(
+		val None = InfoOption(
 			enableProgress = false,
 			enableIgnore = false,
 			enableFile = false,
@@ -56,14 +56,14 @@ fun getDebugFeatureOption(): DebugFeatureOption {
 	return debugFeatureOption!!
 }
 
-private var reportOption: ReportOption? = null
+private var infoOption: InfoOption? = null
 
 context(root: RootContext)
-fun getReportOption(): ReportOption {
-	if (reportOption == null) {
-		reportOption = root.options.findOption() ?: ReportOption.None
+fun getInfoOption(): InfoOption {
+	if (infoOption == null) {
+		infoOption = root.options.findOption() ?: InfoOption.None
 	}
-	return reportOption!!
+	return infoOption!!
 }
 
 context(root: RootContext)
@@ -72,16 +72,16 @@ inline fun <R> whenEnableDebugFeatureOutputAstJson(block: () -> R): R? {
 }
 
 context(root: RootContext)
-inline fun <R> whenEnableReportProgress(block: () -> R): R? {
-	return if (getReportOption().enableProgress) block() else null
+inline fun <R> whenEnableInfoProgress(block: () -> R): R? {
+	return if (getInfoOption().enableProgress) block() else null
 }
 
 context(root: RootContext)
-inline fun <R> whenEnableReportIgnore(block: () -> R): R? {
-	return if (getReportOption().enableIgnore) block() else null
+inline fun <R> whenEnableInfoIgnore(block: () -> R): R? {
+	return if (getInfoOption().enableIgnore) block() else null
 }
 
 context(root: RootContext)
-inline fun <R> whenEnableReportFile(block: () -> R): R? {
-	return if (getReportOption().enableFile) block() else null
+inline fun <R> whenEnableInfoFile(block: () -> R): R? {
+	return if (getInfoOption().enableFile) block() else null
 }

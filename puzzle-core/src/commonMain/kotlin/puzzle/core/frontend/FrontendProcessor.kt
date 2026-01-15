@@ -6,8 +6,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import puzzle.core.cli.PathOption
 import puzzle.core.cli.whenEnableDebugFeatureOutputAstJson
-import puzzle.core.cli.whenEnableReportFile
-import puzzle.core.cli.whenEnableReportProgress
+import puzzle.core.cli.whenEnableInfoFile
+import puzzle.core.cli.whenEnableInfoProgress
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
@@ -31,7 +31,7 @@ context(root: RootContext)
 suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	val projectPath = path(pathOption.path)
 	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
-	whenEnableReportProgress {
+	whenEnableInfoProgress {
 		println("项目源收集用时${CHINESE_SPACE.repeat(4)}: ${rootSource.duration.format()}")
 	}
 	val processStart = markNow()
@@ -63,24 +63,24 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	}
 	val projects = jobs.awaitAll()
 	val processDuration = processStart.elapsedNow()
-	whenEnableReportProgress {
+	whenEnableInfoProgress {
 		println("项目源代码分析用时${CHINESE_SPACE.repeat(2)}: ${processDuration.format()}")
 	}
 	
 	val builtinProject = measureTimedValue { BuiltinAstGenerator.generate() }
-	whenEnableReportProgress {
+	whenEnableInfoProgress {
 		println("内建类型生成用时${CHINESE_SPACE.repeat(3)}: ${builtinProject.duration.format()}")
 	}
 	root.projects = projects + builtinProject.value
 	
 	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
-	whenEnableReportProgress {
+	whenEnableInfoProgress {
 		println("全局符号表创建用时${CHINESE_SPACE.repeat(2)}: ${rootSymbol.duration.format()}")
 	}
 	
 	whenEnableDebugFeatureOutputAstJson {
 		val writeDuration = measureTime { AstDebugWriter.write(projectPath) }
-		whenEnableReportProgress {
+		whenEnableInfoProgress {
 			println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
 		}
 	}
@@ -101,7 +101,7 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
 		val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
 		context.symbol = symbol.value
 		val totalDuration = markStart.elapsedNow()
-		whenEnableReportFile {
+		whenEnableInfoFile {
 			printDurations(
 				path = path,
 				maxPathLength = maxPathLength,
