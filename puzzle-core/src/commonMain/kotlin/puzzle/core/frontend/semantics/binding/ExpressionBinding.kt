@@ -3,6 +3,7 @@ package puzzle.core.frontend.semantics.binding
 import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.scope.BlockScope
+import puzzle.core.frontend.semantics.deferred.DeferredLambdaScope
 import puzzle.core.frontend.semantics.scope.PzlScope
 
 context(_: FileContext)
@@ -90,11 +91,11 @@ private fun IsExpression.declare(parent: PzlScope) {
 	this.expression.declare(parent)
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun LambdaExpression.declare(parent: PzlScope) {
 	val scope = BlockScope(parent)
 	this.references.declares(scope)
-	this.body.declares(scope)
+	context.deferredScopes += DeferredLambdaScope(scope, this)
 }
 
 context(_: FileContext)

@@ -79,7 +79,9 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	}
 	
 	whenEnableDebugFeatureOutputAstJson {
-		val writeDuration = measureTime { AstDebugWriter.write(projectPath) }
+		val writeDuration = measureTime {
+			AstDebugWriter.write(projectPath)
+		}
 		whenEnableInfoProgress {
 			println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
 		}

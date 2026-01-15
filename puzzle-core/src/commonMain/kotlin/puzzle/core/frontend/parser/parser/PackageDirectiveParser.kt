@@ -1,6 +1,6 @@
-package puzzle.core.frontend.parser.parser.declaration
+package puzzle.core.frontend.parser.parser
 
-import puzzle.core.frontend.ast.declaration.PackageDeclaration
+import puzzle.core.frontend.ast.PackageDirective
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
@@ -10,7 +10,7 @@ import puzzle.core.frontend.token.kinds.AccessKind.DOT
 import puzzle.core.frontend.token.kinds.NamespaceKind.PACKAGE
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parsePackageDeclaration(): PackageDeclaration? {
+fun parsePackageDirective(): PackageDirective? {
 	if (!cursor.match(PACKAGE)) return null
 	val start = cursor.previous.location
 	val packages = mutableListOf<String>()
@@ -19,5 +19,5 @@ fun parsePackageDeclaration(): PackageDeclaration? {
 		packages += parseIdentifierString(IdentifierTarget.PACKAGE)
 	}
 	val end = cursor.previous.location
-	return PackageDeclaration(packages, start span end)
+	return PackageDirective(packages, start span end)
 }

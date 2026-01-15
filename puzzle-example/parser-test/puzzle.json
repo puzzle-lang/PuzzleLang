@@ -1,7 +1,9 @@
 {
   "name": "parser-test",
   "group": "puzzle.example",
-  "ignore": [],
+  "ignore": [
+    "src/main/puzzle/example/parser/**"
+  ],
   "deps": [
     "puzzle-source/puzzle-core"
   ]

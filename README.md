@@ -1,6 +1,6 @@
 # 🧩 Puzzle Programming Language
 
-**Version:** `0.1.2`
+**Version:** `0.1.3-dev`
 
 **Puzzle** 是一门正在设计与实现中的通用编程语言，目标是在提供**清晰、可组合的抽象能力**的同时，保持**可预测的性能模型**，并最终
 **直接编译为高效的原生二进制程序**。
@@ -20,7 +20,7 @@ Puzzle 试图在**表达力、可读性与工程可控性**之间取得平衡，
 构建项目
 
 ```shell
-puzzle build --path=<project-path> --debug-features=all
+puzzle build --path=<project-path> --debug-features=all --infos=all
 ```
 
 查看版本信息

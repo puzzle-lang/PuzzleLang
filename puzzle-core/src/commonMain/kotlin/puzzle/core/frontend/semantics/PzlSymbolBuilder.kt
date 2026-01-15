@@ -66,7 +66,7 @@ object PzlSymbolBuilder {
 	
 	context(context: FileContext)
 	private fun buildFileSymbol(parent: ModuleScope): FileSymbol {
-		val segments = context.node.packageDeclaration?.segments
+		val segments = context.node.packageDirective?.segments
 			?: return context.symbol
 		var parent: PzlScope = parent
 		var needCreate = false

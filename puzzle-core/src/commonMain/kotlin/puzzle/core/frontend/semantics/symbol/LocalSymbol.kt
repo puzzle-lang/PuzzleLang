@@ -7,6 +7,7 @@ class LocalSymbol(
 	override val name: String,
 	override val owner: PzlScope,
 	override val node: PzlAstNode,
+	override val visibility: Visibility?,
 ) : PzlSymbol {
 	
 	override val kind = PzlSymbolKind.LOCAL

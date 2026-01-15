@@ -78,7 +78,6 @@ class PathWrapper private constructor(
 		if (isFile) SystemFileSystem.delete(path)
 		if (!isDirectory) return
 		this.list().forEach { it.deleteAll() }
-		SystemFileSystem.delete(path)
 	}
 	
 	override fun toString(): String {

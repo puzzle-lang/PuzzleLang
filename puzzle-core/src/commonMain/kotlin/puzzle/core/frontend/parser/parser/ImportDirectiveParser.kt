@@ -1,7 +1,7 @@
-package puzzle.core.frontend.parser.parser.declaration
+package puzzle.core.frontend.parser.parser
 
-import puzzle.core.frontend.ast.declaration.ImportDeclaration
-import puzzle.core.frontend.ast.declaration.ImportScope
+import puzzle.core.frontend.ast.ImportDirective
+import puzzle.core.frontend.ast.ImportScope
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.span
@@ -16,7 +16,7 @@ import puzzle.core.frontend.token.kinds.OperatorKind.STAR
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseImportDeclaration(): ImportDeclaration {
+fun parseImportDirective(): ImportDirective {
 	val start = cursor.previous.location
 	val name = parseIdentifierString(IdentifierTarget.IMPORT)
 	val segments = mutableListOf(name)
@@ -44,7 +44,7 @@ fun parseImportDeclaration(): ImportDeclaration {
 		}
 	}
 	val end = cursor.previous.location
-	return ImportDeclaration(
+	return ImportDirective(
 		segments = segments,
 		alias = alias,
 		scope = scope,

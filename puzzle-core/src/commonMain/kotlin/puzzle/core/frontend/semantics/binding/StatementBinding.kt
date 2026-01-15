@@ -47,7 +47,8 @@ private fun ForStatement.declare(parent: PzlScope) {
 		val symbol = LocalSymbol(
 			name = it.name.value,
 			owner = scope,
-			node = pattern
+			node = pattern,
+			visibility = null
 		)
 		scope.declare(symbol)
 	}
@@ -90,6 +91,7 @@ private fun VariableDeclarationStatement.declare(parent: PzlScope) {
 			name = it.name.value,
 			owner = parent,
 			node = it,
+			visibility = null
 		)
 		parent.declare(symbol)
 	}

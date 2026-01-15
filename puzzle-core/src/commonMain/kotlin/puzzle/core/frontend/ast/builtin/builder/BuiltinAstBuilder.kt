@@ -1,6 +1,7 @@
 package puzzle.core.frontend.ast.builtin.builder
 
 import puzzle.core.frontend.ast.AstFile
+import puzzle.core.frontend.ast.PackageDirective
 import puzzle.core.frontend.ast.SymbolToken
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
@@ -166,11 +167,11 @@ fun builtinAst(
 	name = name,
 	sourcePath = null,
 	builtin = true,
-	packageDeclaration = PackageDeclaration(
+	packageDirective = PackageDirective(
 		segments = listOf("puzzle"),
 		location = SourceLocation.Builtin,
 	),
-	importDeclarations = emptyList(),
+	importDirectives = emptyList(),
 	declarations = BuiltinAstBuilder().apply(builder).declarations,
 	location = SourceLocation.Builtin,
 )

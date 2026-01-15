@@ -6,6 +6,7 @@ import puzzle.core.frontend.ast.type.SuperConstructorCall
 import puzzle.core.frontend.ast.type.SuperType
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
+import puzzle.core.frontend.semantics.deferred.*
 import puzzle.core.frontend.semantics.scope.*
 import puzzle.core.frontend.semantics.symbol.*
 
@@ -32,7 +33,7 @@ fun List<Declaration>.declares(parent: PzlScope) {
 	}
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun FunDeclaration.declare(parent: PzlScope) {
 	val name = when (this.name) {
 		is IdentifierFunName -> this.name.name.value
@@ -50,14 +51,11 @@ private fun FunDeclaration.declare(parent: PzlScope) {
 	symbol.scope = scope
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
-	this.parameters.declareParameters(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
-	this.body?.declares(scope)
+	this.parameters.declare(scope)
+	context.deferredScopes += DeferredFunScope(scope, this)
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun CtorDeclaration.declare(parent: PzlScope) {
 	val symbol = CtorSymbol(
 		name = this.name?.value,
@@ -68,22 +66,19 @@ private fun CtorDeclaration.declare(parent: PzlScope) {
 	parent.declare(symbol)
 	val scope = CtorScope(parent, symbol)
 	symbol.scope = scope
-	this.parameters.declareParameters(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
-	this.body.declares(scope)
+	this.parameters.declare(scope)
+	context.deferredScopes += DeferredCtorScope(scope, this)
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun InitDeclaration.declare(parent: PzlScope) {
 	val scope = BlockScope(parent)
-	this.body.declares(scope)
 	parent as InitContainer
 	parent.initBlocks += scope
+	context.deferredScopes += DeferredInitScope(scope, this)
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun PropertyDeclaration.declare(parent: PzlScope) {
 	val visibility = this.modifiers.visibility ?: Visibility.PUBLIC
 	val properties = when (this.propertySpec) {
@@ -104,10 +99,12 @@ private fun PropertyDeclaration.declare(parent: PzlScope) {
 	val propertySymbol = symbols.first()
 	this.getter?.declare(parent, propertySymbol)
 	this.setter?.declare(parent, propertySymbol)
-	this.initializer?.declare(parent)
+	if (this.initializer != null) {
+		context.deferredExpressions += DeferredPropertyExpression(parent, this.initializer)
+	}
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun PropertyGetter.declare(parent: PzlScope, propertySymbol: PropertySymbol) {
 	val visibility = this.modifiers.visibility?.also {
 		if (it != propertySymbol.visibility) {
@@ -124,10 +121,10 @@ private fun PropertyGetter.declare(parent: PzlScope, propertySymbol: PropertySym
 	val scope = BlockScope(parent, symbol)
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
-	this.body.declares(scope)
+	context.deferredScopes += DeferredGetterScope(scope, this)
 }
 
-context(_: FileContext)
+context(context: FileContext)
 private fun PropertySetter.declare(parent: PzlScope, propertySymbol: PropertySymbol) {
 	val visibility = this.modifiers.visibility?.also {
 		if (it > propertySymbol.visibility) {
@@ -145,7 +142,7 @@ private fun PropertySetter.declare(parent: PzlScope, propertySymbol: PropertySym
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
 	this.newValue.declare(scope)
-	this.body.declares(scope)
+	context.deferredScopes += DeferredSetterScope(scope, this)
 }
 
 context(_: FileContext)
@@ -161,11 +158,7 @@ private fun ClassDeclaration.declare(parent: PzlScope) {
 	symbol.scope = scope
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
-	this.parameters.declareParameters(scope)
-	this.parameters.declarePrimaryConstructorProperties(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
+	this.parameters.declare(scope)
 	this.superTypes.declares(parent)
 	this.members.declares(scope)
 }
@@ -182,11 +175,7 @@ private fun ObjectDeclaration.declare(parent: PzlScope) {
 	val scope = ObjectScope(parent, symbol)
 	symbol.scope = scope
 	this.contextSpec?.receivers?.declares(scope)
-	this.parameters.declareParameters(scope)
-	this.parameters.declarePrimaryConstructorProperties(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
+	this.parameters.declare(scope)
 	this.superTypes.declares(parent)
 	this.members.declares(scope)
 }
@@ -247,11 +236,7 @@ private fun StructDeclaration.declare(parent: PzlScope) {
 	symbol.scope = scope
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
-	this.parameters.declareParameters(scope)
-	this.parameters.declarePrimaryConstructorProperties(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
+	this.parameters.declare(scope)
 	this.members.declares(scope)
 }
 
@@ -268,11 +253,7 @@ private fun EnumDeclaration.declare(parent: PzlScope) {
 	symbol.scope = scope
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
-	this.parameters.declareParameters(scope)
-	this.parameters.declarePrimaryConstructorProperties(scope)
-	this.parameters.forEach {
-		it.defaultExpression?.declare(scope)
-	}
+	this.parameters.declare(scope)
 	this.members.declares(scope)
 	this.entries.declares(scope)
 }

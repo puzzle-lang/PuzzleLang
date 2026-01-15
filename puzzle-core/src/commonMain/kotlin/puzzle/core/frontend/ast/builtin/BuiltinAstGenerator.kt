@@ -4,7 +4,7 @@ import puzzle.core.frontend.ast.builtin.generator.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
-import puzzle.core.frontend.semantics.symbol.FileSymbol
+import puzzle.core.frontend.semantics.PzlSymbolBuilder
 
 object BuiltinAstGenerator {
 	
@@ -24,7 +24,7 @@ object BuiltinAstGenerator {
 			files = nodes.map { node ->
 				FileContext(true).apply {
 					this.node = node
-					this.symbol = FileSymbol(null, node)
+					this.symbol = PzlSymbolBuilder.buildFileSymbol()
 				}
 			}
 		)

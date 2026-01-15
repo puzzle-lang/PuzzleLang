@@ -40,25 +40,21 @@ object AstDebugWriter {
 							getAstPath(buildAstPath, project, node)
 						}
 						val parent = astPath.parent ?: return@launch
-						lock.withLock {
-							if (!parent.exists()) {
-								var count = 0
-								while (true) {
-									try {
-										parent.createDirectories()
-									} catch (_: Exception) {
-										count++
-										if (count >= 10) return@launch
-										continue
-									}
-									break
-								}
-							}
-						}
 						val text = withContext(Dispatchers.Default) {
 							json.encodeToString(node)
 						}
-						astPath.writeText(text)
+						if (!parent.exists()) {
+							lock.withLock {
+								if (!parent.exists()) {
+									parent.createDirectories()
+								}
+							}
+						}
+						try {
+							astPath.writeText(text)
+						} catch (_: Exception) {
+						
+						}
 					}
 				}
 			}
@@ -76,12 +72,12 @@ object AstDebugWriter {
 		return path(buildAstPath, project.name, module.name, "src", "main", "puzzle", astName)
 	}
 	
-	private fun getAstPath(
+	private suspend fun getAstPath(
 		buildAstPath: PathWrapper,
 		project: ProjectContext,
 		node: AstFile,
 	): PathWrapper {
 		val astPath = node.sourcePath!!.absolutePath.removePrefix(project.path!!.parent!!.absolutePath + "/").removeSuffix(".pzl") + ".json"
-		return path(buildAstPath, astPath)
+		return path(buildAstPath, *astPath.split('/').toTypedArray())
 	}
 }

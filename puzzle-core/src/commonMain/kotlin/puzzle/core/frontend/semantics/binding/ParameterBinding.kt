@@ -1,6 +1,5 @@
 package puzzle.core.frontend.semantics.binding
 
-import puzzle.core.frontend.ast.declaration.Property
 import puzzle.core.frontend.ast.expression.Argument
 import puzzle.core.frontend.ast.parameter.DeclarationContextReceiver
 import puzzle.core.frontend.ast.parameter.Parameter
@@ -8,35 +7,25 @@ import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
+import puzzle.core.frontend.semantics.deferred.DeferredParameterExpression
 import puzzle.core.frontend.semantics.scope.PzlScope
-import puzzle.core.frontend.semantics.symbol.*
+import puzzle.core.frontend.semantics.symbol.LocalSymbol
+import puzzle.core.frontend.semantics.symbol.TypeParameterSymbol
+import puzzle.core.frontend.semantics.symbol.visibility
 
-fun List<Parameter>.declareParameters(parent: PzlScope) {
+context(context: FileContext)
+fun List<Parameter>.declare(parent: PzlScope) {
 	this.forEach {
 		val symbol = LocalSymbol(
 			name = it.name.value,
 			owner = parent,
 			node = it,
+			visibility = it.modifiers.visibility
 		)
 		parent.declare(symbol)
-	}
-}
-
-fun List<Parameter>.declarePrimaryConstructorProperties(parent: PzlScope) {
-	this.forEach {
-		val isMutable = it.isMutable ?: return@forEach
-		val symbol = PropertySymbol(
-			name = it.name.value,
-			owner = parent,
-			node = Property(
-				isMutable = isMutable,
-				name = it.name,
-				type = it.type,
-				location = it.location,
-			),
-			visibility = it.modifiers.visibility ?: Visibility.PUBLIC,
-		)
-		parent.declare(symbol)
+		if (it.defaultExpression != null) {
+			context.deferredExpressions += DeferredParameterExpression(parent, it.defaultExpression)
+		}
 	}
 }
 
@@ -61,6 +50,7 @@ fun ParameterReference.declare(parent: PzlScope) {
 		name = this.name.value,
 		owner = parent,
 		node = this,
+		visibility = null
 	)
 	parent.declare(symbol)
 }
@@ -70,7 +60,8 @@ fun List<DeclarationContextReceiver>.declares(parent: PzlScope) {
 		val symbol = LocalSymbol(
 			name = it.name.value,
 			owner = parent,
-			node = it
+			node = it,
+			visibility = null
 		)
 		parent.declare(symbol)
 	}
