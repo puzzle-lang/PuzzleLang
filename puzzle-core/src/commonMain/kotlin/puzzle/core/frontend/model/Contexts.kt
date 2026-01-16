@@ -5,11 +5,14 @@ import puzzle.core.cli.PzlCliOption
 import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.semantics.deferred.DeferredExpression
 import puzzle.core.frontend.semantics.deferred.DeferredScope
+import puzzle.core.frontend.semantics.deferred.DeferredTypeReference
 import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.util.PathWrapper
 
-class RootContext {
+sealed interface Context
+
+class RootContext : Context {
 	
 	lateinit var options: List<PzlCliOption>
 	
@@ -21,7 +24,7 @@ class ProjectContext(
 	val path: PathWrapper?,
 	val builtin: Boolean,
 	val modules: List<ModuleContext>,
-)
+) : Context
 
 class ModuleContext(
 	val name: String,
@@ -29,11 +32,11 @@ class ModuleContext(
 	val path: PathWrapper?,
 	val builtin: Boolean,
 	val files: List<FileContext>,
-)
+) : Context
 
 class FileContext(
 	val builtin: Boolean,
-) {
+) : Context {
 	
 	lateinit var sourcePath: PathWrapper
 	
@@ -45,7 +48,9 @@ class FileContext(
 	
 	lateinit var symbol: FileSymbol
 	
-	val deferredScopes = mutableListOf<DeferredScope>()
+	val deferredTypeReferences = mutableListOf<DeferredTypeReference>()
 	
 	val deferredExpressions = mutableListOf<DeferredExpression>()
+	
+	val deferredScopes = mutableListOf<DeferredScope>()
 }

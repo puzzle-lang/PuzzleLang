@@ -4,9 +4,8 @@ class ConfigException(message: String) : PzlException(message)
 
 fun configError(message: String, name: String? = null, value: String? = null, path: String? = null): Nothing {
 	val message = buildString {
-		append("错误:")
 		if (name != null) {
-			append(" $name")
+			append(name)
 			if (value != null) {
 				append(": '$value'")
 			}

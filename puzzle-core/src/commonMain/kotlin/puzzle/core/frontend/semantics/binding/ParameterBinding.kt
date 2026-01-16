@@ -8,13 +8,14 @@ import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.semantics.deferred.DeferredParameterExpression
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.deferred.DeferredTypeReference
+import puzzle.core.frontend.semantics.scope.FileContextScope
 import puzzle.core.frontend.semantics.symbol.LocalSymbol
 import puzzle.core.frontend.semantics.symbol.TypeParameterSymbol
 import puzzle.core.frontend.semantics.symbol.visibility
 
-context(context: FileContext)
-fun List<Parameter>.declare(parent: PzlScope) {
+context(file: FileContext)
+fun List<Parameter>.declare(parent: FileContextScope) {
 	this.forEach {
 		val symbol = LocalSymbol(
 			name = it.name.value,
@@ -24,12 +25,13 @@ fun List<Parameter>.declare(parent: PzlScope) {
 		)
 		parent.declare(symbol)
 		if (it.defaultExpression != null) {
-			context.deferredExpressions += DeferredParameterExpression(parent, it.defaultExpression)
+			file.deferredExpressions += DeferredParameterExpression(parent, it.defaultExpression)
 		}
 	}
 }
 
-fun List<TypeParameter>.declares(parent: PzlScope) {
+context(file: FileContext)
+fun List<TypeParameter>.declares(parent: FileContextScope) {
 	this.forEach {
 		val symbol = TypeParameterSymbol(
 			name = it.name.value,
@@ -37,14 +39,19 @@ fun List<TypeParameter>.declares(parent: PzlScope) {
 			node = it,
 		)
 		parent.declare(symbol)
+		if (it.defaultType != null) {
+			file.deferredTypeReferences += DeferredTypeReference(parent, it.defaultType)
+		}
 	}
 }
 
-fun List<ParameterReference>.declares(parent: PzlScope) {
+context(_: FileContext)
+fun List<ParameterReference>.declares(parent: FileContextScope) {
 	this.forEach { it.declare(parent) }
 }
 
-fun ParameterReference.declare(parent: PzlScope) {
+context(_: FileContext)
+fun ParameterReference.declare(parent: FileContextScope) {
 	if (this.name.isAnonymousBinding) return
 	val symbol = LocalSymbol(
 		name = this.name.value,
@@ -55,7 +62,8 @@ fun ParameterReference.declare(parent: PzlScope) {
 	parent.declare(symbol)
 }
 
-fun List<DeclarationContextReceiver>.declares(parent: PzlScope) {
+context(_: FileContext)
+fun List<DeclarationContextReceiver>.declares(parent: FileContextScope) {
 	this.forEach {
 		val symbol = LocalSymbol(
 			name = it.name.value,
@@ -68,7 +76,7 @@ fun List<DeclarationContextReceiver>.declares(parent: PzlScope) {
 }
 
 context(_: FileContext)
-fun List<Argument>.declares(parent: PzlScope) {
+fun List<Argument>.declares(parent: FileContextScope) {
 	this.forEach {
 		it.expression.declare(parent)
 	}

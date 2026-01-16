@@ -30,37 +30,27 @@ object ProjectSourceCollector {
 			configError("项目不存在", projectPath.name)
 		}
 		val projectConfig = decodeProjectConfig(projectPath, isRootProject = true)
+		val projectConfigMap = mapOf(projectPath to projectConfig) + decodeDepProjectConfigs(projectPath, projectConfig.deps)
 		
-		val projectConfigs = listOf(projectPath to projectConfig) + decodeDepProjectConfigs(projectPath, projectConfig.deps)
-		whenEnableInfoIgnore {
-			println("忽略规则统计:")
-		}
-		val projectSources = projectConfigs.map { (path, projectConfig) ->
-			val ignoreMessages = whenEnableInfoIgnore { StringBuilder("[${projectConfig.name}]\n") }
+		val projectSources = projectConfigMap.map { (path, projectConfig) ->
 			val modules = projectConfig.modules!!
-			val moduleSources = modules.mapIndexed { index, module ->
+			val moduleSources = modules.map { module ->
 				val modulePath = path(path, module)
 				configCheck(modulePath.exists() && modulePath.isDirectory) {
 					configError("模块不存在", modulePath.name)
 				}
 				val moduleConfig = decodeModuleConfig(modulePath, projectConfig)
-				val ignores = moduleConfig.ignore
-				val ignoreRules = ignores.toIgnoreRules(modulePath)
-				whenEnableInfoIgnore {
-					ignoreMessages!!.append("  ${if (index == modules.lastIndex) "└" else "├"} [$module]: ")
-					ignoreMessages.append(ignores?.joinToString(prefix = "[", postfix = "]") { "\"$it\"" } ?: "[]")
-					ignoreMessages.append("\n")
-				}
-				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignoreRules)
-			}
-			whenEnableInfoIgnore {
-				println(ignoreMessages)
+				val ignores = moduleConfig.ignore ?: emptyList()
+				getModuleSourceFiles(moduleConfig.name!!, modulePath, ignores)
 			}
 			ProjectSource(
 				name = projectConfig.name!!,
 				path = path,
 				moduleSources = moduleSources,
 			)
+		}
+		whenEnableInfoIgnore {
+			projectSources.printIgnoreRules()
 		}
 		
 		val maxPathLength = projectSources.maxOfOrNull { project ->
@@ -119,9 +109,9 @@ object ProjectSourceCollector {
 		return projectConfig
 	}
 	
-	private fun decodeDepProjectConfigs(projectPath: PathWrapper, deps: List<String>?): List<Pair<PathWrapper, ProjectConfig>> {
-		if (deps.isNullOrEmpty()) return emptyList()
-		return deps.map { dep ->
+	private fun decodeDepProjectConfigs(projectPath: PathWrapper, deps: List<String>?): Map<PathWrapper, ProjectConfig> {
+		if (deps.isNullOrEmpty()) return emptyMap()
+		return deps.associate { dep ->
 			val path = path(projectPath, dep)
 			path to decodeProjectConfig(path, isRootProject = false)
 		}
@@ -164,14 +154,15 @@ object ProjectSourceCollector {
 		return moduleConfig
 	}
 	
-	private fun getModuleSourceFiles(name: String, modulePath: PathWrapper, ignores: List<IgnoreRule>): ModuleSource {
-		val (fileRules, dirRules) = ignores.partition { it.kind == IgnoreKind.EXACT }
+	private fun getModuleSourceFiles(name: String, modulePath: PathWrapper, ignores: List<String>): ModuleSource {
+		val ignoreRules = ignores.toIgnoreRules(modulePath)
+		val (fileRules, dirRules) = ignoreRules.partition { it.kind == IgnoreKind.EXACT }
 		val sourcePath = path(modulePath, "src", "main")
 		configCheck(sourcePath.exists() && sourcePath.isDirectory) {
 			configError("源目录不存在", sourcePath.name)
 		}
 		val sourcePaths = collectAllPzlPaths(sourcePath, fileRules, dirRules)
-		return ModuleSource(name, modulePath, sourcePaths)
+		return ModuleSource(name, modulePath, sourcePaths, ignores)
 	}
 	
 	private fun collectAllPzlPaths(path: PathWrapper, fileRules: List<IgnoreRule>, dirRules: List<IgnoreRule>): List<PathWrapper> {
@@ -204,8 +195,7 @@ object ProjectSourceCollector {
 		if (!value) lazyError()
 	}
 	
-	private fun List<String>?.toIgnoreRules(modulePath: PathWrapper): List<IgnoreRule> {
-		if (this.isNullOrEmpty()) return emptyList()
+	private fun List<String>.toIgnoreRules(modulePath: PathWrapper): List<IgnoreRule> {
 		val path = modulePath.absolutePath
 		return this.mapIndexed { index, ignore ->
 			when {
@@ -235,5 +225,30 @@ object ProjectSourceCollector {
 		if (dirRules.isEmpty()) return null
 		val path = this.absolutePath
 		return dirRules.find { it.path == path }?.kind
+	}
+	
+	private fun List<ProjectSource>.printIgnoreRules() {
+		val message = buildString {
+			appendLine("忽略规则")
+			this@printIgnoreRules.forEachIndexed { projectIndex, project ->
+				append(if (projectIndex == this@printIgnoreRules.lastIndex) "└─" else "├─")
+				appendLine(" ${project.name}")
+				project.moduleSources.forEachIndexed { moduleIndex, module ->
+					append(if (projectIndex == this@printIgnoreRules.lastIndex) " " else "│")
+					append(" ".repeat(3))
+					append(if (moduleIndex == project.moduleSources.lastIndex) "└─" else "├─")
+					appendLine(" ${module.name}")
+					module.ignore.forEachIndexed { index, ignore ->
+						append(if (projectIndex == this@printIgnoreRules.lastIndex) " " else "│")
+						append(" ".repeat(3))
+						append(if (moduleIndex == project.moduleSources.lastIndex) " " else "│")
+						append(" ".repeat(3))
+						append(if (index == module.ignore.lastIndex) "└─" else "├─")
+						appendLine(" $ignore")
+					}
+				}
+			}
+		}
+		println(message)
 	}
 }

@@ -6,9 +6,9 @@ import puzzle.core.frontend.parser.parser.parseFile
 
 object PzlParser {
 	
-	context(context: FileContext)
+	context(file: FileContext)
 	fun parse(): AstFile {
-		return context(PzlTokenCursor(context.tokens)) {
+		return context(PzlTokenCursor(file.tokens)) {
 			parseFile()
 		}
 	}

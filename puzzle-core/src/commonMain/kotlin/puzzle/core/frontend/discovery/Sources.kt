@@ -17,4 +17,5 @@ class ModuleSource(
 	val name: String,
 	val path: PathWrapper,
 	val sourcePaths: List<PathWrapper>,
+	val ignore: List<String>,
 )

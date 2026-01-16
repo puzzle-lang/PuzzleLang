@@ -4,11 +4,11 @@ import puzzle.core.frontend.ast.statement.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.semantics.scope.BlockScope
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.FileContextScope
 import puzzle.core.frontend.semantics.symbol.LocalSymbol
 
 context(_: FileContext)
-fun List<Statement>.declares(parent: PzlScope) {
+fun List<Statement>.declares(parent: FileContextScope) {
 	this.forEach {
 		when (it) {
 			is AssignmentStatement -> it.declare(parent)
@@ -24,18 +24,18 @@ fun List<Statement>.declares(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun AssignmentStatement.declare(parent: PzlScope) {
+private fun AssignmentStatement.declare(parent: FileContextScope) {
 	this.target.declare(parent)
 	this.value.declare(parent)
 }
 
 context(_: FileContext)
-private fun ContextualStatement.declare(parent: PzlScope) {
+private fun ContextualStatement.declare(parent: FileContextScope) {
 	this.arguments.declares(parent)
 }
 
 context(_: FileContext)
-private fun ForStatement.declare(parent: PzlScope) {
+private fun ForStatement.declare(parent: FileContextScope) {
 	this.iterable.declare(parent)
 	val scope = BlockScope(parent)
 	val patterns = when (this.pattern) {
@@ -56,31 +56,31 @@ private fun ForStatement.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun IfStatement.declare(parent: PzlScope) {
+private fun IfStatement.declare(parent: FileContextScope) {
 	this.condition.declare(parent)
 	val scope = BlockScope(parent)
 	this.thenBody.declares(scope)
 }
 
 context(_: FileContext)
-private fun InitStatement.declare(parent: PzlScope) {
+private fun InitStatement.declare(parent: FileContextScope) {
 	this.arguments.declares(parent)
 }
 
 context(_: FileContext)
-private fun ExpressionStatement.declare(parent: PzlScope) {
+private fun ExpressionStatement.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
 }
 
 context(_: FileContext)
-private fun WhileStatement.declare(parent: PzlScope) {
+private fun WhileStatement.declare(parent: FileContextScope) {
 	this.condition.declare(parent)
 	val scope = BlockScope(parent)
 	this.body.declares(scope)
 }
 
 context(_: FileContext)
-private fun VariableDeclarationStatement.declare(parent: PzlScope) {
+private fun VariableDeclarationStatement.declare(parent: FileContextScope) {
 	val variables = when (this.variableSpec) {
 		is DestructureVariableSpec -> this.variableSpec.variables
 		is SingleVariableSpec -> listOf(this.variableSpec.variable)

@@ -11,7 +11,7 @@ import puzzle.core.frontend.semantics.scope.*
 import puzzle.core.frontend.semantics.symbol.*
 
 context(_: FileContext)
-fun List<Declaration>.declares(parent: PzlScope) {
+fun List<Declaration>.declares(parent: FileContextScope) {
 	this.forEach {
 		when (it) {
 			is FunDeclaration -> it.declare(parent)
@@ -33,8 +33,8 @@ fun List<Declaration>.declares(parent: PzlScope) {
 	}
 }
 
-context(context: FileContext)
-private fun FunDeclaration.declare(parent: PzlScope) {
+context(file: FileContext)
+private fun FunDeclaration.declare(parent: FileContextScope) {
 	val name = when (this.name) {
 		is IdentifierFunName -> this.name.name.value
 		is MagicFunName -> this.name.kind.value
@@ -52,11 +52,11 @@ private fun FunDeclaration.declare(parent: PzlScope) {
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
 	this.parameters.declare(scope)
-	context.deferredScopes += DeferredFunScope(scope, this)
+	file.deferredScopes += DeferredFunScope(scope, this)
 }
 
-context(context: FileContext)
-private fun CtorDeclaration.declare(parent: PzlScope) {
+context(file: FileContext)
+private fun CtorDeclaration.declare(parent: FileContextScope) {
 	val symbol = CtorSymbol(
 		name = this.name?.value,
 		owner = parent,
@@ -67,19 +67,19 @@ private fun CtorDeclaration.declare(parent: PzlScope) {
 	val scope = CtorScope(parent, symbol)
 	symbol.scope = scope
 	this.parameters.declare(scope)
-	context.deferredScopes += DeferredCtorScope(scope, this)
+	file.deferredScopes += DeferredCtorScope(scope, this)
 }
 
-context(context: FileContext)
-private fun InitDeclaration.declare(parent: PzlScope) {
+context(file: FileContext)
+private fun InitDeclaration.declare(parent: FileContextScope) {
 	val scope = BlockScope(parent)
 	parent as InitContainer
 	parent.initBlocks += scope
-	context.deferredScopes += DeferredInitScope(scope, this)
+	file.deferredScopes += DeferredInitScope(scope, this)
 }
 
-context(context: FileContext)
-private fun PropertyDeclaration.declare(parent: PzlScope) {
+context(file: FileContext)
+private fun PropertyDeclaration.declare(parent: FileContextScope) {
 	val visibility = this.modifiers.visibility ?: Visibility.PUBLIC
 	val properties = when (this.propertySpec) {
 		is DestructurePropertySpec -> this.propertySpec.properties
@@ -100,12 +100,12 @@ private fun PropertyDeclaration.declare(parent: PzlScope) {
 	this.getter?.declare(parent, propertySymbol)
 	this.setter?.declare(parent, propertySymbol)
 	if (this.initializer != null) {
-		context.deferredExpressions += DeferredPropertyExpression(parent, this.initializer)
+		file.deferredExpressions += DeferredPropertyExpression(parent, this.initializer)
 	}
 }
 
-context(context: FileContext)
-private fun PropertyGetter.declare(parent: PzlScope, propertySymbol: PropertySymbol) {
+context(file: FileContext)
+private fun PropertyGetter.declare(parent: FileContextScope, propertySymbol: PropertySymbol) {
 	val visibility = this.modifiers.visibility?.also {
 		if (it != propertySymbol.visibility) {
 			syntaxError("属性访问器的可见性必须和属性的可见性相同", this.modifiers.first())
@@ -121,11 +121,11 @@ private fun PropertyGetter.declare(parent: PzlScope, propertySymbol: PropertySym
 	val scope = BlockScope(parent, symbol)
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
-	context.deferredScopes += DeferredGetterScope(scope, this)
+	file.deferredScopes += DeferredGetterScope(scope, this)
 }
 
-context(context: FileContext)
-private fun PropertySetter.declare(parent: PzlScope, propertySymbol: PropertySymbol) {
+context(file: FileContext)
+private fun PropertySetter.declare(parent: FileContextScope, propertySymbol: PropertySymbol) {
 	val visibility = this.modifiers.visibility?.also {
 		if (it > propertySymbol.visibility) {
 			syntaxError("属性赋值器的可见性不能大于属性的可见性", this.modifiers.first())
@@ -142,11 +142,11 @@ private fun PropertySetter.declare(parent: PzlScope, propertySymbol: PropertySym
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
 	this.newValue.declare(scope)
-	context.deferredScopes += DeferredSetterScope(scope, this)
+	file.deferredScopes += DeferredSetterScope(scope, this)
 }
 
 context(_: FileContext)
-private fun ClassDeclaration.declare(parent: PzlScope) {
+private fun ClassDeclaration.declare(parent: FileContextScope) {
 	val symbol = ClassSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -164,7 +164,7 @@ private fun ClassDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun ObjectDeclaration.declare(parent: PzlScope) {
+private fun ObjectDeclaration.declare(parent: FileContextScope) {
 	val symbol = ObjectSymbol(
 		name = this.name?.value,
 		owner = parent,
@@ -181,7 +181,7 @@ private fun ObjectDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun ErrorDeclaration.declare(parent: PzlScope) {
+private fun ErrorDeclaration.declare(parent: FileContextScope) {
 	val symbol = ErrorSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -192,7 +192,7 @@ private fun ErrorDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun TraitDeclaration.declare(parent: PzlScope) {
+private fun TraitDeclaration.declare(parent: FileContextScope) {
 	val symbol = TraitSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -208,7 +208,7 @@ private fun TraitDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun MixinDeclaration.declare(parent: PzlScope) {
+private fun MixinDeclaration.declare(parent: FileContextScope) {
 	val symbol = MixinSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -224,7 +224,7 @@ private fun MixinDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun StructDeclaration.declare(parent: PzlScope) {
+private fun StructDeclaration.declare(parent: FileContextScope) {
 	val symbol = StructSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -241,7 +241,7 @@ private fun StructDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun EnumDeclaration.declare(parent: PzlScope) {
+private fun EnumDeclaration.declare(parent: FileContextScope) {
 	val symbol = EnumSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -259,7 +259,7 @@ private fun EnumDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun EnumEntry.declare(parent: PzlScope) {
+private fun EnumEntry.declare(parent: FileContextScope) {
 	val symbol = EnumEntrySymbol(
 		name = this.name.value,
 		owner = parent,
@@ -273,7 +273,7 @@ private fun EnumEntry.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun ExtensionDeclaration.declare(parent: PzlScope) {
+private fun ExtensionDeclaration.declare(parent: FileContextScope) {
 	val symbol = ExtensionSymbol(
 		owner = parent,
 		node = this,
@@ -288,7 +288,7 @@ private fun ExtensionDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun AnnotationDeclaration.declare(parent: PzlScope) {
+private fun AnnotationDeclaration.declare(parent: FileContextScope) {
 	val symbol = AnnotationSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -299,7 +299,7 @@ private fun AnnotationDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun TypeAliasDeclaration.declare(parent: PzlScope) {
+private fun TypeAliasDeclaration.declare(parent: FileContextScope) {
 	val symbol = TypeAliasSymbol(
 		name = this.name.value,
 		owner = parent,
@@ -310,7 +310,7 @@ private fun TypeAliasDeclaration.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun List<SuperType>.declares(parent: PzlScope) {
+private fun List<SuperType>.declares(parent: FileContextScope) {
 	this.forEach { type ->
 		if (type !is SuperConstructorCall) return@forEach
 		type.arguments.declares(parent)

@@ -10,7 +10,7 @@ sealed interface PzlSymbol {
 	
 	val kind: PzlSymbolKind
 	
-	val owner: PzlScope?
+	val owner: PzlScope<*>?
 		get() = null
 	
 	val node: PzlAstNode?
@@ -19,7 +19,7 @@ sealed interface PzlSymbol {
 	val visibility: Visibility?
 		get() = null
 	
-	val scope: PzlScope?
+	val scope: PzlScope<*>?
 		get() = null
 }
 

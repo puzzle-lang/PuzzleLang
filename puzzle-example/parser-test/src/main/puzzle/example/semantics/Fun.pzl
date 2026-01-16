@@ -1,7 +1,8 @@
 package puzzle.example.semantics
 
 fun main() {
-
+    val name = ""
+    val name = ""
 }
 
 class Test {

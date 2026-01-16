@@ -2,11 +2,11 @@ package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.EnumEntry
 import puzzle.core.frontend.semantics.scope.EnumEntryScope
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.FileContextScope
 
 class EnumEntrySymbol(
 	override val name: String,
-	override val owner: PzlScope,
+	override val owner: FileContextScope,
 	override val node: EnumEntry,
 ) : PzlSymbol {
 	

@@ -3,16 +3,15 @@ package puzzle.core.frontend.semantics.binding
 import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.scope.BlockScope
-import puzzle.core.frontend.semantics.deferred.DeferredLambdaScope
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.FileContextScope
 
 context(_: FileContext)
-fun List<Expression>.declares(parent: PzlScope) {
+fun List<Expression>.declares(parent: FileContextScope) {
 	this.forEach { it.declare(parent) }
 }
 
 context(_: FileContext)
-fun Expression.declare(parent: PzlScope) {
+fun Expression.declare(parent: FileContextScope) {
 	when (this) {
 		is AsExpression -> this.declare(parent)
 		is BinaryExpression -> this.declare(parent)
@@ -35,34 +34,43 @@ fun Expression.declare(parent: PzlScope) {
 		is TernaryExpression -> this.declare(parent)
 		is PrefixUnaryExpression -> this.declare(parent)
 		is PostfixUnaryExpression -> this.declare(parent)
-		else -> {}
+		is SuperExpression -> TODO()
+		is ThisExpression -> TODO()
+		is Identifier -> this.declare(parent)
+		is ContinueExpression -> TODO()
+		is BooleanLiteral -> TODO()
+		is CharLiteral -> TODO()
+		is NullLiteral -> TODO()
+		is NumberLiteral -> TODO()
+		is StringLiteral.Text -> TODO()
+		is OracleExpression -> TODO()
 	}
 }
 
 context(_: FileContext)
-private fun AsExpression.declare(parent: PzlScope) {
+private fun AsExpression.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
 }
 
 context(_: FileContext)
-private fun BinaryExpression.declare(parent: PzlScope) {
+private fun BinaryExpression.declare(parent: FileContextScope) {
 	this.left.declare(parent)
 	this.right.declare(parent)
 }
 
 context(_: FileContext)
-private fun ElvisExpression.declare(parent: PzlScope) {
+private fun ElvisExpression.declare(parent: FileContextScope) {
 	this.left.declare(parent)
 	this.right.declare(parent)
 }
 
 context(_: FileContext)
-private fun GroupingExpression.declare(parent: PzlScope) {
+private fun GroupingExpression.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
 }
 
 context(_: FileContext)
-private fun IfExpression.declare(parent: PzlScope) {
+private fun IfExpression.declare(parent: FileContextScope) {
 	this.condition.declare(parent)
 	val thenScope = BlockScope(parent)
 	this.thenBody.declares(thenScope)
@@ -71,35 +79,35 @@ private fun IfExpression.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun InvokeExpression.declare(parent: PzlScope) {
+private fun InvokeExpression.declare(parent: FileContextScope) {
 	this.callee.declare(parent)
 	this.arguments.declares(parent)
 }
 
 context(_: FileContext)
-private fun ReturnExpression.declare(parent: PzlScope) {
+private fun ReturnExpression.declare(parent: FileContextScope) {
 	this.expression?.declare(parent)
 }
 
 context(_: FileContext)
-private fun BreakExpression.declare(parent: PzlScope) {
+private fun BreakExpression.declare(parent: FileContextScope) {
 	this.expression?.declare(parent)
 }
 
 context(_: FileContext)
-private fun IsExpression.declare(parent: PzlScope) {
+private fun IsExpression.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
 }
 
-context(context: FileContext)
-private fun LambdaExpression.declare(parent: PzlScope) {
+context(file: FileContext)
+private fun LambdaExpression.declare(parent: FileContextScope) {
 	val scope = BlockScope(parent)
 	this.references.declares(scope)
-	context.deferredScopes += DeferredLambdaScope(scope, this)
+	this.body.declares(scope)
 }
 
 context(_: FileContext)
-private fun StringLiteral.Template.declare(parent: PzlScope) {
+private fun StringLiteral.Template.declare(parent: FileContextScope) {
 	this.parts.forEach { part ->
 		if (part !is StringLiteral.Template.Part.Expression) return@forEach
 		part.expression.declare(parent)
@@ -107,13 +115,13 @@ private fun StringLiteral.Template.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun LoopExpression.declare(parent: PzlScope) {
+private fun LoopExpression.declare(parent: FileContextScope) {
 	val scope = BlockScope(parent)
 	this.body.declares(scope)
 }
 
 context(_: FileContext)
-private fun MatchPatternExpression.declare(parent: PzlScope) {
+private fun MatchPatternExpression.declare(parent: FileContextScope) {
 	this.subject.declare(parent)
 	this.arms.forEach { arm ->
 		arm.patterns.forEach { pattern ->
@@ -131,7 +139,7 @@ private fun MatchPatternExpression.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun MatchConditionExpression.declare(parent: PzlScope) {
+private fun MatchConditionExpression.declare(parent: FileContextScope) {
 	this.cases.forEach { case ->
 		case.condition.declare(parent)
 		val scope = BlockScope(parent)
@@ -144,38 +152,43 @@ private fun MatchConditionExpression.declare(parent: PzlScope) {
 }
 
 context(_: FileContext)
-private fun MemberAccessExpression.declare(parent: PzlScope) {
+private fun MemberAccessExpression.declare(parent: FileContextScope) {
 	this.receiver.declare(parent)
 }
 
 context(_: FileContext)
-private fun MemberReferenceExpression.declare(parent: PzlScope) {
+private fun MemberReferenceExpression.declare(parent: FileContextScope) {
 	this.receiver?.declare(parent)
 }
 
 context(_: FileContext)
-private fun MultiValueExpression.declare(parent: PzlScope) {
+private fun MultiValueExpression.declare(parent: FileContextScope) {
 	this.expressions.declares(parent)
 }
 
 context(_: FileContext)
-private fun NonNullAssertionExpression.declare(parent: PzlScope) {
+private fun NonNullAssertionExpression.declare(parent: FileContextScope) {
 	this.receiver.declare(parent)
 }
 
 context(_: FileContext)
-private fun TernaryExpression.declare(parent: PzlScope) {
+private fun TernaryExpression.declare(parent: FileContextScope) {
 	this.condition.declare(parent)
 	this.thenExpression.declare(parent)
 	this.elseExpression.declare(parent)
 }
 
 context(_: FileContext)
-private fun PrefixUnaryExpression.declare(parent: PzlScope) {
+private fun PrefixUnaryExpression.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
 }
 
 context(_: FileContext)
-private fun PostfixUnaryExpression.declare(parent: PzlScope) {
+private fun PostfixUnaryExpression.declare(parent: FileContextScope) {
 	this.expression.declare(parent)
+}
+
+context(_: FileContext)
+private fun Identifier.declare(parent: FileContextScope) {
+	val symbols = parent.lookup(this.value)
 }

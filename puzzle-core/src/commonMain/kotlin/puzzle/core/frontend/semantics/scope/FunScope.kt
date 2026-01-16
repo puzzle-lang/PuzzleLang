@@ -1,12 +1,13 @@
 package puzzle.core.frontend.semantics.scope
 
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.symbol.FunSymbol
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 class FunScope(
-	override val parent: PzlScope?,
+	override val parent: FileContextScope?,
 	override val owner: FunSymbol,
-) : PzlScope {
+) : FileContextScope {
 	
 	private val symbolsMap = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
@@ -15,6 +16,7 @@ class FunScope(
 	override val symbols: Collection<PzlSymbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
+	context(_: FileContext)
 	override fun declare(symbol: PzlSymbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol

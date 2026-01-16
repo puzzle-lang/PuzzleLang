@@ -10,24 +10,24 @@ import puzzle.core.util.PathWrapper
 
 class SyntaxException(message: String) : PzlException(message)
 
-context(context: FileContext)
+context(file: FileContext)
 fun syntaxError(message: String, position: Int): Nothing {
 	val position = calcPosition(position)
-	val message = buildSyntaxExceptionMessage(message, context.sourcePath, position, null)
+	val message = buildSyntaxExceptionMessage(message, file.sourcePath, position, null)
 	throw SyntaxException(message)
 }
 
-context(context: FileContext)
+context(file: FileContext)
 fun syntaxError(message: String, token: PzlToken): Nothing {
 	val position = (token.location as? SourceLocation.File)?.startPosition
-	val message = buildSyntaxExceptionMessage(message, context.sourcePath, position, token)
+	val message = buildSyntaxExceptionMessage(message, file.sourcePath, position, token)
 	throw SyntaxException(message)
 }
 
-context(context: FileContext)
+context(file: FileContext)
 fun syntaxError(message: String, node: PzlAstNode): Nothing {
 	val position = (node.location as? SourceLocation.File)?.startPosition
-	val message = buildSyntaxExceptionMessage(message, context.sourcePath, position, null)
+	val message = buildSyntaxExceptionMessage(message, file.sourcePath, position, null)
 	throw SyntaxException(message)
 }
 

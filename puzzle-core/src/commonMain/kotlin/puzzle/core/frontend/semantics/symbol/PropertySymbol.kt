@@ -4,11 +4,11 @@ import puzzle.core.frontend.ast.declaration.Property
 import puzzle.core.frontend.ast.declaration.PropertyGetter
 import puzzle.core.frontend.ast.declaration.PropertySetter
 import puzzle.core.frontend.semantics.scope.BlockScope
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.FileContextScope
 
 class PropertySymbol(
 	override val name: String,
-	override val owner: PzlScope,
+	override val owner: FileContextScope,
 	override val node: Property,
 	override val visibility: Visibility,
 ) : PzlSymbol {
@@ -18,7 +18,7 @@ class PropertySymbol(
 
 class PropertyGetterSymbol(
 	override val name: String,
-	override val owner: PzlScope,
+	override val owner: FileContextScope,
 	override val node: PropertyGetter,
 	override val visibility: Visibility,
 ) : PzlSymbol {
@@ -30,7 +30,7 @@ class PropertyGetterSymbol(
 
 class PropertySetterSymbol(
 	override val name: String,
-	override val owner: PzlScope,
+	override val owner: FileContextScope,
 	override val node: PropertySetter,
 	override val visibility: Visibility,
 ) : PzlSymbol {

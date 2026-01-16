@@ -23,7 +23,7 @@ object FileLexerScanner {
 
 object TemplateExpressionLexerScanner {
 	
-	context(context: FileContext)
+	context(file: FileContext)
 	fun scan(input: CharArray, position: Int): List<PzlToken> {
 		val lexer = PzlLexer(input, position)
 		return buildList {

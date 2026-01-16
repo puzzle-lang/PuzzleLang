@@ -64,7 +64,7 @@ object StringRecognition : TokenRecognition {
 		return PzlToken(kind, start span position + offset)
 	}
 	
-	context(context: FileContext)
+	context(file: FileContext)
 	private fun parseTemplate(input: CharArray, start: Int, isMultiLine: Boolean, dollarCount: Int): PzlToken {
 		val offset = if (isMultiLine) 3 else 1
 		var textStart = start + dollarCount + offset

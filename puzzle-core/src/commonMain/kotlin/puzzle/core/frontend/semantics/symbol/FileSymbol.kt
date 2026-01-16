@@ -9,7 +9,7 @@ class FileSymbol(
 	override val node: AstFile,
 ) : PzlSymbol {
 	
-	override lateinit var owner: PzlScope
+	override lateinit var owner: PzlScope<*>
 	
 	override lateinit var scope: FileScope
 	

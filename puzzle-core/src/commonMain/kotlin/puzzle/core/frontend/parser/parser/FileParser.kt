@@ -8,7 +8,7 @@ import puzzle.core.frontend.parser.PzlTokenCursor
 import puzzle.core.frontend.parser.parser.declaration.parseDeclarations
 import puzzle.core.frontend.token.kinds.NamespaceKind.IMPORT
 
-context(context: FileContext, cursor: PzlTokenCursor)
+context(file: FileContext, cursor: PzlTokenCursor)
 fun parseFile(): AstFile {
 	val start = cursor.current.location
 	val packageDirective = parsePackageDirective()
@@ -17,7 +17,7 @@ fun parseFile(): AstFile {
 		importDirectives += parseImportDirective()
 	}
 	val declarations = parseDeclarations()
-	val sourcePath = context.sourcePath
+	val sourcePath = file.sourcePath
 	val end = cursor.previous.location
 	return AstFile(
 		name = sourcePath.name.removeSuffix(".pzl"),

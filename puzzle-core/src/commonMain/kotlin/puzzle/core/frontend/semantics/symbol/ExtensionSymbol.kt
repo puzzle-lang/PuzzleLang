@@ -2,10 +2,10 @@ package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.declaration.ExtensionDeclaration
 import puzzle.core.frontend.semantics.scope.ExtensionScope
-import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.FileContextScope
 
 class ExtensionSymbol(
-	override val owner: PzlScope,
+	override val owner: FileContextScope,
 	override val node: ExtensionDeclaration,
 	override val visibility: Visibility,
 ) : PzlSymbol {

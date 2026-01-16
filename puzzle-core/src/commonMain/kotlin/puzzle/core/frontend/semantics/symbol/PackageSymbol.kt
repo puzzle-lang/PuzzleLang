@@ -5,7 +5,7 @@ import puzzle.core.frontend.semantics.scope.PzlScope
 
 class PackageSymbol(
 	override val name: String?,
-	override val owner: PzlScope,
+	override val owner: PzlScope<*>,
 ) : PzlSymbol {
 	
 	override val kind = PzlSymbolKind.PACKAGE

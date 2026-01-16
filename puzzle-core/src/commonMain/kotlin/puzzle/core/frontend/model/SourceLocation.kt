@@ -76,10 +76,10 @@ fun SourceLocation.copy(
 	return SourceLocation.File(start, end)
 }
 
-context(context: FileContext)
+context(file: FileContext)
 fun calcPosition(position: Int): SourcePosition {
-	val line = context.lineStarts.indexOfLast { position >= it }
-	val column = position - context.lineStarts[line]
+	val line = file.lineStarts.indexOfLast { position >= it }
+	val column = position - file.lineStarts[line]
 	return SourcePosition(line + 1, column + 1)
 }
 

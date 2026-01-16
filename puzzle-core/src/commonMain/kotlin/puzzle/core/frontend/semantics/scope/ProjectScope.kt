@@ -1,12 +1,13 @@
 package puzzle.core.frontend.semantics.scope
 
+import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.semantics.symbol.ProjectSymbol
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 class ProjectScope(
 	override val parent: RootScope,
 	override val owner: ProjectSymbol,
-) : PzlScope {
+) : ProjectContextScope {
 	
 	private val symbolsMap = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
@@ -15,6 +16,7 @@ class ProjectScope(
 	override val symbols: Collection<PzlSymbol>
 		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
 	
+	context(_: ProjectContext)
 	override fun declare(symbol: PzlSymbol) {
 		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
 		symbols += symbol

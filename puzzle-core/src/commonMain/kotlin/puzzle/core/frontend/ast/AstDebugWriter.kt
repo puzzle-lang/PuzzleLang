@@ -3,32 +3,24 @@ package puzzle.core.frontend.ast
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.json.Json
 import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
+import puzzle.core.util.json
 import puzzle.core.util.path
 
 object AstDebugWriter {
 	
-	private val json = Json {
-		prettyPrint = true
-		encodeDefaults = true
-		classDiscriminator = "class"
-		ignoreUnknownKeys = true
-		serializersModule = AstSerializersModule
-	}
-	
 	private val lock = Mutex()
 	
-	context(context: RootContext, scope: CoroutineScope)
+	context(root: RootContext, scope: CoroutineScope)
 	suspend fun write(projectPath: PathWrapper) {
 		val buildAstPath = path(projectPath, "build", "ast")
 		if (buildAstPath.exists()) {
 			buildAstPath.deleteAll()
 		}
-		val jobs = context.projects.flatMap { project ->
+		val jobs = root.projects.flatMap { project ->
 			project.modules.flatMap { module ->
 				module.files.mapNotNull { file ->
 					val node = file.node
@@ -72,7 +64,7 @@ object AstDebugWriter {
 		return path(buildAstPath, project.name, module.name, "src", "main", "puzzle", astName)
 	}
 	
-	private suspend fun getAstPath(
+	private fun getAstPath(
 		buildAstPath: PathWrapper,
 		project: ProjectContext,
 		node: AstFile,
