@@ -90,18 +90,18 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 
 context(_: RootContext)
 private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
-	val context = FileContext(false)
-	context(context) {
+	val file = FileContext(false)
+	context(file) {
 		val markStart = markNow()
-		context.sourcePath = path
+		file.sourcePath = path
 		val source = measureTimedValue { path.readText().toCharArray() }
-		context.lineStarts = source.value.getLineStarts()
+		file.lineStarts = source.value.getLineStarts()
 		val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
-		context.tokens = tokens.value
+		file.tokens = tokens.value
 		val node = measureTimedValue { PzlParser.parse() }
-		context.node = node.value
+		file.node = node.value
 		val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
-		context.symbol = symbol.value
+		file.symbol = symbol.value
 		val totalDuration = markStart.elapsedNow()
 		whenEnableInfoFile {
 			printDurations(
@@ -117,7 +117,7 @@ private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
 			)
 		}
 	}
-	return context
+	return file
 }
 
 private fun printDurations(
@@ -144,10 +144,10 @@ private fun printDurations(
 		val charSize = charSize.toString().padStart(6)
 		val tokenSize = tokenSize.toString().padStart(6)
 		val scopeDuration = scopeDuration.format()
-		append("[用时] $totalTime  ")
-		append("[读取] $charSize  $readTime  ")
-		append("[词法] $tokenSize  $lexerTime  $lexerSpeed  ")
-		append("[语法] $parserTime  $parserSpeed  ")
+		append("[用时] $totalTime ")
+		append("[读取] $charSize $readTime ")
+		append("[词法] $tokenSize $lexerTime $lexerSpeed  ")
+		append("[语法] $parserTime $parserSpeed ")
 		append("[语义] $scopeDuration\n")
 	}
 	print(message)

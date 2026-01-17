@@ -2,14 +2,15 @@ package puzzle.core.frontend.semantics.deferred
 
 import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.ast.declaration.*
+import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.scope.BlockScope
 import puzzle.core.frontend.semantics.scope.CtorScope
-import puzzle.core.frontend.semantics.scope.FileContextScope
 import puzzle.core.frontend.semantics.scope.FunScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 
 sealed interface DeferredScope {
 	
-	val scope: FileContextScope
+	val scope: PzlScope<FileContext>
 	
 	val node: PzlAstNode
 }

@@ -1,11 +1,12 @@
 package puzzle.core.frontend.semantics
 
+import puzzle.core.frontend.ast.expression.toIdentifier
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
-import puzzle.core.frontend.semantics.binding.declare
 import puzzle.core.frontend.semantics.binding.declares
+import puzzle.core.frontend.semantics.deferred.deferredBinding
 import puzzle.core.frontend.semantics.scope.*
 import puzzle.core.frontend.semantics.symbol.*
 
@@ -14,7 +15,7 @@ object PzlSymbolBuilder {
 	context(file: FileContext)
 	fun buildFileSymbol(): FileSymbol {
 		val node = file.node
-		val symbol = FileSymbol(node.name, node)
+		val symbol = FileSymbol(node.name.toIdentifier(), node)
 		val scope = FileScope(symbol)
 		symbol.scope = scope
 		node.declarations.declares(scope)
@@ -33,8 +34,8 @@ object PzlSymbolBuilder {
 			}
 		}
 		root.forEachFileContext {
-			this.deferredExpressions.forEach {
-				it.expression.declare(it.parent)
+			context(it) {
+				deferredBinding()
 			}
 		}
 		return symbol
@@ -42,7 +43,7 @@ object PzlSymbolBuilder {
 	
 	context(project: ProjectContext, _: RootContext)
 	private fun buildProjectSymbol(parent: RootScope): ProjectSymbol {
-		val symbol = ProjectSymbol(project.name, parent)
+		val symbol = ProjectSymbol(project.name.toIdentifier(), parent)
 		parent.declare(symbol)
 		val scope = ProjectScope(parent, symbol)
 		symbol.scope = scope
@@ -57,7 +58,7 @@ object PzlSymbolBuilder {
 	
 	context(module: ModuleContext, _: ProjectContext)
 	private fun buildModuleSymbol(parent: ProjectScope): ModuleSymbol {
-		val symbol = ModuleSymbol(module.name, parent)
+		val symbol = ModuleSymbol(module.name.toIdentifier(), parent)
 		parent.declare(symbol)
 		val scope = ModuleScope(parent, symbol)
 		symbol.scope = scope
@@ -79,14 +80,14 @@ object PzlSymbolBuilder {
 		segments.forEach { segment ->
 			var symbol: PackageSymbol? = null
 			if (!needCreate) {
-				symbol = parent.lookup(segment)
+				symbol = parent.lookup(segment.toIdentifier())
 					.find { it is PackageSymbol } as? PackageSymbol
 				if (symbol == null) {
 					needCreate = true
 				}
 			}
 			if (symbol == null) {
-				symbol = PackageSymbol(segment, parent)
+				symbol = PackageSymbol(segment.toIdentifier(), parent)
 				when (parent) {
 					is PackageScope -> parent.declare(symbol)
 					is ModuleScope -> parent.declare(symbol)
@@ -95,7 +96,7 @@ object PzlSymbolBuilder {
 				val scope = PackageScope(parent, symbol)
 				symbol.scope = scope
 			}
-			parent = symbol.scope!!
+			parent = symbol.scope
 		}
 		val symbol = file.symbol
 		when (parent) {
@@ -108,7 +109,7 @@ object PzlSymbolBuilder {
 	}
 	
 	private fun RootContext.forEachFileContext(
-		action: FileContext.() -> Unit,
+		action: (FileContext) -> Unit,
 	) {
 		this.projects.forEach { project ->
 			project.modules.forEach { module ->

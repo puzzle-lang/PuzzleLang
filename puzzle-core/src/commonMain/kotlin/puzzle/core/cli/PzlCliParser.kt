@@ -1,27 +1,28 @@
 package puzzle.core.cli
 
 import puzzle.core.exception.cliError
+import puzzle.core.util.containsType
 
 fun parseCliOptions(args: List<String>): List<PzlCliOption> {
 	return buildList {
 		args.forEach { arg ->
 			this += when {
 				arg.startsWith("--path=") -> {
-					if (this.any { it is PathOption }) {
+					if (this.containsType<PathOption>()) {
 						cliError("重复的选项: --path")
 					}
 					parsePath(arg)
 				}
 				
 				arg.startsWith("--debug-features=") -> {
-					if (this.any { it is DebugFeatureOption }) {
+					if (this.containsType<DebugFeatureOption>()) {
 						cliError("重复的选项: --debug-features")
 					}
 					parseDebugFeatureOption(arg)
 				}
 				
 				arg.startsWith("--infos=") -> {
-					if (this.any { it is InfoOption }) {
+					if (this.containsType<InfoOption>()) {
 						cliError("重复的选项: --infos")
 					}
 					parseReportOption(arg)

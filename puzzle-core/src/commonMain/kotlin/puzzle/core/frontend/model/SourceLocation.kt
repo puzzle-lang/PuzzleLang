@@ -40,6 +40,15 @@ sealed interface SourceLocation {
 		override val end: Int
 			get() = error("内置源位置")
 	}
+	
+	@Serializable
+	object None : SourceLocation {
+		override val start: Int
+			get() = error("位置未知")
+		
+		override val end: Int
+			get() = error("位置未知")
+	}
 }
 
 context(_: FileContext)

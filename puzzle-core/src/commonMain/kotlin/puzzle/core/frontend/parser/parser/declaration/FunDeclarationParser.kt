@@ -1,7 +1,6 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.ast.SymbolToken
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.type.LambdaType
@@ -161,27 +160,30 @@ context(_: FileContext, cursor: PzlTokenCursor)
 private fun tryParseOperatorFunName(): FunName? {
 	if (cursor.match { it.kind in overloadableSymbols }) {
 		val token = cursor.previous
-		return SymbolFunName(SymbolToken(token.kind as SymbolKind, token.location))
+		val kind = token.kind as SymbolKind
+		val name = Identifier(kind.value, token.location)
+		return SymbolFunName(name, kind)
 	}
-	when {
-		cursor.match(LBRACKET, RBRACKET, ASSIGN) -> {
-			val location = cursor.offset(-3).location span cursor.previous.location
-			return MagicFunName(MagicKind.SETTER, location)
-		}
-		
+	
+	val start = cursor.current.location
+	val kind = when {
 		cursor.match(LBRACKET, RBRACKET) -> {
-			val location = cursor.offset(-2).location span cursor.previous.location
-			return MagicFunName(MagicKind.GETTER, location)
+			if (cursor.match(ASSIGN)) {
+				MagicKind.SETTER
+			} else {
+				MagicKind.GETTER
+			}
 		}
 		
-		cursor.match(LT_EQUALS, GT) -> {
-			val location = cursor.offset(-2).location span cursor.previous.location
-			return MagicFunName(MagicKind.COMPARE, location)
+		cursor.match(LT_EQUALS, GT) -> MagicKind.COMPARE
+		
+		cursor.match { it.kind in notOverloadableSymbols } -> {
+			val token = cursor.previous
+			syntaxError("'${token.value}' 运算符不支持被重载", token)
 		}
+		
+		else -> return null
 	}
-	if (cursor.match { it.kind in notOverloadableSymbols }) {
-		val token = cursor.previous
-		syntaxError("'${token.value}' 运算符不支持被重载", cursor.previous)
-	}
-	return null
+	val name = Identifier(kind.value, start span cursor.previous.location)
+	return MagicFunName(name, kind)
 }

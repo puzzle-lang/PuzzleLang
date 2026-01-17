@@ -6,6 +6,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -24,7 +25,7 @@ fun parseTraitDeclaration(meta: DeclarationMeta, start: SourceLocation): TraitDe
 		syntaxError("结构体不支持 with", cursor.previous)
 	}
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.TRAIT)
 	} else MemberDeclarationInfo.Empty
 	if (info.inits.isNotEmpty()) {
 		syntaxError("特征不允许有初始化块", info.inits.first())

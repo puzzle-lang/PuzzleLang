@@ -2,7 +2,6 @@ package puzzle.core.frontend.ast.builtin.builder
 
 import puzzle.core.frontend.ast.AstFile
 import puzzle.core.frontend.ast.PackageDirective
-import puzzle.core.frontend.ast.SymbolToken
 import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.SourceLocation
@@ -27,17 +26,15 @@ class BuiltinAstBuilder {
 		val funName = when {
 			name in magicKindMap -> {
 				MagicFunName(
-					kind = magicKindMap[name]!!,
-					location = SourceLocation.Builtin
+					name = Identifier(name, SourceLocation.Builtin),
+					kind = magicKindMap[name]!!
 				)
 			}
 			
 			SymbolKind.kinds.any { it.value == name } -> {
 				SymbolFunName(
-					symbol = SymbolToken(
-						kind = SymbolKind.kinds.first { it.value == name },
-						location = SourceLocation.Builtin
-					)
+					name = Identifier(name, SourceLocation.Builtin),
+					kind = SymbolKind.kinds.first { it.value == name }
 				)
 			}
 			

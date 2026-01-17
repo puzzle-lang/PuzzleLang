@@ -1,14 +1,13 @@
 package puzzle.core.frontend.semantics.symbol
 
 import puzzle.core.frontend.ast.PzlAstNode
+import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.semantics.scope.PzlScope
 
 sealed interface PzlSymbol {
 	
-	val name: String?
+	val name: Identifier?
 		get() = null
-	
-	val kind: PzlSymbolKind
 	
 	val owner: PzlScope<*>?
 		get() = null
@@ -21,35 +20,26 @@ sealed interface PzlSymbol {
 	
 	val scope: PzlScope<*>?
 		get() = null
+	
+	val kind: PzlSymbolKind
+	
+	val isTypeDeclaration: Boolean
 }
 
 enum class PzlSymbolKind {
-	FUN,
-	CTOR,
+	FUN, CTOR,
 	
-	CLASS,
-	TRAIT,
-	OBJECT,
-	ERROR,
-	STRUCT,
-	ENUM,
-	ANNOTATION,
-	EXTENSION,
-	MIXIN,
-	TYPE_ALIAS,
-	TYPE_PARAMETER,
+	CLASS, TRAIT, OBJECT, ERROR, STRUCT, ENUM, ANNOTATION, EXTENSION, MIXIN, TYPEALIAS,
 	
-	PROPERTY,
-	PROPERTY_GETTER,
-	PROPERTY_SETTER,
+	TYPE_PARAMETER, PARAMETER, ENUM_ENTRY,
+	
+	PROPERTY, PROPERTY_GETTER, PROPERTY_SETTER,
 	
 	LOCAL,
 	
-	ENUM_ENTRY,
+	ROOT, PROJECT, MODULE, FILE, PACKAGE;
 	
-	ROOT,
-	PROJECT,
-	MODULE,
-	FILE,
-	PACKAGE
+	override fun toString(): String {
+		return this.name.lowercase()
+	}
 }

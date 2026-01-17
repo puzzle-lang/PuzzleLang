@@ -4,11 +4,11 @@ import puzzle.core.frontend.ast.statement.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.semantics.scope.BlockScope
-import puzzle.core.frontend.semantics.scope.FileContextScope
+import puzzle.core.frontend.semantics.scope.PzlScope
 import puzzle.core.frontend.semantics.symbol.LocalSymbol
 
 context(_: FileContext)
-fun List<Statement>.declares(parent: FileContextScope) {
+fun List<Statement>.declares(parent: PzlScope<FileContext>) {
 	this.forEach {
 		when (it) {
 			is AssignmentStatement -> it.declare(parent)
@@ -24,18 +24,18 @@ fun List<Statement>.declares(parent: FileContextScope) {
 }
 
 context(_: FileContext)
-private fun AssignmentStatement.declare(parent: FileContextScope) {
+private fun AssignmentStatement.declare(parent: PzlScope<FileContext>) {
 	this.target.declare(parent)
 	this.value.declare(parent)
 }
 
 context(_: FileContext)
-private fun ContextualStatement.declare(parent: FileContextScope) {
+private fun ContextualStatement.declare(parent: PzlScope<FileContext>) {
 	this.arguments.declares(parent)
 }
 
 context(_: FileContext)
-private fun ForStatement.declare(parent: FileContextScope) {
+private fun ForStatement.declare(parent: PzlScope<FileContext>) {
 	this.iterable.declare(parent)
 	val scope = BlockScope(parent)
 	val patterns = when (this.pattern) {
@@ -45,7 +45,7 @@ private fun ForStatement.declare(parent: FileContextScope) {
 	patterns.forEach {
 		if (it.name.isAnonymousBinding) return@forEach
 		val symbol = LocalSymbol(
-			name = it.name.value,
+			name = it.name,
 			owner = scope,
 			node = pattern,
 			visibility = null
@@ -56,31 +56,31 @@ private fun ForStatement.declare(parent: FileContextScope) {
 }
 
 context(_: FileContext)
-private fun IfStatement.declare(parent: FileContextScope) {
+private fun IfStatement.declare(parent: PzlScope<FileContext>) {
 	this.condition.declare(parent)
 	val scope = BlockScope(parent)
 	this.thenBody.declares(scope)
 }
 
 context(_: FileContext)
-private fun InitStatement.declare(parent: FileContextScope) {
+private fun InitStatement.declare(parent: PzlScope<FileContext>) {
 	this.arguments.declares(parent)
 }
 
 context(_: FileContext)
-private fun ExpressionStatement.declare(parent: FileContextScope) {
+private fun ExpressionStatement.declare(parent: PzlScope<FileContext>) {
 	this.expression.declare(parent)
 }
 
 context(_: FileContext)
-private fun WhileStatement.declare(parent: FileContextScope) {
+private fun WhileStatement.declare(parent: PzlScope<FileContext>) {
 	this.condition.declare(parent)
 	val scope = BlockScope(parent)
 	this.body.declares(scope)
 }
 
 context(_: FileContext)
-private fun VariableDeclarationStatement.declare(parent: FileContextScope) {
+private fun VariableDeclarationStatement.declare(parent: PzlScope<FileContext>) {
 	val variables = when (this.variableSpec) {
 		is DestructureVariableSpec -> this.variableSpec.variables
 		is SingleVariableSpec -> listOf(this.variableSpec.variable)
@@ -88,7 +88,7 @@ private fun VariableDeclarationStatement.declare(parent: FileContextScope) {
 	variables.forEach {
 		if (it.name.isAnonymousBinding) return@forEach
 		val symbol = LocalSymbol(
-			name = it.name.value,
+			name = it.name,
 			owner = parent,
 			node = it,
 			visibility = null

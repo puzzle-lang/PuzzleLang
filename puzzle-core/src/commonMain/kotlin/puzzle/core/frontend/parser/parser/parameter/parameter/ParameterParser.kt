@@ -66,7 +66,7 @@ private fun parseParameter(target: ParameterTarget): Parameter {
 		
 		target.allowProperty -> {
 			if (modifiers.isNotEmpty()) {
-				syntaxError("不能在此处添加修饰符", modifiers.first())
+				syntaxError("在此处不能添加修饰符", modifiers.first())
 			} else null
 		}
 		

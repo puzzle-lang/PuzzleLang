@@ -12,7 +12,7 @@ enum class DeclarationTarget(
 		allowType = true,
 		allowTypeVariance = false,
 		allowContext = true,
-		allowErrors = true,
+		allowErrors = true
 	),
 	PROPERTY(
 		label = "属性",

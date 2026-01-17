@@ -7,6 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.type.SuperTypeTarget
 import puzzle.core.frontend.parser.parser.type.parseSuperTypes
@@ -21,7 +22,7 @@ fun parseExtensionDeclaration(meta: DeclarationMeta, start: SourceLocation): Ext
 		.filterIsInstance<SuperTypeReference>()
 	val withTypes = parseWithTypes()
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.EXTENSION)
 	} else MemberDeclarationInfo.Empty
 	if (info.inits.isNotEmpty()) {
 		syntaxError("扩展不允许有初始化块", info.inits.first())

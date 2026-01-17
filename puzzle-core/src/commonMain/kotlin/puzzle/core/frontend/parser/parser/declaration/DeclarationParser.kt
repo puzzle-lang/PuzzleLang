@@ -1,13 +1,11 @@
 package puzzle.core.frontend.parser.parser.declaration
 
 import puzzle.core.exception.syntaxError
-import puzzle.core.frontend.ast.declaration.CtorDeclaration
-import puzzle.core.frontend.ast.declaration.Declaration
-import puzzle.core.frontend.ast.declaration.InitDeclaration
-import puzzle.core.frontend.ast.declaration.TopLevelAllowedDeclaration
+import puzzle.core.frontend.ast.declaration.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.dispatcher.declaration.check
 import puzzle.core.frontend.parser.dispatcher.declaration.member.*
@@ -72,11 +70,15 @@ private fun parseDeclarationDispatcher(): DeclarationDispatcher<*> {
 }
 
 context(_: FileContext, cursor: PzlTokenCursor)
-fun parseMemberDeclarationInfo(): MemberDeclarationInfo {
+fun parseMemberDeclarationInfo(
+	policy: DeclarationMemberPolicy,
+): MemberDeclarationInfo {
 	val declarations = if (cursor.match(RBRACE)) emptyList() else {
 		buildList {
 			do {
-				this += parseMemberDeclaration()
+				this += parseMemberDeclaration().also {
+					it.checkMember(policy)
+				}
 			} while (!cursor.match(RBRACE))
 		}
 	}
@@ -149,3 +151,27 @@ private val DeclarationMeta.start: SourceLocation
 		if (modifiers.isNotEmpty()) return modifiers.first().location
 		return cursor.previous.location
 	}
+
+context(_: FileContext)
+private fun Declaration.checkMember(policy: DeclarationMemberPolicy) {
+	val kind = when {
+		!policy.allowProperty && this is PropertyDeclaration -> "属性"
+		!policy.allowFun && this is FunDeclaration -> "函数"
+		!policy.allowClass && this is ClassDeclaration -> "类"
+		!policy.allowObject && this is ObjectDeclaration -> "单例对象"
+		!policy.allowError && this is ErrorDeclaration -> "错误"
+		!policy.allowTrait && this is TraitDeclaration -> "特征"
+		!policy.allowMixin && this is MixinDeclaration -> "混入"
+		!policy.allowStruct && this is StructDeclaration -> "结构体"
+		!policy.allowEnum && this is EnumDeclaration -> "枚举"
+		!policy.allowAnnotation && this is AnnotationDeclaration -> "注解"
+		!policy.allowExtension && this is ExtensionDeclaration -> "扩展"
+		!policy.allowTypeAlias && this is TypeAliasDeclaration -> "类型别名"
+		!policy.allowCtor && this is CtorDeclaration -> "构造函数"
+		!policy.allowInit && this is InitDeclaration -> "初始化块"
+		else -> null
+	}
+	if (kind != null) {
+		syntaxError("${policy.label}不支持成员$kind", this)
+	}
+}

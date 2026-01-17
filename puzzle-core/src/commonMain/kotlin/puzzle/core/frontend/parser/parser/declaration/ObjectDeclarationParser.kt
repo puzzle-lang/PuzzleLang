@@ -5,6 +5,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
@@ -34,7 +35,7 @@ fun parseObjectDeclaration(meta: DeclarationMeta, start: SourceLocation, isTopLe
 	val superTypes = parseSuperTypes(SuperTypeTarget.OBJECT)
 	val withTypes = parseWithTypes()
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.OBJECT)
 	} else MemberDeclarationInfo.Empty
 	val end = cursor.previous.location
 	return ObjectDeclaration(

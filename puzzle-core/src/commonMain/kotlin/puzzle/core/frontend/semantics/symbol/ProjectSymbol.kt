@@ -1,14 +1,17 @@
 package puzzle.core.frontend.semantics.symbol
 
+import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.semantics.scope.ProjectScope
 import puzzle.core.frontend.semantics.scope.RootScope
 
 class ProjectSymbol(
-	override val name: String,
+	override val name: Identifier,
 	override val owner: RootScope,
 ) : PzlSymbol {
 	
+	override lateinit var scope: ProjectScope
+	
 	override val kind = PzlSymbolKind.PROJECT
 	
-	override var scope: ProjectScope? = null
+	override val isTypeDeclaration = false
 }

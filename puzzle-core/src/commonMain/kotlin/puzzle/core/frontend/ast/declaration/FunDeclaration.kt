@@ -1,7 +1,11 @@
 package puzzle.core.frontend.ast.declaration
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import puzzle.core.frontend.ast.*
+import puzzle.core.frontend.ast.AnnotationCall
+import puzzle.core.frontend.ast.DocComment
+import puzzle.core.frontend.ast.Modifier
+import puzzle.core.frontend.ast.PzlAstNode
 import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.ast.parameter.DeclarationContextSpec
 import puzzle.core.frontend.ast.parameter.Parameter
@@ -10,6 +14,7 @@ import puzzle.core.frontend.ast.statement.Statement
 import puzzle.core.frontend.ast.type.ErrorsSpec
 import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.model.SourceLocation
+import puzzle.core.frontend.token.kinds.SymbolKind
 
 @Serializable
 class FunDeclaration(
@@ -43,24 +48,27 @@ class MultiReturnSpec(
 ) : ReturnSpec
 
 @Serializable
-sealed interface FunName : PzlAstNode
+sealed interface FunName {
+	
+	val name: Identifier
+}
 
 @Serializable
 class IdentifierFunName(
-	val name: Identifier,
-	override val location: SourceLocation = name.location,
+	override val name: Identifier,
 ) : FunName
 
 @Serializable
 class SymbolFunName(
-	val symbol: SymbolToken,
-	override val location: SourceLocation = symbol.location,
+	override val name: Identifier,
+	@Contextual
+	val kind: SymbolKind,
 ) : FunName
 
 @Serializable
 class MagicFunName(
+	override val name: Identifier,
 	val kind: MagicKind,
-	override val location: SourceLocation,
 ) : FunName
 
 @Serializable

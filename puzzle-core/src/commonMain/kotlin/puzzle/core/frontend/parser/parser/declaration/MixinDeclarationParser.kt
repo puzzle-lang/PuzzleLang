@@ -7,6 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -22,7 +23,7 @@ fun parseMixinDeclaration(meta: DeclarationMeta, start: SourceLocation): MixinDe
 	val mixinConstraints = parseMixinConstraints()
 	val withTypes = parseWithTypes()
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.MIXIN)
 	} else MemberDeclarationInfo.Empty
 	if (info.inits.isNotEmpty()) {
 		syntaxError("混入不允许有初始化块", info.inits.first())

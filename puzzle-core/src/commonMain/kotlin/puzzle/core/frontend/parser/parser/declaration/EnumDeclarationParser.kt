@@ -7,6 +7,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -49,7 +50,7 @@ fun parseEnumDeclaration(meta: DeclarationMeta, start: SourceLocation): EnumDecl
 	val entries = parseEnumEntries()
 	val info = when {
 		cursor.match(RBRACE) -> MemberDeclarationInfo.Empty
-		cursor.match(SEMICOLON) -> parseMemberDeclarationInfo()
+		cursor.match(SEMICOLON) -> parseMemberDeclarationInfo(DeclarationMemberPolicy.ENUM)
 		else -> syntaxError("enum 缺少 ';'", cursor.current)
 	}
 	val location = start span cursor.previous.location
@@ -90,7 +91,7 @@ private fun parseEnumEntry(): EnumEntry {
 		}
 	}
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.ENUM_ENTRY)
 	} else MemberDeclarationInfo.Empty
 	val end = cursor.previous.location
 	if (info.ctors.isNotEmpty()) {

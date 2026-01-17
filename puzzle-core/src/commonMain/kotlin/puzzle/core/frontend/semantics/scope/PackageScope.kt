@@ -1,29 +1,27 @@
 package puzzle.core.frontend.semantics.scope
 
+import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.semantics.symbol.PackageSymbol
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 class PackageScope(
-	override val parent: PzlScope<*>?,
+	override val parent: PzlScope<*>,
 	override val owner: PackageSymbol,
-) : ModuleContextScope {
+) : PzlScope<ModuleContext> {
 	
-	private val symbolsMap = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsMap = mutableMapOf<Identifier?, MutableList<PzlSymbol>>()
 	
-	private var cached: List<PzlSymbol>? = null
-	
-	override val symbols: Collection<PzlSymbol>
-		get() = cached ?: symbolsMap.values.flatten().also { cached = it }
+	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
 	context(_: ModuleContext)
 	override fun declare(symbol: PzlSymbol) {
-		val symbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
-		symbols += symbol
-		cached = null
+		val sameNameSymbols = symbolsMap.getOrPut(symbol.name) { mutableListOf() }
+		sameNameSymbols += symbol
+		orderedSymbols += symbol
 	}
 	
-	override fun lookup(name: String): List<PzlSymbol> {
+	override fun lookup(name: Identifier?): List<PzlSymbol> {
 		return symbolsMap[name] ?: emptyList()
 	}
 }

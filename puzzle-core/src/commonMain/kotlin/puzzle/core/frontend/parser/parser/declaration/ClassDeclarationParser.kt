@@ -5,6 +5,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.ModifierTarget
 import puzzle.core.frontend.parser.parser.check
@@ -29,7 +30,7 @@ fun parseClassDeclaration(meta: DeclarationMeta, start: SourceLocation): ClassDe
 	val superTypes = parseSuperTypes(SuperTypeTarget.CLASS)
 	val withTypes = parseWithTypes()
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.CLASS)
 	} else MemberDeclarationInfo.Empty
 	val end = cursor.previous.location
 	return ClassDeclaration(

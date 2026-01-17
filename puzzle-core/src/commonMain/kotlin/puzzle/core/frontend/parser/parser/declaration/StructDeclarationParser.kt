@@ -6,6 +6,7 @@ import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.SourceLocation
 import puzzle.core.frontend.model.span
 import puzzle.core.frontend.parser.PzlTokenCursor
+import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMemberPolicy
 import puzzle.core.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.core.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.core.frontend.parser.parser.expression.parseIdentifier
@@ -31,7 +32,7 @@ fun parseStructDeclaration(meta: DeclarationMeta, start: SourceLocation): Struct
 		syntaxError("结构体不支持 with", cursor.previous)
 	}
 	val info = if (cursor.match(LBRACE)) {
-		parseMemberDeclarationInfo()
+		parseMemberDeclarationInfo(DeclarationMemberPolicy.STRUCT)
 	} else MemberDeclarationInfo.Empty
 	if (info.ctors.isNotEmpty()) {
 		syntaxError("结构体不允许有次构造函数", info.ctors.first())

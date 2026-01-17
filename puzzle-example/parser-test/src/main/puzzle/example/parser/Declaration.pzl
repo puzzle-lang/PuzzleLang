@@ -271,11 +271,6 @@ extension Dog : NameProvider {
     fun name() {
 
     }
-
-    inner class Hello {
-
-        class World
-    }
 }
 
 fun Int.times(other: Int): Int {  }
