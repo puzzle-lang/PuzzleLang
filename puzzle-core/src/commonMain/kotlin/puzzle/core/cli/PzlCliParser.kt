@@ -49,6 +49,10 @@ private val availableDebugFeatures = setOf(
 
 private fun parseDebugFeatureOption(arg: String): DebugFeatureOption {
 	val featuresString = arg.removePrefix("--debug-features=")
+	when (featuresString) {
+		"all" -> return DebugFeatureOption.All
+		"none" -> return DebugFeatureOption.None
+	}
 	if (featuresString == "all") return DebugFeatureOption.All
 	if (featuresString.isBlank()) cliError("--debug-features=<option1,option2,...> 缺少参数")
 	val features = featuresString.split(",")
@@ -77,7 +81,10 @@ private val availableReports = setOf(
 
 private fun parseReportOption(arg: String): InfoOption {
 	val logInfosString = arg.removePrefix("--infos=")
-	if (logInfosString == "all") return InfoOption.All
+	when (logInfosString) {
+		"all" -> return InfoOption.All
+		"none" -> return InfoOption.None
+	}
 	if (logInfosString.isBlank()) cliError("--infos=<option1,option2,...> 缺少参数")
 	val logInfos = logInfosString.split(",")
 	logInfos.forEach { info ->

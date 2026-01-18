@@ -42,8 +42,14 @@ fun parseParameters(target: ParameterTarget): List<Parameter> {
 
 context(_: FileContext)
 private fun List<Parameter>.check() {
+	val names = mutableSetOf<String>()
 	var existsTypeQuantifier = false
 	this.forEach {
+		val name = it.name
+		if (name.value in names) {
+			syntaxError("$name 参数不允许重名", name)
+		}
+		names += name.value
 		if (it.quantifier == null) return@forEach
 		if (existsTypeQuantifier) {
 			syntaxError("只允许使用一个包含数量修饰符的参数", it.quantifier)

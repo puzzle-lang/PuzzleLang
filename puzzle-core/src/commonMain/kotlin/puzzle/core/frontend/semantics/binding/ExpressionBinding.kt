@@ -190,5 +190,5 @@ private fun PostfixUnaryExpression.declare(parent: PzlScope<FileContext>) {
 
 context(_: FileContext)
 private fun Identifier.declare(parent: PzlScope<FileContext>) {
-	val symbols = parent.lookup(this)
+	val symbols = parent.lookup(this.value)
 }

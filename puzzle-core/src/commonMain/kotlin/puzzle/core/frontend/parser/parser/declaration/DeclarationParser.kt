@@ -168,6 +168,7 @@ private fun Declaration.checkMember(policy: DeclarationMemberPolicy) {
 		!policy.allowExtension && this is ExtensionDeclaration -> "扩展"
 		!policy.allowTypeAlias && this is TypeAliasDeclaration -> "类型别名"
 		!policy.allowCtor && this is CtorDeclaration -> "构造函数"
+		!policy.allowNamedCtor && this is CtorDeclaration && this.name != null -> "命名构造函数"
 		!policy.allowInit && this is InitDeclaration -> "初始化块"
 		else -> null
 	}

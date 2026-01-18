@@ -24,7 +24,7 @@ fun syntaxError(message: String, token: PzlToken): Nothing {
 context(file: FileContext)
 fun syntaxError(message: String, node: PzlAstNode?): Nothing {
 	val position = (node?.location as? SourceLocation.File)?.startPosition
-	syntaxError(message, position, null)
+	syntaxError(message, position)
 }
 
 context(file: FileContext)
@@ -34,12 +34,15 @@ private fun syntaxError(
 	token: PzlToken? = null,
 ): Nothing {
 	val message = buildString {
+		append(message)
+		if (token != null) {
+			appendLine(" >> ${token.value} <<")
+		} else {
+			appendLine()
+		}
 		append("错误位置: ")
 		append(file.sourcePath.absolutePath)
 		position?.let { append(":${it.line}:${it.column}") }
-		append(" ")
-		token?.let { append(">> ${it.value} <<") }
-		append(message)
 	}
 	throw SyntaxException(message)
 }

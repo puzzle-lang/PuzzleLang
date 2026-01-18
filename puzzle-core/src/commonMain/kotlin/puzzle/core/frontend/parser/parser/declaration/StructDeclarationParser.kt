@@ -34,9 +34,6 @@ fun parseStructDeclaration(meta: DeclarationMeta, start: SourceLocation): Struct
 	val info = if (cursor.match(LBRACE)) {
 		parseMemberDeclarationInfo(DeclarationMemberPolicy.STRUCT)
 	} else MemberDeclarationInfo.Empty
-	if (info.ctors.isNotEmpty()) {
-		syntaxError("结构体不允许有次构造函数", info.ctors.first())
-	}
 	val end = cursor.previous.location
 	return StructDeclaration(
 		name = name,

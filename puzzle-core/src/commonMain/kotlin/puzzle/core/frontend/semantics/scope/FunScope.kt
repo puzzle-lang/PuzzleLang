@@ -1,6 +1,5 @@
 package puzzle.core.frontend.semantics.scope
 
-import puzzle.core.frontend.ast.expression.Identifier
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
 import puzzle.core.frontend.semantics.symbol.FunSymbol
@@ -11,7 +10,7 @@ class FunScope(
 	override val owner: FunSymbol,
 ) : PzlScope<FileContext> {
 	
-	private val symbolsByName = mutableMapOf<Identifier, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -19,12 +18,12 @@ class FunScope(
 	override fun declare(symbol: PzlSymbol) {
 		val name = symbol.name!!
 		if (name.isAnonymousBinding) return
-		val symbols = symbolsByName.getOrPut(name) { mutableListOf() }
+		val symbols = symbolsByName.getOrPut(name.value) { mutableListOf() }
 		symbols += symbol
 		orderedSymbols += symbol
 	}
 	
-	override fun lookup(name: Identifier?): List<PzlSymbol> {
+	override fun lookup(name: String?): List<PzlSymbol> {
 		return symbolsByName[name] ?: parent.lookup(name)
 	}
 }

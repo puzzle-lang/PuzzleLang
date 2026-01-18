@@ -266,7 +266,7 @@ class Dog : Animation
 
 class Cat : Animation
 
-extension Dog : NameProvider {
+extension Dog : NameProvider as DogNameProvider {
 
     fun name() {
 
@@ -276,8 +276,6 @@ extension Dog : NameProvider {
 fun Int.times(other: Int): Int {  }
 
 class sealed
-
-trait sealed
 
 fun init(import: ((type.import) -> final?)?) {}
 

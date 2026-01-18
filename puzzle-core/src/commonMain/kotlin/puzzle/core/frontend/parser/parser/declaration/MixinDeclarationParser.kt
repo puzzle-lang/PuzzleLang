@@ -1,6 +1,5 @@
 package puzzle.core.frontend.parser.parser.declaration
 
-import puzzle.core.exception.syntaxError
 import puzzle.core.frontend.ast.declaration.MixinDeclaration
 import puzzle.core.frontend.ast.type.NamedType
 import puzzle.core.frontend.model.FileContext
@@ -25,12 +24,6 @@ fun parseMixinDeclaration(meta: DeclarationMeta, start: SourceLocation): MixinDe
 	val info = if (cursor.match(LBRACE)) {
 		parseMemberDeclarationInfo(DeclarationMemberPolicy.MIXIN)
 	} else MemberDeclarationInfo.Empty
-	if (info.inits.isNotEmpty()) {
-		syntaxError("混入不允许有初始化块", info.inits.first())
-	}
-	if (info.ctors.isNotEmpty()) {
-		syntaxError("混入不允许有次构造函数", info.ctors.first())
-	}
 	val end = cursor.previous.location
 	return MixinDeclaration(
 		name = name,

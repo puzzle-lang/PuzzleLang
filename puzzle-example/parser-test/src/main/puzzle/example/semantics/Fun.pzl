@@ -5,6 +5,17 @@ fun main() {
     val name = ""
 }
 
+fun a(a: Int, b: Int) {
+
+}
+
 class Test {
 
+}
+
+enum Number(value: String) {
+    ONE(1),
+    TWO(2);
+
+    ctor (value: Int) : this(value.toString())
 }

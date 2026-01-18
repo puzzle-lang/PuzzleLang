@@ -94,9 +94,6 @@ private fun parseEnumEntry(): EnumEntry {
 		parseMemberDeclarationInfo(DeclarationMemberPolicy.ENUM_ENTRY)
 	} else MemberDeclarationInfo.Empty
 	val end = cursor.previous.location
-	if (info.ctors.isNotEmpty()) {
-		syntaxError("枚举成员不允许有次构造函数", info.ctors.first())
-	}
 	return EnumEntry(
 		name = name,
 		members = info.members,

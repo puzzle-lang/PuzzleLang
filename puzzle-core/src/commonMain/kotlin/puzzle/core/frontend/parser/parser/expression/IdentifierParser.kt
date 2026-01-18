@@ -105,6 +105,10 @@ enum class IdentifierTarget(
 		label = "注解声明",
 		allowAnonymousBinding = false
 	),
+	EXTENSION_AS(
+		label = "扩展别名",
+		allowAnonymousBinding = false
+	),
 	TYPEALIAS(
 		label = "类型别名",
 		allowAnonymousBinding = false
@@ -196,5 +200,5 @@ enum class IdentifierTarget(
 	SETTER_PARAMETER(
 		label = "属性赋值器参数",
 		allowAnonymousBinding = false,
-	)
+	),
 }

@@ -80,7 +80,7 @@ object PzlSymbolBuilder {
 		segments.forEach { segment ->
 			var symbol: PackageSymbol? = null
 			if (!needCreate) {
-				symbol = parent.lookup(segment.toIdentifier())
+				symbol = parent.lookup(segment)
 					.find { it is PackageSymbol } as? PackageSymbol
 				if (symbol == null) {
 					needCreate = true

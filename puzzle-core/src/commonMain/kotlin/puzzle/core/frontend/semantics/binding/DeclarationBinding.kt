@@ -278,6 +278,7 @@ private fun EnumEntry.declare(parent: PzlScope<FileContext>) {
 context(_: FileContext)
 private fun ExtensionDeclaration.declare(parent: PzlScope<FileContext>) {
 	val symbol = ExtensionSymbol(
+		name = this.alias,
 		owner = parent,
 		node = this,
 		visibility = this.modifiers.visibility ?: Visibility.PUBLIC
