@@ -34,6 +34,7 @@ object PzlSymbolBuilder {
 			}
 		}
 		root.forEachFileContext {
+			println(it.node.name)
 			context(it) {
 				deferredBinding()
 			}

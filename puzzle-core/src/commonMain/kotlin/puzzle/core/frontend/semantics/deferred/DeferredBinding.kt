@@ -11,13 +11,13 @@ fun deferredBinding() {
 	file.deferredTypeReferences.forEach {
 	
 	}
-	file.deferredScopes.forEach {
-//		when (it) {
-//			is DeferredCtorScope -> TODO()
-//			is DeferredFunScope -> TODO()
-//			is DeferredGetterScope -> TODO()
-//			is DeferredInitScope -> TODO()
-//			is DeferredSetterScope -> TODO()
-//		}
+	file.deferredScopes.forEach { scope ->
+		when (scope) {
+			is DeferredCtorScope -> scope.node.body
+			is DeferredFunScope -> TODO()
+			is DeferredGetterScope -> TODO()
+			is DeferredInitScope -> TODO()
+			is DeferredSetterScope -> TODO()
+		}
 	}
 }

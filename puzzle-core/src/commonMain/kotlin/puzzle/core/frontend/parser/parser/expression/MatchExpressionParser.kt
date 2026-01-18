@@ -15,6 +15,8 @@ import puzzle.core.frontend.token.kinds.BracketKind.Start.LBRACE
 import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
 import puzzle.core.frontend.token.kinds.ControlFlowKind.ELSE
 import puzzle.core.frontend.token.kinds.ControlFlowKind.IF
+import puzzle.core.frontend.token.kinds.OperatorKind.IN
+import puzzle.core.frontend.token.kinds.OperatorKind.NOT
 import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
 import puzzle.core.frontend.token.kinds.SymbolKind.ARROW
 import puzzle.core.frontend.token.kinds.TypeOperatorKind.AS
@@ -47,9 +49,24 @@ private fun parseMatchPatternExpression(): MatchPatternExpression {
 		val patterns = buildList {
 			do {
 				when {
+					cursor.match(NOT, IS) -> {
+						val type = parseTypeReference()
+						this += IsMatchPattern(true, type)
+					}
+					
 					cursor.match(IS) -> {
 						val type = parseTypeReference()
-						this += IsMatchPattern(type)
+						this += IsMatchPattern(false, type)
+					}
+					
+					cursor.match(NOT, IN) -> {
+						val expression = parseExpressionChain()
+						this += InMatchPattern(true, expression)
+					}
+					
+					cursor.match(IN) -> {
+						val expression = parseExpressionChain()
+						this += InMatchPattern(false, expression)
 					}
 					
 					else -> {

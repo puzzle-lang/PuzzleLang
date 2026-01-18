@@ -16,6 +16,7 @@ fun Expression.declare(parent: PzlScope<FileContext>) {
 		is AsExpression -> this.declare(parent)
 		is BinaryExpression -> this.declare(parent)
 		is ElvisExpression -> this.declare(parent)
+		is OracleExpression -> this.declare(parent)
 		is GroupingExpression -> this.declare(parent)
 		is IfExpression -> this.declare(parent)
 		is InvokeExpression -> this.declare(parent)
@@ -34,16 +35,8 @@ fun Expression.declare(parent: PzlScope<FileContext>) {
 		is TernaryExpression -> this.declare(parent)
 		is PrefixUnaryExpression -> this.declare(parent)
 		is PostfixUnaryExpression -> this.declare(parent)
-		is SuperExpression -> TODO()
-		is ThisExpression -> TODO()
 		is Identifier -> this.declare(parent)
-		is ContinueExpression -> TODO()
-		is BooleanLiteral -> TODO()
-		is CharLiteral -> TODO()
-		is NullLiteral -> TODO()
-		is NumberLiteral -> TODO()
-		is StringLiteral.Text -> TODO()
-		is OracleExpression -> TODO()
+		else -> {}
 	}
 }
 
@@ -60,6 +53,12 @@ private fun BinaryExpression.declare(parent: PzlScope<FileContext>) {
 
 context(_: FileContext)
 private fun ElvisExpression.declare(parent: PzlScope<FileContext>) {
+	this.left.declare(parent)
+	this.right.declare(parent)
+}
+
+context(_: FileContext)
+private fun OracleExpression.declare(parent: PzlScope<FileContext>) {
 	this.left.declare(parent)
 	this.right.declare(parent)
 }

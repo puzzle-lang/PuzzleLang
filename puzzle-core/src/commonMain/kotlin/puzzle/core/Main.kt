@@ -7,42 +7,70 @@ import puzzle.core.exception.PzlException
 import puzzle.core.exception.cliError
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.processFrontend
-import puzzle.core.util.*
+import puzzle.core.util.AnsiStyle
+import puzzle.core.util.CHINESE_SPACE
+import puzzle.core.util.format
+import puzzle.core.util.getCurrentMemoryUsage
 import kotlin.time.measureTime
 
 fun main(vararg args: String) {
-	try {
-		runBlocking(Dispatchers.Default) {
-			val mode = args.firstOrNull()
-				?: return@runBlocking PzlCliMessage.help()
-			when (mode) {
-				"build" -> build(args.drop(1))
-				"help" -> PzlCliMessage.help()
-				"version" -> PzlCliMessage.version()
-				else -> PzlCliMessage.unknown()
+	val root = RootContext()
+	context(root) {
+		try {
+			runBlocking(Dispatchers.Default) {
+				val mode = args.firstOrNull()
+					?: return@runBlocking PzlCliMessage.help()
+				when (mode) {
+					"build" -> build(args.drop(1))
+					"help" -> PzlCliMessage.help()
+					"version" -> PzlCliMessage.version()
+					else -> PzlCliMessage.unknown()
+				}
 			}
+		} catch (e: PzlException) {
+			printPzlException(e)
+		} catch (e: Throwable) {
+			throw e
 		}
-	} catch (e: PzlException) {
-		withAnsiStyle(AnsiStyle.BRIGHT_RED) {
-			println("e: ${e.message}")
-		}
-//		throw e
-	} catch (e: Exception) {
-		throw e
 	}
 }
 
+context(root: RootContext)
 private suspend fun build(args: List<String>) {
-	val root = RootContext()
 	val options = parseCliOptions(args)
 	root.options = options
 	val pathOption = options.findOption<PathOption>() ?: cliError("缺少 --path 选项")
-	context(root) {
-		val duration = measureTime { processFrontend(pathOption) }
-		whenEnableInfoProgress {
-			println("执行用时${CHINESE_SPACE.repeat(7)}: ${duration.format()}")
-			val usage = getCurrentMemoryUsage()
-			println("内存使用 ${"[$usage]".padStart(22)}")
-		}
+	val duration = measureTime { processFrontend(pathOption) }
+	if (info.enableProgress) {
+		println("执行用时${CHINESE_SPACE.repeat(7)}: ${duration.format()}")
+		val usage = getCurrentMemoryUsage()
+		println("内存使用 ${"[$usage]".padStart(22)}")
 	}
+}
+
+context(_: RootContext)
+private fun printPzlException(e: Throwable) {
+	val message = buildString {
+		if (debugFeature.enableAnsiColor) {
+			append(AnsiStyle.RED)
+		}
+		append("错误: ")
+		if (debugFeature.enableErrorStack) {
+			appendLine(e.message)
+			val message = e.stackTraceToString()
+			val index = message.indexOf("\n")
+			if (index == -1) {
+				append(message)
+			} else {
+				append(message.substring(index + 1))
+			}
+		} else {
+			append(e.message)
+		}
+		if (debugFeature.enableAnsiColor) {
+			append(AnsiStyle.RESET)
+		}
+		appendLine()
+	}
+	print(message)
 }

@@ -44,7 +44,9 @@ private fun parsePath(arg: String): PathOption {
 }
 
 private val availableDebugFeatures = setOf(
-	"output-ast-json"
+	"output-ast-json",
+	"ansi-color",
+	"error-stack"
 )
 
 private fun parseDebugFeatureOption(arg: String): DebugFeatureOption {
@@ -68,8 +70,12 @@ private fun parseDebugFeatureOption(arg: String): DebugFeatureOption {
 		.firstOrNull()
 		?.let { cliError("--debug-features=$it 重复的参数") }
 	val enableOutputAstJson = "output-ast-json" in features
+	val enableAnsiColor = "ansi-color" in features
+	val enableErrorStack = "error-stack" in features
 	return DebugFeatureOption(
 		enableOutputAstJson = enableOutputAstJson,
+		enableAnsiColor = enableAnsiColor,
+		enableErrorStack = enableErrorStack
 	)
 }
 

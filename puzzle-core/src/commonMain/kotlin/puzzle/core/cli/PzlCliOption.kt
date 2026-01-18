@@ -10,16 +10,22 @@ class PathOption(
 
 class DebugFeatureOption(
 	val enableOutputAstJson: Boolean,
+	val enableAnsiColor: Boolean,
+	val enableErrorStack: Boolean,
 ) : PzlCliOption {
 	
 	companion object {
 		
 		val All = DebugFeatureOption(
 			enableOutputAstJson = true,
+			enableAnsiColor = true,
+			enableErrorStack = true,
 		)
 		
 		val None = DebugFeatureOption(
 			enableOutputAstJson = false,
+			enableAnsiColor = false,
+			enableErrorStack = false,
 		)
 	}
 }
@@ -49,39 +55,15 @@ class InfoOption(
 private var debugFeatureOption: DebugFeatureOption? = null
 
 context(root: RootContext)
-fun getDebugFeatureOption(): DebugFeatureOption {
-	if (debugFeatureOption == null) {
-		debugFeatureOption = root.options.findOption() ?: DebugFeatureOption.None
+val debugFeature: DebugFeatureOption
+	get() = debugFeatureOption ?: (root.options.findOption() ?: DebugFeatureOption.None).also {
+		debugFeatureOption = it
 	}
-	return debugFeatureOption!!
-}
 
 private var infoOption: InfoOption? = null
 
 context(root: RootContext)
-fun getInfoOption(): InfoOption {
-	if (infoOption == null) {
-		infoOption = root.options.findOption() ?: InfoOption.None
+val info: InfoOption
+	get() = infoOption ?: (root.options.findOption() ?: InfoOption.None).also {
+		infoOption = it
 	}
-	return infoOption!!
-}
-
-context(root: RootContext)
-inline fun <R> whenEnableDebugFeatureOutputAstJson(block: () -> R): R? {
-	return if (getDebugFeatureOption().enableOutputAstJson) block() else null
-}
-
-context(root: RootContext)
-inline fun <R> whenEnableInfoProgress(block: () -> R): R? {
-	return if (getInfoOption().enableProgress) block() else null
-}
-
-context(root: RootContext)
-inline fun <R> whenEnableInfoIgnore(block: () -> R): R? {
-	return if (getInfoOption().enableIgnore) block() else null
-}
-
-context(root: RootContext)
-inline fun <R> whenEnableInfoFile(block: () -> R): R? {
-	return if (getInfoOption().enableFile) block() else null
-}

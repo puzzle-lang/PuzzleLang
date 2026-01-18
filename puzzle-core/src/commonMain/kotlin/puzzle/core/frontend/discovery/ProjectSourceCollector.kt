@@ -3,7 +3,7 @@
 package puzzle.core.frontend.discovery
 
 import kotlinx.serialization.json.Json
-import puzzle.core.cli.whenEnableInfoIgnore
+import puzzle.core.cli.info
 import puzzle.core.exception.configError
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.util.PathWrapper
@@ -49,7 +49,7 @@ object ProjectSourceCollector {
 				moduleSources = moduleSources,
 			)
 		}
-		whenEnableInfoIgnore {
+		if (info.enableIgnore) {
 			projectSources.printIgnoreRules()
 		}
 		

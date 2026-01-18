@@ -1,21 +1,12 @@
 package puzzle.core.util
 
-fun withAnsiStyle(
+fun getAnsiString(
+	message: String,
 	vararg styles: AnsiStyle,
-	block: () -> Unit,
-) {
-	styles.forEach {
-		setAnsiStyle(it)
-	}
-	try {
-		block()
-	} finally {
-		setAnsiStyle(AnsiStyle.RESET)
-	}
-}
-
-private fun setAnsiStyle(style: AnsiStyle) {
-	print(style.code)
+): String {
+	if (styles.isEmpty()) return message
+	val styles = styles.joinToString("")
+	return "$styles$message${AnsiStyle.RESET}"
 }
 
 enum class AnsiStyle(val code: String) {
@@ -78,5 +69,9 @@ enum class AnsiStyle(val code: String) {
 	BG_BRIGHT_BLUE("\u001B[104m"),
 	BG_BRIGHT_MAGENTA("\u001B[105m"),
 	BG_BRIGHT_CYAN("\u001B[106m"),
-	BG_BRIGHT_WHITE("\u001B[107m"),
+	BG_BRIGHT_WHITE("\u001B[107m");
+	
+	override fun toString(): String {
+		return this.code
+	}
 }

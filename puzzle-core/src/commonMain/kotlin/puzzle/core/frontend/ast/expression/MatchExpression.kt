@@ -50,5 +50,12 @@ class ExpressionMatchPattern(
 
 @Serializable
 class IsMatchPattern(
+	val negated: Boolean,
 	val type: TypeReference,
+) : MatchPattern
+
+@Serializable
+class InMatchPattern(
+	val negated: Boolean,
+	val expression: Expression,
 ) : MatchPattern
