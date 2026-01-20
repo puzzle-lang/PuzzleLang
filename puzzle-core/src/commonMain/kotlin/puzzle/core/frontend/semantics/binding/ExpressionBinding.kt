@@ -1,9 +1,13 @@
 package puzzle.core.frontend.semantics.binding
 
+import puzzle.core.frontend.ast.ImportScope
 import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.scope.BlockScope
 import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.findFileScope
+import puzzle.core.frontend.semantics.scope.findRootScope
+import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 context(_: FileContext)
 fun List<Expression>.declares(parent: PzlScope<FileContext>) {
@@ -189,5 +193,24 @@ private fun PostfixUnaryExpression.declare(parent: PzlScope<FileContext>) {
 
 context(_: FileContext)
 private fun Identifier.declare(parent: PzlScope<FileContext>) {
-	val symbols = parent.lookup(this.value)
+	parent.lookupSymbol(this.value)
+}
+
+context(file: FileContext)
+private fun PzlScope<FileContext>.lookupSymbol(name: String): PzlSymbol {
+	var symbols = this.lookupLocal(name)
+	if (symbols.isNotEmpty()) {
+		return symbols.last()
+	}
+	val fileScope = this.findFileScope()
+	val segments = fileScope.owner.node.importDirectives.filter { directive ->
+		if (directive.scope != ImportScope.SINGLE) return@filter false
+		if (directive.alias?.value == name) return@filter true
+		directive.segments.last() == name
+	}.firstOrNull()?.segments
+	if (segments != null) {
+		val rootScope = fileScope.findRootScope()
+		file.parent
+	}
+	TODO()
 }

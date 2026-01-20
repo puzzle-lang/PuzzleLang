@@ -9,19 +9,19 @@ class PackageScope(
 	override val owner: PackageSymbol,
 ) : PzlScope<ModuleContext> {
 	
-	private val symbolsMap = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
 	context(_: ModuleContext)
 	override fun declare(symbol: PzlSymbol) {
 		val name = symbol.name!!
-		val sameNameSymbols = symbolsMap.getOrPut(name.value) { mutableListOf() }
+		val sameNameSymbols = symbolsByName.getOrPut(name.value) { mutableListOf() }
 		sameNameSymbols += symbol
 		orderedSymbols += symbol
 	}
 	
-	override fun lookup(name: String?): List<PzlSymbol> {
-		return symbolsMap[name] ?: emptyList()
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
+		return symbolsByName[name] ?: emptyList()
 	}
 }

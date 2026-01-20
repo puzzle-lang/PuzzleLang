@@ -1,12 +1,29 @@
 package puzzle.core.util
 
-fun getAnsiString(
-	message: String,
-	vararg styles: AnsiStyle,
-): String {
-	if (styles.isEmpty()) return message
-	val styles = styles.joinToString("")
-	return "$styles$message${AnsiStyle.RESET}"
+import puzzle.core.cli.debugFeature
+import puzzle.core.frontend.model.Context
+
+fun String.toAnsiString(style: AnsiStyle, vararg styles: AnsiStyle): String {
+	if (!debugFeature.enableAnsiColor) return this
+	val styles = arrayOf(style, *styles).joinToString("")
+	return "$styles$this${AnsiStyle.RESET}"
+}
+
+fun StringBuilder.beginAnsi(style: AnsiStyle, vararg styles: AnsiStyle) {
+	if (!debugFeature.enableAnsiColor) return
+	val styles = arrayOf(AnsiStyle.RESET, style, *styles).joinToString("")
+	this.append(styles)
+}
+
+fun StringBuilder.appendAnsi(style: AnsiStyle, vararg styles: AnsiStyle) {
+	if (!debugFeature.enableAnsiColor) return
+	val styles = arrayOf(style, *styles).joinToString("")
+	this.append(styles)
+}
+
+fun StringBuilder.endAnsi() {
+	if (!debugFeature.enableAnsiColor) return
+	this.append(AnsiStyle.RESET)
 }
 
 enum class AnsiStyle(val code: String) {

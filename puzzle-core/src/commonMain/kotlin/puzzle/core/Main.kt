@@ -7,38 +7,31 @@ import puzzle.core.exception.PzlException
 import puzzle.core.exception.cliError
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.processFrontend
-import puzzle.core.util.AnsiStyle
-import puzzle.core.util.CHINESE_SPACE
-import puzzle.core.util.format
-import puzzle.core.util.getCurrentMemoryUsage
+import puzzle.core.util.*
 import kotlin.time.measureTime
 
 fun main(vararg args: String) {
-	val root = RootContext()
-	context(root) {
-		try {
-			runBlocking(Dispatchers.Default) {
-				val mode = args.firstOrNull()
-					?: return@runBlocking PzlCliMessage.help()
-				when (mode) {
-					"build" -> build(args.drop(1))
-					"help" -> PzlCliMessage.help()
-					"version" -> PzlCliMessage.version()
-					else -> PzlCliMessage.unknown()
-				}
+	try {
+		runBlocking(Dispatchers.Default) {
+			val mode = args.firstOrNull()
+				?: return@runBlocking PzlCliMessage.help()
+			when (mode) {
+				"build" -> build(args.drop(1))
+				"help" -> PzlCliMessage.help()
+				"version" -> PzlCliMessage.version()
+				else -> PzlCliMessage.unknown()
 			}
-		} catch (e: PzlException) {
-			printPzlException(e)
-		} catch (e: Throwable) {
-			throw e
 		}
+	} catch (e: PzlException) {
+		printPzlException(e)
+	} catch (e: Throwable) {
+		throw e
 	}
 }
 
-context(root: RootContext)
 private suspend fun build(args: List<String>) {
 	val options = parseCliOptions(args)
-	root.options = options
+	RootContext.options = options
 	val pathOption = options.findOption<PathOption>() ?: cliError("缺少 --path 选项")
 	val duration = measureTime { processFrontend(pathOption) }
 	if (info.enableProgress) {
@@ -48,12 +41,9 @@ private suspend fun build(args: List<String>) {
 	}
 }
 
-context(_: RootContext)
 private fun printPzlException(e: Throwable) {
 	val message = buildString {
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.RED)
-		}
+		beginAnsi(AnsiStyle.RED)
 		append("错误: ")
 		if (debugFeature.enableErrorStack) {
 			appendLine(e.message)
@@ -67,9 +57,7 @@ private fun printPzlException(e: Throwable) {
 		} else {
 			append(e.message)
 		}
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.RESET)
-		}
+		endAnsi()
 		appendLine()
 	}
 	print(message)

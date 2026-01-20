@@ -9,6 +9,17 @@ import puzzle.core.frontend.semantics.PzlSymbolBuilder
 object BuiltinAstGenerator {
 	
 	fun generate(): ProjectContext {
+		return ProjectContext().apply {
+			this.name = "puzzle-builtin"
+			this.builtin = true
+			this.modules = listOf(
+				generateBuiltinCoreModule()
+			)
+		}
+	}
+	
+	context(project: ProjectContext)
+	private fun generateBuiltinCoreModule(): ModuleContext {
 		val nodes = listOf(
 			generateAnyAst(),
 			generateComparableAst(),
@@ -17,22 +28,19 @@ object BuiltinAstGenerator {
 			generateBooleanAst(),
 			generateStringAst()
 		)
-		val puzzleBuiltinCore = ModuleContext(
-			name = "puzzle-builtin-core",
-			path = null,
-			builtin = true,
-			files = nodes.map { node ->
-				FileContext(true).apply {
+		return ModuleContext().apply {
+			val module = this
+			this.name = "puzzle-builtin-core"
+			this.builtin = true
+			this.parent = project
+			this.files = nodes.map { node ->
+				FileContext().apply {
+					this.builtin = true
+					this.parent = module
 					this.node = node
 					this.symbol = PzlSymbolBuilder.buildFileSymbol()
 				}
 			}
-		)
-		return ProjectContext(
-			name = "puzzle-builtin",
-			path = null,
-			builtin = true,
-			modules = listOf(puzzleBuiltinCore)
-		)
+		}
 	}
 }

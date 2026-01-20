@@ -27,6 +27,10 @@ fun syntaxError(message: String, node: PzlAstNode?): Nothing {
 	syntaxError(message, position)
 }
 
+fun syntaxError(message: String): Nothing {
+	throw SyntaxException(message)
+}
+
 context(file: FileContext)
 private fun syntaxError(
 	message: String,
@@ -41,7 +45,7 @@ private fun syntaxError(
 			appendLine()
 		}
 		append("错误位置: ")
-		append(file.sourcePath.absolutePath)
+		append(file.path.absolutePath)
 		position?.let { append(":${it.line}:${it.column}") }
 	}
 	throw SyntaxException(message)

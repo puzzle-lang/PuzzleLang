@@ -8,8 +8,8 @@ import puzzle.core.frontend.ast.parameter.ParameterReference
 import puzzle.core.frontend.ast.parameter.TypeParameter
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
-import puzzle.core.frontend.semantics.deferred.DeferredExpression
-import puzzle.core.frontend.semantics.deferred.DeferredTypeReference
+import puzzle.core.frontend.semantics.deferred.DeferredExpressionDeclarer
+import puzzle.core.frontend.semantics.deferred.DeferredTypeReferenceDeclarer
 import puzzle.core.frontend.semantics.scope.PzlScope
 import puzzle.core.frontend.semantics.symbol.*
 
@@ -24,7 +24,7 @@ fun List<Parameter>.declare(parent: PzlScope<FileContext>) {
 		)
 		parent.declare(symbol)
 		if (it.defaultExpression != null) {
-			file.deferredExpressions += DeferredExpression(parent, it.defaultExpression)
+			file.deferredDeclarers += DeferredExpressionDeclarer(parent, it.defaultExpression)
 		}
 	}
 }
@@ -58,7 +58,7 @@ fun List<TypeParameter>.declares(parent: PzlScope<FileContext>) {
 		)
 		parent.declare(symbol)
 		if (it.defaultType != null) {
-			file.deferredTypeReferences += DeferredTypeReference(parent, it.defaultType)
+			file.deferredDeclarers += DeferredTypeReferenceDeclarer(parent, it.defaultType)
 		}
 	}
 }

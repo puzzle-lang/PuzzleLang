@@ -17,7 +17,7 @@ fun parseFile(): AstFile {
 		importDirectives += parseImportDirective()
 	}
 	val declarations = parseDeclarations()
-	val sourcePath = file.sourcePath
+	val sourcePath = file.path
 	val end = cursor.previous.location
 	return AstFile(
 		name = sourcePath.name.removeSuffix(".pzl"),

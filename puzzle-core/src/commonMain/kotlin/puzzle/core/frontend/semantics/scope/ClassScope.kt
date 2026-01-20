@@ -11,7 +11,7 @@ class ClassScope(
 	override val owner: ClassSymbol,
 ) : PzlScope<FileContext>, InitContainer {
 	
-	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -29,5 +29,9 @@ class ClassScope(
 	
 	override fun lookup(name: String?): List<PzlSymbol> {
 		return symbolsByName[name] ?: parent.lookup(name)
+	}
+	
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
+		return symbolsByName[name] ?: emptyList()
 	}
 }

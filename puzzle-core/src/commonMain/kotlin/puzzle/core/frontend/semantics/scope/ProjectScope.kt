@@ -9,18 +9,19 @@ class ProjectScope(
 	override val owner: ProjectSymbol,
 ) : PzlScope<ProjectContext> {
 	
-	private val symbolsMap = mutableMapOf<String, PzlSymbol>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
 	context(_: ProjectContext)
 	override fun declare(symbol: PzlSymbol) {
 		val name = symbol.name!!
-		symbolsMap[name.value] = symbol
+		val sameNameSymbols = symbolsByName.getOrPut(name.value) { mutableListOf() }
+		sameNameSymbols += symbol
 		orderedSymbols += symbol
 	}
 	
-	override fun lookup(name: String?): List<PzlSymbol> {
-		return symbolsMap[name]?.let { listOf(it) } ?: parent.lookup(name)
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
+		return symbolsByName[name] ?: emptyList()
 	}
 }

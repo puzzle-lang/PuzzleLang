@@ -6,7 +6,6 @@ import puzzle.core.frontend.model.ModuleContext
 import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.semantics.binding.declares
-import puzzle.core.frontend.semantics.deferred.deferredBinding
 import puzzle.core.frontend.semantics.scope.*
 import puzzle.core.frontend.semantics.symbol.*
 
@@ -22,30 +21,32 @@ object PzlSymbolBuilder {
 		return symbol
 	}
 	
-	context(root: RootContext)
 	fun buildRootSymbol(): RootSymbol {
 		val symbol = RootSymbol()
 		val scope = RootScope(symbol)
 		symbol.scope = scope
-		root.projects.forEach { project ->
+		RootContext.projects.forEach { project ->
 			context(project) {
 				val symbol = buildProjectSymbol(scope)
-				scope.declare(symbol)
+				context(RootContext) {
+					scope.declare(symbol)
+				}
 			}
 		}
-		root.forEachFileContext {
-			println(it.node.name)
-			context(it) {
-				deferredBinding()
+		forEachAllFileContext { file ->
+			file.deferredDeclarers.forEach {
+				it.declares()
 			}
 		}
 		return symbol
 	}
 	
-	context(project: ProjectContext, _: RootContext)
+	context(project: ProjectContext)
 	private fun buildProjectSymbol(parent: RootScope): ProjectSymbol {
 		val symbol = ProjectSymbol(project.name.toIdentifier(), parent)
-		parent.declare(symbol)
+		context(RootContext) {
+			parent.declare(symbol)
+		}
 		val scope = ProjectScope(parent, symbol)
 		symbol.scope = scope
 		project.modules.forEach { module ->
@@ -109,13 +110,13 @@ object PzlSymbolBuilder {
 		return symbol
 	}
 	
-	private fun RootContext.forEachFileContext(
-		action: (FileContext) -> Unit,
+	private fun forEachAllFileContext(
+		action: context(FileContext) (FileContext) -> Unit,
 	) {
-		this.projects.forEach { project ->
+		RootContext.projects.forEach { project ->
 			project.modules.forEach { module ->
 				module.files.forEach { file ->
-					action(file)
+					action(file, file)
 				}
 			}
 		}

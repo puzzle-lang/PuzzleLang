@@ -12,7 +12,7 @@ class FileScope(
 	
 	override lateinit var parent: PzlScope<*>
 	
-	private val symbolsByName = mutableMapOf<String, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -27,6 +27,6 @@ class FileScope(
 	}
 	
 	override fun lookup(name: String?): List<PzlSymbol> {
-		return symbolsByName[name] ?: emptyList()
+		return symbolsByName[name] ?: parent.lookup(name)
 	}
 }

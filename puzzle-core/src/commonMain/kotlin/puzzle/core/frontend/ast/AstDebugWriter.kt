@@ -14,13 +14,13 @@ object AstDebugWriter {
 	
 	private val lock = Mutex()
 	
-	context(root: RootContext, scope: CoroutineScope)
+	context(scope: CoroutineScope)
 	suspend fun write(projectPath: PathWrapper) {
 		val buildAstPath = path(projectPath, "build", "ast")
 		if (buildAstPath.exists()) {
 			buildAstPath.deleteAll()
 		}
-		val jobs = root.projects.flatMap { project ->
+		val jobs = RootContext.projects.flatMap { project ->
 			project.modules.flatMap { module ->
 				module.files.mapNotNull { file ->
 					val node = file.node

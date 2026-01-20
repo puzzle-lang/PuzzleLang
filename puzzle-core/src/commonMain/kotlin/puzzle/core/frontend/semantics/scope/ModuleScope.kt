@@ -9,7 +9,7 @@ class ModuleScope(
 	override val owner: ModuleSymbol?,
 ) : PzlScope<ModuleContext> {
 	
-	private val symbolsByName = mutableMapOf<String, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -21,7 +21,7 @@ class ModuleScope(
 		orderedSymbols += symbol
 	}
 	
-	override fun lookup(name: String?): List<PzlSymbol> {
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
 		return symbolsByName[name] ?: emptyList()
 	}
 }

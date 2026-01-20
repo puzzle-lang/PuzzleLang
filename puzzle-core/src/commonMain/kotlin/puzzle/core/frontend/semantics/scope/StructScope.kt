@@ -11,7 +11,7 @@ class StructScope(
 	override val owner: StructSymbol,
 ) : PzlScope<FileContext>, InitContainer {
 	
-	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -29,5 +29,9 @@ class StructScope(
 	
 	override fun lookup(name: String?): List<PzlSymbol> {
 		return symbolsByName[name] ?: parent.lookup(name)
+	}
+	
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
+		return symbolsByName[name] ?: emptyList()
 	}
 }

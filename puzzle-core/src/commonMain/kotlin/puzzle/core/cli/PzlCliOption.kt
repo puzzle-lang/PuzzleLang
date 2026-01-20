@@ -54,16 +54,14 @@ class InfoOption(
 
 private var debugFeatureOption: DebugFeatureOption? = null
 
-context(root: RootContext)
 val debugFeature: DebugFeatureOption
-	get() = debugFeatureOption ?: (root.options.findOption() ?: DebugFeatureOption.None).also {
+	get() = debugFeatureOption ?: (RootContext.options.findOption() ?: DebugFeatureOption.None).also {
 		debugFeatureOption = it
 	}
 
 private var infoOption: InfoOption? = null
 
-context(root: RootContext)
 val info: InfoOption
-	get() = infoOption ?: (root.options.findOption() ?: InfoOption.None).also {
+	get() = infoOption ?: (RootContext.options.findOption() ?: InfoOption.None).also {
 		infoOption = it
 	}

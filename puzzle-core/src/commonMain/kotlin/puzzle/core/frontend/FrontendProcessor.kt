@@ -1,9 +1,6 @@
 package puzzle.core.frontend
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import puzzle.core.cli.PathOption
 import puzzle.core.cli.debugFeature
 import puzzle.core.cli.info
@@ -12,8 +9,6 @@ import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
 import puzzle.core.frontend.lexer.FileLexerScanner
 import puzzle.core.frontend.model.FileContext
-import puzzle.core.frontend.model.ModuleContext
-import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.parser.PzlParser
 import puzzle.core.frontend.semantics.PzlSymbolBuilder
@@ -23,41 +18,28 @@ import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
-context(root: RootContext)
 suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	val projectPath = path(pathOption.path)
-	val rootSource = measureTimedValue { ProjectSourceCollector.collect(projectPath) }
+	val collectDuration = measureTime { ProjectSourceCollector.collect(projectPath) }
 	if (info.enableProgress) {
-		println("项目源收集用时${CHINESE_SPACE.repeat(4)}: ${rootSource.duration.format()}")
+		println("项目源收集用时${CHINESE_SPACE.repeat(4)}: ${collectDuration.format()}")
 	}
 	val processStart = markNow()
-	val maxPathLength = rootSource.value.maxPathLength
-	val jobs = rootSource.value.projectSources.map { project ->
+	RootContext.projects.map { project ->
 		async(Dispatchers.Default) {
-			val jobs = project.moduleSources.map { module ->
-				async(Dispatchers.Default) {
-					val jobs = module.sourcePaths.map { path ->
-						async(Dispatchers.Default) {
-							processFile(path, maxPathLength)
+			project.modules.map { module ->
+				launch(Dispatchers.Default) {
+					module.files.map { file ->
+						launch(Dispatchers.Default) {
+							context(file) {
+								compileFile()
+							}
 						}
-					}
-					ModuleContext(
-						name = module.name,
-						path = module.path,
-						builtin = false,
-						files = jobs.awaitAll()
-					)
+					}.joinAll()
 				}
-			}
-			ProjectContext(
-				name = project.name,
-				path = project.path,
-				builtin = false,
-				modules = jobs.awaitAll()
-			)
+			}.joinAll()
 		}
-	}
-	val projects = jobs.awaitAll()
+	}.joinAll()
 	val processDuration = processStart.elapsedNow()
 	if (info.enableProgress) {
 		println("项目源代码分析用时${CHINESE_SPACE.repeat(2)}: ${processDuration.format()}")
@@ -67,7 +49,7 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	if (info.enableProgress) {
 		println("内建类型生成用时${CHINESE_SPACE.repeat(3)}: ${builtinProject.duration.format()}")
 	}
-	root.projects = projects + builtinProject.value
+	RootContext.projects += builtinProject.value
 	
 	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
 	if (info.enableProgress) {
@@ -84,42 +66,35 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 	}
 }
 
-context(_: RootContext)
-private fun processFile(path: PathWrapper, maxPathLength: Int): FileContext {
-	val file = FileContext(false)
-	context(file) {
-		val markStart = markNow()
-		file.sourcePath = path
-		val source = measureTimedValue { path.readText().toCharArray() }
-		file.lineStarts = source.value.getLineStarts()
-		val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
-		file.tokens = tokens.value
-		val node = measureTimedValue { PzlParser.parse() }
-		file.node = node.value
-		val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
-		file.symbol = symbol.value
-		if (info.enableFile) {
-			val totalDuration = markStart.elapsedNow()
-			printDurations(
-				path = path,
-				maxPathLength = maxPathLength,
-				charSize = source.value.size,
-				tokenSize = tokens.value.size,
-				totalDuration = totalDuration,
-				readDuration = source.duration,
-				lexerDuration = tokens.duration,
-				parserDuration = node.duration,
-				scopeDuration = symbol.duration
-			)
-		}
+context(file: FileContext)
+private fun compileFile() {
+	val markStart = markNow()
+	val source = measureTimedValue { file.path.readText().toCharArray() }
+	file.lineStarts = source.value.getLineStarts()
+	val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
+	file.tokens = tokens.value
+	val node = measureTimedValue { PzlParser.parse() }
+	file.node = node.value
+	val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
+	file.symbol = symbol.value
+	if (info.enableFile) {
+		val totalDuration = markStart.elapsedNow()
+		printDurations(
+			path = file.path,
+			charSize = source.value.size,
+			tokenSize = tokens.value.size,
+			totalDuration = totalDuration,
+			readDuration = source.duration,
+			lexerDuration = tokens.duration,
+			parserDuration = node.duration,
+			scopeDuration = symbol.duration
+		)
 	}
-	return file
 }
 
-context(root: RootContext)
+context(_: FileContext)
 private fun printDurations(
 	path: PathWrapper,
-	maxPathLength: Int,
 	charSize: Int,
 	tokenSize: Int,
 	totalDuration: Duration,
@@ -130,14 +105,10 @@ private fun printDurations(
 ) {
 	val message = buildString {
 		val path = path.absolutePath
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append(path)
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_CYAN)
-		}
-		append(" ${"─".repeat(maxPathLength - path.length + 2)}> ")
+		append(path.toAnsiString(AnsiStyle.BRIGHT_BLUE, AnsiStyle.UNDERLINE))
+		appendAnsi(AnsiStyle.UNDERLINE_OFF)
+		val maxPathLength = RootContext.maxPathLength
+		append(" ${"-".repeat(maxPathLength - path.length + 2)}> ".toAnsiString(AnsiStyle.BRIGHT_CYAN))
 		val totalTime = totalDuration.format()
 		val readTime = readDuration.format()
 		val lexerTime = lexerDuration.format()
@@ -147,49 +118,17 @@ private fun printDurations(
 		val charSize = charSize.toString().padStart(6)
 		val tokenSize = tokenSize.toString().padStart(6)
 		val scopeDuration = scopeDuration.format()
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_GREEN)
-		}
-		append("[总计] ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append("$totalTime  ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_GREEN)
-		}
-		append("[读取] ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append("$charSize $readTime  ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_GREEN)
-		}
-		append("[词法] ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append("$tokenSize $lexerTime $lexerSpeed  ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_GREEN)
-		}
-		append("[语法] ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append("$parserTime $parserSpeed  ")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_GREEN)
-		}
-		append("[语义]")
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.BRIGHT_WHITE)
-		}
-		append(scopeDuration)
-		if (debugFeature.enableAnsiColor) {
-			append(AnsiStyle.RESET)
-		}
+		append("[总计] ".toAnsiString(AnsiStyle.BRIGHT_GREEN))
+		append("$totalTime  ".toAnsiString(AnsiStyle.BRIGHT_WHITE))
+		append("[读取] ".toAnsiString(AnsiStyle.BRIGHT_GREEN))
+		append("$charSize $readTime  ".toAnsiString(AnsiStyle.BRIGHT_WHITE))
+		append("[词法] ".toAnsiString(AnsiStyle.BRIGHT_GREEN))
+		append("$tokenSize $lexerTime $lexerSpeed  ".toAnsiString(AnsiStyle.BRIGHT_WHITE))
+		append("[语法] ".toAnsiString(AnsiStyle.BRIGHT_GREEN))
+		append("$parserTime $parserSpeed  ".toAnsiString(AnsiStyle.BRIGHT_WHITE))
+		append("[语义]".toAnsiString(AnsiStyle.BRIGHT_GREEN))
+		append(scopeDuration.toAnsiString(AnsiStyle.BRIGHT_WHITE))
+		endAnsi()
 		appendLine()
 	}
 	print(message)

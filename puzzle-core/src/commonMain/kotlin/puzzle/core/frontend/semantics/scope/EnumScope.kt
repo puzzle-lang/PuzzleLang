@@ -7,11 +7,11 @@ import puzzle.core.frontend.semantics.symbol.EnumSymbol
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 class EnumScope(
-	override val parent: PzlScope<FileContext>?,
+	override val parent: PzlScope<FileContext>,
 	override val owner: EnumSymbol,
 ) : PzlScope<FileContext>, InitContainer {
 	
-	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	
@@ -28,6 +28,10 @@ class EnumScope(
 	}
 	
 	override fun lookup(name: String?): List<PzlSymbol> {
-		return symbolsByName[name] ?: parent?.lookup(name) ?: emptyList()
+		return symbolsByName[name] ?: parent.lookup(name)
+	}
+	
+	override fun lookupLocal(name: String?): List<PzlSymbol> {
+		return symbolsByName[name] ?: emptyList()
 	}
 }

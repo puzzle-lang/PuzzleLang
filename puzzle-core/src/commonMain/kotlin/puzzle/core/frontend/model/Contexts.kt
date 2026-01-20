@@ -1,44 +1,66 @@
 package puzzle.core.frontend.model
 
-import kotlinx.serialization.Contextual
 import puzzle.core.cli.PzlCliOption
 import puzzle.core.frontend.ast.AstFile
-import puzzle.core.frontend.semantics.deferred.DeferredExpression
-import puzzle.core.frontend.semantics.deferred.DeferredScope
-import puzzle.core.frontend.semantics.deferred.DeferredTypeReference
+import puzzle.core.frontend.semantics.deferred.DeferredDeclarer
 import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.token.PzlToken
 import puzzle.core.util.PathWrapper
 
-sealed interface Context
+sealed interface Context {
+	
+	val parent: Context
+}
 
-class RootContext : Context {
+object RootContext : Context {
+	
+	override val parent: Context
+		get() = error("RootContext 没有 parent")
 	
 	lateinit var options: List<PzlCliOption>
 	
 	lateinit var projects: List<ProjectContext>
+	
+	var maxPathLength = 0
 }
 
-class ProjectContext(
-	val name: String,
-	val path: PathWrapper?,
-	val builtin: Boolean,
-	val modules: List<ModuleContext>,
-) : Context
-
-class ModuleContext(
-	val name: String,
-	@Contextual
-	val path: PathWrapper?,
-	val builtin: Boolean,
-	val files: List<FileContext>,
-) : Context
-
-class FileContext(
-	val builtin: Boolean,
-) : Context {
+class ProjectContext : Context {
 	
-	lateinit var sourcePath: PathWrapper
+	override val parent = RootContext
+	
+	lateinit var name: String
+	
+	var path: PathWrapper? = null
+	
+	var builtin = false
+	
+	lateinit var modules: List<ModuleContext>
+}
+
+class ModuleContext : Context {
+	
+	override lateinit var parent: ProjectContext
+	
+	lateinit var name: String
+	
+	var path: PathWrapper? = null
+	
+	var builtin = false
+	
+	lateinit var ignores: List<String>
+	
+	lateinit var deps: List<Dependence>
+	
+	lateinit var files: List<FileContext>
+}
+
+class FileContext : Context {
+	
+	override lateinit var parent: ModuleContext
+	
+	var builtin = false
+	
+	lateinit var path: PathWrapper
 	
 	lateinit var lineStarts: IntArray
 	
@@ -48,9 +70,19 @@ class FileContext(
 	
 	lateinit var symbol: FileSymbol
 	
-	val deferredTypeReferences = mutableListOf<DeferredTypeReference>()
-	
-	val deferredExpressions = mutableListOf<DeferredExpression>()
-	
-	val deferredScopes = mutableListOf<DeferredScope>()
+	val deferredDeclarers = mutableListOf<DeferredDeclarer>()
+}
+
+class Dependence(
+	val projectName: String,
+	val moduleName: String,
+)
+
+context(context: Context)
+inline fun <reified CTX : Context> findContext(): CTX {
+	var context = context
+	while (context !is CTX) {
+		context = context.parent
+	}
+	return context
 }

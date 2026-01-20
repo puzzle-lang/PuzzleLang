@@ -4,7 +4,13 @@ import puzzle.core.frontend.ast.type.TypeReference
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.semantics.scope.PzlScope
 
-class DeferredTypeReference(
-	val parent: PzlScope<FileContext>,
-	val type: TypeReference,
-)
+class DeferredTypeReferenceDeclarer(
+	private val parent: PzlScope<FileContext>,
+	private val type: TypeReference,
+) : DeferredDeclarer {
+	
+	context(_: FileContext)
+	override fun declares() {
+	
+	}
+}

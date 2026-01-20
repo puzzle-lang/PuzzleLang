@@ -6,7 +6,8 @@ import puzzle.core.frontend.ast.type.SuperConstructorCall
 import puzzle.core.frontend.ast.type.SuperType
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.parser.isAnonymousBinding
-import puzzle.core.frontend.semantics.deferred.*
+import puzzle.core.frontend.semantics.deferred.DeferredBodyDeclarer
+import puzzle.core.frontend.semantics.deferred.DeferredExpressionDeclarer
 import puzzle.core.frontend.semantics.scope.*
 import puzzle.core.frontend.semantics.symbol.*
 
@@ -25,7 +26,7 @@ fun List<Declaration>.declares(parent: PzlScope<FileContext>) {
 			is MixinDeclaration -> it.declare(parent)
 			is StructDeclaration -> it.declare(parent)
 			is EnumDeclaration -> it.declare(parent)
-			is EnumEntry -> it.declare(parent)
+			is EnumEntry -> it.declare(parent as EnumScope)
 			is ExtensionDeclaration -> it.declare(parent)
 			is AnnotationDeclaration -> it.declare(parent)
 			is TypeAliasDeclaration -> it.declare(parent)
@@ -47,7 +48,9 @@ private fun FunDeclaration.declare(parent: PzlScope<FileContext>) {
 	this.typeSpec?.parameters?.declares(scope)
 	this.contextSpec?.receivers?.declares(scope)
 	this.parameters.declare(scope)
-	file.deferredScopes += DeferredFunScope(scope, this)
+	if (this.body != null) {
+		file.deferredDeclarers += DeferredBodyDeclarer(scope, this.body)
+	}
 }
 
 context(file: FileContext)
@@ -62,7 +65,7 @@ private fun CtorDeclaration.declare(parent: PzlScope<FileContext>) {
 	val scope = CtorScope(parent, symbol)
 	symbol.scope = scope
 	this.parameters.declare(scope)
-	file.deferredScopes += DeferredCtorScope(scope, this)
+	file.deferredDeclarers += DeferredBodyDeclarer(scope, this.body)
 }
 
 context(file: FileContext)
@@ -70,7 +73,7 @@ private fun InitDeclaration.declare(parent: PzlScope<FileContext>) {
 	val scope = BlockScope(parent)
 	parent as InitContainer
 	parent.initBlocks += scope
-	file.deferredScopes += DeferredInitScope(scope, this)
+	file.deferredDeclarers += DeferredBodyDeclarer(scope, this.body)
 }
 
 context(file: FileContext)
@@ -95,7 +98,7 @@ private fun PropertyDeclaration.declare(parent: PzlScope<FileContext>) {
 	this.getter?.declare(parent, propertySymbol)
 	this.setter?.declare(parent, propertySymbol)
 	if (this.initializer != null) {
-		file.deferredExpressions += DeferredExpression(parent, this.initializer)
+		file.deferredDeclarers += DeferredExpressionDeclarer(parent, this.initializer)
 	}
 }
 
@@ -116,7 +119,7 @@ private fun PropertyGetter.declare(parent: PzlScope<FileContext>, propertySymbol
 	val scope = BlockScope(parent, symbol)
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
-	file.deferredScopes += DeferredGetterScope(scope, this)
+	file.deferredDeclarers += DeferredBodyDeclarer(scope, this.body)
 }
 
 context(file: FileContext)
@@ -137,7 +140,7 @@ private fun PropertySetter.declare(parent: PzlScope<FileContext>, propertySymbol
 	symbol.scope = scope
 	this.oldValue?.declare(scope)
 	this.newValue.declare(scope)
-	file.deferredScopes += DeferredSetterScope(scope, this)
+	file.deferredDeclarers += DeferredBodyDeclarer(scope, this.body)
 }
 
 context(_: FileContext)
@@ -262,7 +265,7 @@ private fun EnumDeclaration.declare(parent: PzlScope<FileContext>) {
 }
 
 context(_: FileContext)
-private fun EnumEntry.declare(parent: PzlScope<FileContext>) {
+private fun EnumEntry.declare(parent: EnumScope) {
 	val symbol = EnumEntrySymbol(
 		name = this.name,
 		owner = parent,
@@ -325,7 +328,7 @@ private fun List<SuperType>.declares(parent: PzlScope<FileContext>) {
 	this.forEach { superType ->
 		if (superType !is SuperConstructorCall) return@forEach
 		superType.arguments.forEach {
-			file.deferredExpressions += DeferredExpression(parent, it.expression)
+			file.deferredDeclarers += DeferredExpressionDeclarer(parent, it.expression)
 		}
 	}
 }
