@@ -32,6 +32,6 @@ class StructScope(
 	}
 	
 	override fun lookupLocal(name: String?): List<PzlSymbol> {
-		return symbolsByName[name] ?: emptyList()
+		return symbolsByName[name] .orEmpty()
 	}
 }

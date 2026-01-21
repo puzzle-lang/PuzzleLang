@@ -1,67 +1,40 @@
 package puzzle.core.cli
 
-import puzzle.core.frontend.model.RootContext
-
-sealed interface PzlCliOption
-
-class PathOption(
-	val path: String,
-) : PzlCliOption
-
-class DebugFeatureOption(
-	val enableOutputAstJson: Boolean,
-	val enableAnsiColor: Boolean,
-	val enableErrorStack: Boolean,
-) : PzlCliOption {
+object PzlCliOption {
 	
-	companion object {
+	val path = PathOption
+	
+	val debugFeature = DebugFeatureOption
+	
+	val info = InfoOption
+	
+	object PathOption {
 		
-		val All = DebugFeatureOption(
-			enableOutputAstJson = true,
-			enableAnsiColor = true,
-			enableErrorStack = true,
-		)
+		var init = false
 		
-		val None = DebugFeatureOption(
-			enableOutputAstJson = false,
-			enableAnsiColor = false,
-			enableErrorStack = false,
-		)
+		var path: String? = null
+	}
+	
+	object DebugFeatureOption {
+		
+		var init = false
+		
+		var enableOutputAstJson = false
+		
+		var enableAnsiColor = false
+		
+		var enableErrorStack = false
+	}
+	
+	object InfoOption {
+		
+		var init = false
+		var enableProgress = false
+		
+		var enableIgnore = false
+		
+		var enableFile = false
 	}
 }
 
-class InfoOption(
-	val enableProgress: Boolean,
-	val enableIgnore: Boolean,
-	val enableFile: Boolean,
-) : PzlCliOption {
-	
-	companion object {
-		
-		val All = InfoOption(
-			enableProgress = true,
-			enableIgnore = true,
-			enableFile = true,
-		)
-		
-		val None = InfoOption(
-			enableProgress = false,
-			enableIgnore = false,
-			enableFile = false,
-		)
-	}
-}
-
-private var debugFeatureOption: DebugFeatureOption? = null
-
-val debugFeature: DebugFeatureOption
-	get() = debugFeatureOption ?: (RootContext.options.findOption() ?: DebugFeatureOption.None).also {
-		debugFeatureOption = it
-	}
-
-private var infoOption: InfoOption? = null
-
-val info: InfoOption
-	get() = infoOption ?: (RootContext.options.findOption() ?: InfoOption.None).also {
-		infoOption = it
-	}
+val option = PzlCliOption

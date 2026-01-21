@@ -1,13 +1,12 @@
 package puzzle.core.frontend
 
 import kotlinx.coroutines.*
-import puzzle.core.cli.PathOption
-import puzzle.core.cli.debugFeature
-import puzzle.core.cli.info
+import puzzle.core.cli.option
 import puzzle.core.frontend.ast.AstDebugWriter
 import puzzle.core.frontend.ast.builtin.BuiltinAstGenerator
 import puzzle.core.frontend.discovery.ProjectSourceCollector
 import puzzle.core.frontend.lexer.FileLexerScanner
+import puzzle.core.frontend.model.Dependence
 import puzzle.core.frontend.model.FileContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.parser.PzlParser
@@ -18,13 +17,43 @@ import kotlin.time.TimeSource.Monotonic.markNow
 import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
-suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
-	val projectPath = path(pathOption.path)
+suspend fun processFrontend(path: String) = coroutineScope {
+	val projectPath = path(path)
 	val collectDuration = measureTime { ProjectSourceCollector.collect(projectPath) }
-	if (info.enableProgress) {
+	if (option.info.enableProgress) {
 		println("项目源收集用时${CHINESE_SPACE.repeat(4)}: ${collectDuration.format()}")
 	}
-	val processStart = markNow()
+	val compileDuration = measureTime {
+		compileAllFiles()
+	}
+	if (option.info.enableProgress) {
+		println("项目源代码分析用时${CHINESE_SPACE.repeat(2)}: ${compileDuration.format()}")
+	}
+	
+	val builtinProject = measureTimedValue { BuiltinAstGenerator.generate() }
+	if (option.info.enableProgress) {
+		println("内建类型生成用时${CHINESE_SPACE.repeat(3)}: ${builtinProject.duration.format()}")
+	}
+	RootContext.projects += builtinProject.value
+	
+	fillInDefaultDependencies()
+	
+	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
+	if (option.info.enableProgress) {
+		println("全局符号表创建用时${CHINESE_SPACE.repeat(2)}: ${rootSymbol.duration.format()}")
+	}
+	
+	if (option.debugFeature.enableOutputAstJson) {
+		val writeDuration = measureTime {
+			AstDebugWriter.write(projectPath)
+		}
+		if (option.info.enableProgress) {
+			println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
+		}
+	}
+}
+
+private suspend fun CoroutineScope.compileAllFiles() {
 	RootContext.projects.map { project ->
 		async(Dispatchers.Default) {
 			project.modules.map { module ->
@@ -40,30 +69,6 @@ suspend fun processFrontend(pathOption: PathOption) = coroutineScope {
 			}.joinAll()
 		}
 	}.joinAll()
-	val processDuration = processStart.elapsedNow()
-	if (info.enableProgress) {
-		println("项目源代码分析用时${CHINESE_SPACE.repeat(2)}: ${processDuration.format()}")
-	}
-	
-	val builtinProject = measureTimedValue { BuiltinAstGenerator.generate() }
-	if (info.enableProgress) {
-		println("内建类型生成用时${CHINESE_SPACE.repeat(3)}: ${builtinProject.duration.format()}")
-	}
-	RootContext.projects += builtinProject.value
-	
-	val rootSymbol = measureTimedValue { PzlSymbolBuilder.buildRootSymbol() }
-	if (info.enableProgress) {
-		println("全局符号表创建用时${CHINESE_SPACE.repeat(2)}: ${rootSymbol.duration.format()}")
-	}
-	
-	if (debugFeature.enableOutputAstJson) {
-		val writeDuration = measureTime {
-			AstDebugWriter.write(projectPath)
-		}
-		if (info.enableProgress) {
-			println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
-		}
-	}
 }
 
 context(file: FileContext)
@@ -77,7 +82,7 @@ private fun compileFile() {
 	file.node = node.value
 	val symbol = measureTimedValue { PzlSymbolBuilder.buildFileSymbol() }
 	file.symbol = symbol.value
-	if (info.enableFile) {
+	if (option.info.enableFile) {
 		val totalDuration = markStart.elapsedNow()
 		printDurations(
 			path = file.path,
@@ -142,4 +147,24 @@ private fun CharArray.getLineStarts(): IntArray {
 		}
 	}
 	return starts.toIntArray()
+}
+
+private fun fillInDefaultDependencies() {
+	RootContext.projects.forEach { project ->
+		project.modules.forEach { module ->
+			when (project.name) {
+				"puzzle-builtin" if module.name == "puzzle-core" -> return@forEach
+				"puzzle-source" if module.name == "puzzle-core" -> {
+					module.deps += setOf(Dependence("puzzle-builtin", "puzzle-core"))
+				}
+				
+				else -> {
+					module.deps += setOf(
+						Dependence("puzzle-builtin", "puzzle-core"),
+						Dependence("puzzle-source", "puzzle-core")
+					)
+				}
+			}
+		}
+	}
 }

@@ -3,12 +3,13 @@ package puzzle.core.frontend.semantics.scope
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
-class RootScope(
-	override val owner: PzlSymbol,
-) : PzlScope<RootContext> {
+object RootScope : PzlScope<RootContext> {
+	
+	override val owner: PzlSymbol?
+		get() = error("RootScope 没有 owner")
 	
 	override val parent: PzlScope<*>
-		get() = error("Root 作用域没有 parent")
+		get() = error("RootScope 没有 parent")
 	
 	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
@@ -23,6 +24,6 @@ class RootScope(
 	}
 	
 	override fun lookupLocal(name: String?): List<PzlSymbol> {
-		return symbolsByName[name] ?: emptyList()
+		return symbolsByName[name] .orEmpty()
 	}
 }

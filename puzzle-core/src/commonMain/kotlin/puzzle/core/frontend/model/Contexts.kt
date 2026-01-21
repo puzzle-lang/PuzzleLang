@@ -1,7 +1,7 @@
 package puzzle.core.frontend.model
 
-import puzzle.core.cli.PzlCliOption
 import puzzle.core.frontend.ast.AstFile
+import puzzle.core.frontend.discovery.IgnoreRule
 import puzzle.core.frontend.semantics.deferred.DeferredDeclarer
 import puzzle.core.frontend.semantics.symbol.FileSymbol
 import puzzle.core.frontend.token.PzlToken
@@ -16,8 +16,6 @@ object RootContext : Context {
 	
 	override val parent: Context
 		get() = error("RootContext 没有 parent")
-	
-	lateinit var options: List<PzlCliOption>
 	
 	lateinit var projects: List<ProjectContext>
 	
@@ -47,9 +45,9 @@ class ModuleContext : Context {
 	
 	var builtin = false
 	
-	lateinit var ignores: List<String>
+	var ignoreRules = emptyList<IgnoreRule>()
 	
-	lateinit var deps: List<Dependence>
+	var deps = emptySet<Dependence>()
 	
 	lateinit var files: List<FileContext>
 }
@@ -73,7 +71,7 @@ class FileContext : Context {
 	val deferredDeclarers = mutableListOf<DeferredDeclarer>()
 }
 
-class Dependence(
+data class Dependence(
 	val projectName: String,
 	val moduleName: String,
 )

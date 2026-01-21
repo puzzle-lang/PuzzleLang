@@ -37,7 +37,7 @@ enum class PzlSymbolKind {
 	
 	LOCAL,
 	
-	ROOT, PROJECT, MODULE, FILE, PACKAGE;
+	PROJECT, MODULE, FILE, PACKAGE;
 	
 	override fun toString(): String {
 		return this.name.lowercase()

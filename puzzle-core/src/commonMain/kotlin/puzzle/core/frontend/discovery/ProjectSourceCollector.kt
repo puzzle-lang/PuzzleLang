@@ -3,12 +3,9 @@
 package puzzle.core.frontend.discovery
 
 import kotlinx.serialization.json.Json
-import puzzle.core.cli.info
+import puzzle.core.cli.option
 import puzzle.core.exception.configError
-import puzzle.core.frontend.model.FileContext
-import puzzle.core.frontend.model.ModuleContext
-import puzzle.core.frontend.model.ProjectContext
-import puzzle.core.frontend.model.RootContext
+import puzzle.core.frontend.model.*
 import puzzle.core.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -26,15 +23,18 @@ object ProjectSourceCollector {
 	
 	private val validGroupRegex = "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)*$".toRegex()
 	
+	private lateinit var projectConfigs: Collection<ProjectConfig>
+	
 	fun collect(projectPath: PathWrapper) {
 		configCheck(projectPath.exists() && projectPath.isDirectory) {
 			configError("项目不存在", projectPath.name)
 		}
 		val projectConfigMap = getAllProjectConfigMap(projectPath, isRootProject = true)
+		this.projectConfigs = projectConfigMap.values
 		RootContext.projects = projectConfigMap.map { (path, config) ->
 			getProjectContext(path, config)
 		}
-		if (info.enableIgnore) {
+		if (option.info.enableIgnore) {
 			printIgnoreRules()
 		}
 		RootContext.maxPathLength = calcMaxPathLength()
@@ -155,16 +155,30 @@ object ProjectSourceCollector {
 		configCheck(sourcePath.exists() && sourcePath.isDirectory) {
 			configError("源目录不存在", sourcePath.name)
 		}
-		val ignoreRules = config.ignore?.toIgnoreRules(path) ?: emptyList()
+		val ignoreRules = config.ignore?.toIgnoreRules(path).orEmpty()
 		val (fileRules, dirRules) = ignoreRules.partition { it.kind == IgnoreKind.EXACT }
 		return ModuleContext().apply {
 			this.name = config.name!!
 			this.path = path
 			this.parent = project
-			this.ignores = config.ignore ?: emptyList()
+			this.ignoreRules = ignoreRules
 			this.files = getAllSourcePaths(sourcePath, fileRules, dirRules).map { path ->
 				getFileContext(path)
 			}
+			this.deps = config.deps?.mapIndexed { index, dep ->
+				configCheck(" " !in dep) {
+					configError("依赖不允许包含空格符", "deps[$index]", dep)
+				}
+				val groups = dep.split(":")
+				val projectName = if (groups.size == 1) project.name else groups.first()
+				val projectConfig = projectConfigs.find { it.name == projectName }
+					?: configError("依赖不存在", "deps[$index]", dep, this.path!!.absolutePath)
+				val moduleName = groups.last()
+				configCheck(moduleName in projectConfig.modules!!) {
+					configError("依赖不存在", "deps[$index]", dep, this.path!!.absolutePath)
+				}
+				Dependence(projectName, moduleName)
+			}?.toSet().orEmpty()
 		}
 	}
 	
@@ -218,11 +232,11 @@ object ProjectSourceCollector {
 		val path = modulePath.absolutePath
 		return this.mapIndexed { index, ignore ->
 			when {
-				ignore == "**" -> IgnoreRule(path, IgnoreKind.RECURSIVE)
-				ignore == "*" -> IgnoreRule(path, IgnoreKind.CHILDREN)
-				ignore.endsWith("/**") -> IgnoreRule("$path/${ignore.removeSuffix("/**")}", IgnoreKind.RECURSIVE)
-				ignore.endsWith("/*") -> IgnoreRule("$path/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN)
-				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule("$path/$ignore", IgnoreKind.EXACT)
+				ignore == "**" -> IgnoreRule(path, IgnoreKind.RECURSIVE, ignore)
+				ignore == "*" -> IgnoreRule(path, IgnoreKind.CHILDREN, ignore)
+				ignore.endsWith("/**") -> IgnoreRule("$path/${ignore.removeSuffix("/**")}", IgnoreKind.RECURSIVE, ignore)
+				ignore.endsWith("/*") -> IgnoreRule("$path/${ignore.removeSuffix("/*")}", IgnoreKind.CHILDREN, ignore)
+				ignore != ".pzl" && ignore.endsWith(".pzl") -> IgnoreRule("$path/$ignore", IgnoreKind.EXACT, ignore)
 				ignore.isBlank() -> configError("规则不能为空", "ignore[$index]", path = "$path/puzzle.json")
 				else -> configError(
 					"忽略规则错误, 规则示例: '**', '*', 'src/main/puzzle/*', 'src/main/puzzle/**', 'src/main/puzzle/String.pzl'",
@@ -274,16 +288,16 @@ object ProjectSourceCollector {
 					append(if (moduleIndex == modules.lastIndex) "└─" else "├─")
 					appendAnsi(AnsiStyle.BRIGHT_WHITE)
 					appendLine(" ${module.name}")
-					val ignores = module.ignores
-					ignores.forEachIndexed { index, ignore ->
+					val ignoreRules = module.ignoreRules
+					ignoreRules.forEachIndexed { index, ignore ->
 						appendAnsi(AnsiStyle.BRIGHT_CYAN)
 						append(if (projectIndex == RootContext.projects.lastIndex) " " else "│")
 						append(" ".repeat(3))
 						append(if (moduleIndex == modules.lastIndex) " " else "│")
 						append(" ".repeat(3))
-						append(if (index == ignores.lastIndex) "└─" else "├─")
+						append(if (index == ignoreRules.lastIndex) "└─" else "├─")
 						appendAnsi(AnsiStyle.BRIGHT_BLUE)
-						appendLine(" $ignore")
+						appendLine(" ${ignore.raw}")
 					}
 				}
 			}

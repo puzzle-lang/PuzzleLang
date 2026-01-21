@@ -1,28 +1,27 @@
 package puzzle.core.util
 
-import puzzle.core.cli.debugFeature
-import puzzle.core.frontend.model.Context
+import puzzle.core.cli.option
 
 fun String.toAnsiString(style: AnsiStyle, vararg styles: AnsiStyle): String {
-	if (!debugFeature.enableAnsiColor) return this
+	if (!option.debugFeature.enableAnsiColor) return this
 	val styles = arrayOf(style, *styles).joinToString("")
 	return "$styles$this${AnsiStyle.RESET}"
 }
 
 fun StringBuilder.beginAnsi(style: AnsiStyle, vararg styles: AnsiStyle) {
-	if (!debugFeature.enableAnsiColor) return
+	if (!option.debugFeature.enableAnsiColor) return
 	val styles = arrayOf(AnsiStyle.RESET, style, *styles).joinToString("")
 	this.append(styles)
 }
 
 fun StringBuilder.appendAnsi(style: AnsiStyle, vararg styles: AnsiStyle) {
-	if (!debugFeature.enableAnsiColor) return
+	if (!option.debugFeature.enableAnsiColor) return
 	val styles = arrayOf(style, *styles).joinToString("")
 	this.append(styles)
 }
 
 fun StringBuilder.endAnsi() {
-	if (!debugFeature.enableAnsiColor) return
+	if (!option.debugFeature.enableAnsiColor) return
 	this.append(AnsiStyle.RESET)
 }
 

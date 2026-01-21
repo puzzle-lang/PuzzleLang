@@ -47,7 +47,7 @@ private fun List<Parameter>.check() {
 	this.forEach {
 		val name = it.name
 		if (name.value in names) {
-			syntaxError("$name 参数不允许重名", name)
+			syntaxError("冲突的参数, 参数名称 '$name' 存在冲突", name)
 		}
 		names += name.value
 		if (it.quantifier == null) return@forEach

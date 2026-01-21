@@ -24,7 +24,7 @@ class AnnotationScope(
 	}
 	
 	override fun lookupLocal(name: String?): List<PzlSymbol> {
-		return symbolsByName[name] ?: emptyList()
+		return symbolsByName[name].orEmpty()
 	}
 	
 	override fun lookup(name: String?): List<PzlSymbol> {

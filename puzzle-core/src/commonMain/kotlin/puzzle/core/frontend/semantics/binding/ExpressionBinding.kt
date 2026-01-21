@@ -3,10 +3,12 @@ package puzzle.core.frontend.semantics.binding
 import puzzle.core.frontend.ast.ImportScope
 import puzzle.core.frontend.ast.expression.*
 import puzzle.core.frontend.model.FileContext
+import puzzle.core.frontend.model.ModuleContext
+import puzzle.core.frontend.model.findContext
 import puzzle.core.frontend.semantics.scope.BlockScope
 import puzzle.core.frontend.semantics.scope.PzlScope
+import puzzle.core.frontend.semantics.scope.RootScope
 import puzzle.core.frontend.semantics.scope.findFileScope
-import puzzle.core.frontend.semantics.scope.findRootScope
 import puzzle.core.frontend.semantics.symbol.PzlSymbol
 
 context(_: FileContext)
@@ -209,8 +211,12 @@ private fun PzlScope<FileContext>.lookupSymbol(name: String): PzlSymbol {
 		directive.segments.last() == name
 	}.firstOrNull()?.segments
 	if (segments != null) {
-		val rootScope = fileScope.findRootScope()
-		file.parent
+		var scope: PzlScope<*> = RootScope
+		val module = findContext<ModuleContext>()
+		println(module.deps)
+//		segments.forEach { segment ->
+
+//		}
 	}
 	TODO()
 }

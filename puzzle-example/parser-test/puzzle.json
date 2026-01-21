@@ -3,8 +3,5 @@
   "group": "puzzle.example",
   "ignore": [
     "src/main/puzzle/example/parser/**"
-  ],
-  "deps": [
-    "puzzle-source:puzzle-core"
   ]
 }

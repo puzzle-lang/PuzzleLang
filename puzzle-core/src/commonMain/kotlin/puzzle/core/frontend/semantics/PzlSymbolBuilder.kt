@@ -7,7 +7,10 @@ import puzzle.core.frontend.model.ProjectContext
 import puzzle.core.frontend.model.RootContext
 import puzzle.core.frontend.semantics.binding.declares
 import puzzle.core.frontend.semantics.scope.*
-import puzzle.core.frontend.semantics.symbol.*
+import puzzle.core.frontend.semantics.symbol.FileSymbol
+import puzzle.core.frontend.semantics.symbol.ModuleSymbol
+import puzzle.core.frontend.semantics.symbol.PackageSymbol
+import puzzle.core.frontend.semantics.symbol.ProjectSymbol
 
 object PzlSymbolBuilder {
 	
@@ -15,21 +18,19 @@ object PzlSymbolBuilder {
 	fun buildFileSymbol(): FileSymbol {
 		val node = file.node
 		val symbol = FileSymbol(node.name.toIdentifier(), node)
+		symbol.checkImportDuplicate()
 		val scope = FileScope(symbol)
 		symbol.scope = scope
 		node.declarations.declares(scope)
 		return symbol
 	}
 	
-	fun buildRootSymbol(): RootSymbol {
-		val symbol = RootSymbol()
-		val scope = RootScope(symbol)
-		symbol.scope = scope
-		RootContext.projects.forEach { project ->
-			context(project) {
-				val symbol = buildProjectSymbol(scope)
-				context(RootContext) {
-					scope.declare(symbol)
+	fun buildRootSymbol() {
+		context(RootContext) {
+			RootContext.projects.forEach { project ->
+				context(project) {
+					val symbol = buildProjectSymbol()
+					RootScope.declare(symbol)
 				}
 			}
 		}
@@ -38,16 +39,13 @@ object PzlSymbolBuilder {
 				it.declares()
 			}
 		}
-		return symbol
 	}
 	
-	context(project: ProjectContext)
-	private fun buildProjectSymbol(parent: RootScope): ProjectSymbol {
-		val symbol = ProjectSymbol(project.name.toIdentifier(), parent)
-		context(RootContext) {
-			parent.declare(symbol)
-		}
-		val scope = ProjectScope(parent, symbol)
+	context(project: ProjectContext, _: RootContext)
+	private fun buildProjectSymbol(): ProjectSymbol {
+		val symbol = ProjectSymbol(project.name.toIdentifier(), RootScope)
+		RootScope.declare(symbol)
+		val scope = ProjectScope(RootScope, symbol)
 		symbol.scope = scope
 		project.modules.forEach { module ->
 			context(module) {

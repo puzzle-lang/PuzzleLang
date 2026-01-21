@@ -30,7 +30,7 @@ object BuiltinAstGenerator {
 		)
 		return ModuleContext().apply {
 			val module = this
-			this.name = "puzzle-builtin-core"
+			this.name = "puzzle-core"
 			this.builtin = true
 			this.parent = project
 			this.files = nodes.map { node ->

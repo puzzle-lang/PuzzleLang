@@ -1,46 +1,42 @@
 package puzzle.core.cli
 
 import puzzle.core.exception.cliError
-import puzzle.core.util.containsType
 
-fun parseCliOptions(args: List<String>): List<PzlCliOption> {
-	return buildList {
-		args.forEach { arg ->
-			this += when {
-				arg.startsWith("--path=") -> {
-					if (this.containsType<PathOption>()) {
-						cliError("重复的选项: --path")
-					}
-					parsePath(arg)
+fun parseCliOptions(args: List<String>) {
+	args.forEach { arg ->
+		when {
+			arg.startsWith("--path=") -> {
+				if (option.path.init) {
+					cliError("重复的选项: --path")
 				}
-				
-				arg.startsWith("--debug-features=") -> {
-					if (this.containsType<DebugFeatureOption>()) {
-						cliError("重复的选项: --debug-features")
-					}
-					parseDebugFeatureOption(arg)
-				}
-				
-				arg.startsWith("--infos=") -> {
-					if (this.containsType<InfoOption>()) {
-						cliError("重复的选项: --infos")
-					}
-					parseReportOption(arg)
-				}
-				
-				else -> cliError("未知选项: $arg")
+				parsePathOption(arg)
+				option.path.init = true
 			}
+			
+			arg.startsWith("--debug-features=") -> {
+				if (option.debugFeature.init) {
+					cliError("重复的选项: --debug-features")
+				}
+				parseDebugFeatureOption(arg)
+				option.debugFeature.init = true
+			}
+			
+			arg.startsWith("--infos=") -> {
+				if (option.info.init) {
+					cliError("重复的选项: --infos")
+				}
+				parseInfoOption(arg)
+				option.info.init = true
+			}
+			
+			else -> cliError("未知选项: $arg")
 		}
 	}
 }
 
-inline fun <reified T : PzlCliOption> List<PzlCliOption>.findOption(): T? {
-	return this.find { it is T } as? T
-}
-
-private fun parsePath(arg: String): PathOption {
+private fun parsePathOption(arg: String) {
 	val path = arg.removePrefix("--path=")
-	return PathOption(path)
+	option.path.path = path
 }
 
 private val availableDebugFeatures = setOf(
@@ -49,13 +45,18 @@ private val availableDebugFeatures = setOf(
 	"error-stack"
 )
 
-private fun parseDebugFeatureOption(arg: String): DebugFeatureOption {
+private fun parseDebugFeatureOption(arg: String) {
 	val featuresString = arg.removePrefix("--debug-features=")
 	when (featuresString) {
-		"all" -> return DebugFeatureOption.All
-		"none" -> return DebugFeatureOption.None
+		"all" -> {
+			option.debugFeature.enableOutputAstJson = true
+			option.debugFeature.enableAnsiColor = true
+			option.debugFeature.enableErrorStack = true
+			return
+		}
+		
+		"none" -> return
 	}
-	if (featuresString == "all") return DebugFeatureOption.All
 	if (featuresString.isBlank()) cliError("--debug-features=<option1,option2,...> 缺少参数")
 	val features = featuresString.split(",")
 	features.forEach { feature ->
@@ -69,14 +70,9 @@ private fun parseDebugFeatureOption(arg: String): DebugFeatureOption {
 		.keys
 		.firstOrNull()
 		?.let { cliError("--debug-features=$it 重复的参数") }
-	val enableOutputAstJson = "output-ast-json" in features
-	val enableAnsiColor = "ansi-color" in features
-	val enableErrorStack = "error-stack" in features
-	return DebugFeatureOption(
-		enableOutputAstJson = enableOutputAstJson,
-		enableAnsiColor = enableAnsiColor,
-		enableErrorStack = enableErrorStack
-	)
+	option.debugFeature.enableOutputAstJson = "output-ast-json" in features
+	option.debugFeature.enableAnsiColor = "ansi-color" in features
+	option.debugFeature.enableErrorStack = "error-stack" in features
 }
 
 private val availableReports = setOf(
@@ -85,11 +81,17 @@ private val availableReports = setOf(
 	"file"
 )
 
-private fun parseReportOption(arg: String): InfoOption {
+private fun parseInfoOption(arg: String) {
 	val logInfosString = arg.removePrefix("--infos=")
 	when (logInfosString) {
-		"all" -> return InfoOption.All
-		"none" -> return InfoOption.None
+		"all" -> {
+			option.info.enableProgress = true
+			option.info.enableIgnore = true
+			option.info.enableFile = true
+			return
+		}
+		
+		"none" -> return
 	}
 	if (logInfosString.isBlank()) cliError("--infos=<option1,option2,...> 缺少参数")
 	val logInfos = logInfosString.split(",")
@@ -104,12 +106,7 @@ private fun parseReportOption(arg: String): InfoOption {
 		.keys
 		.firstOrNull()
 		?.let { cliError("--infos=$it 重复的参数") }
-	val enableProgress = "progress" in logInfos
-	val enableIgnore = "ignore" in logInfos
-	val enableFile = "file" in logInfos
-	return InfoOption(
-		enableProgress = enableProgress,
-		enableIgnore = enableIgnore,
-		enableFile = enableFile
-	)
+	option.info.enableProgress = "progress" in logInfos
+	option.info.enableIgnore = "ignore" in logInfos
+	option.info.enableFile = "file" in logInfos
 }

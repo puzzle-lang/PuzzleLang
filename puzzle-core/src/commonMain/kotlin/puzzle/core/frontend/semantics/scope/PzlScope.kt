@@ -29,11 +29,3 @@ fun PzlScope<FileContext>.findFileScope(): FileScope {
 	}
 	return scope
 }
-
-fun PzlScope<FileContext>.findRootScope(): RootScope {
-	var scope: PzlScope<*> = this
-	while (scope !is RootScope) {
-		scope = scope.parent
-	}
-	return scope
-}

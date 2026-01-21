@@ -23,6 +23,7 @@ class ModuleConfig(
 data class IgnoreRule(
 	val path: String,
 	val kind: IgnoreKind,
+	val raw: String
 )
 
 enum class IgnoreKind(

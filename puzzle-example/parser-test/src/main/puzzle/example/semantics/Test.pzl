@@ -1,15 +1,10 @@
 package puzzle.example.semantics
 
+import puzzle.example.test.test
+
 fun main() {
     val name = ""
     val name = ""
-}
 
-fun test(name1: String = "", name2: String = name1, name3: String = name) {
-    var a = 1
-    a! += 10
-}
-
-class Test {
-
+    test()
 }

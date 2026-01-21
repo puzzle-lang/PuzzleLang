@@ -20,20 +20,20 @@ fun List<PzlSymbol>.checkDuplicate(symbol: PzlSymbol) {
 context(_: FileContext)
 private fun List<PzlSymbol>.checkDuplicateTypeDeclaration(symbol: PzlSymbol) {
 	if (this.any { it.isTypeDeclaration }) {
-		syntaxError("${symbol.name} 重复类型声明", symbol.name)
+		syntaxError("${symbol.name} 类型声明冲突", symbol.name)
 	}
 }
 
 context(_: FileContext)
 private fun List<PzlSymbol>.checkDuplicateParameterDeclaration(symbol: ParameterSymbol) {
 	if (this.containsType<ParameterSymbol>()) {
-		syntaxError("${symbol.name} 重复参数声明", symbol.name)
+		syntaxError("${symbol.name} 参数声明冲突", symbol.name)
 	}
 }
 
 context(_: FileContext)
 private fun List<PzlSymbol>.checkDuplicateLocalDeclaration(symbol: LocalSymbol) {
 	if (this.containsType<LocalSymbol>()) {
-		syntaxError("${symbol.name} 重复的变量声明", symbol.name)
+		syntaxError("${symbol.name} 变量声明冲突", symbol.name)
 	}
 }
