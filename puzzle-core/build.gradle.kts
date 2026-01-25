@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "puzzle.core"
-version = "0.0.0"
+version = property("puzzle-lang.version").toString()
 
 kotlin {
 	macosArm64 {
