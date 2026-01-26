@@ -14,21 +14,21 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [bundles]
-puzzle-cli = [
-    'kotlinx-coroutines-core'
-]
-puzzle-driver = [
-    'kotlinx-coroutines-core'
-]
-puzzle-base = [
-    'kotlinx-io-core'
-]
-puzzle-diagnostic = [
-    'kotlinx-serialization-json'
-]
-puzzle-ast = [
-    'kotlinx-serialization-json'
-]
+puzzle-cli = ['kotlinx-coroutines-core']
+puzzle-driver = ['kotlinx-coroutines-core', 'kotlinx-serialization-json']
+puzzle-frontend = []
+puzzle-sema = []
+puzzle-backup = []
+puzzle-diagnostic = ['kotlinx-serialization-json']
+puzzle-base = ['kotlinx-serialization-json', 'kotlinx-io-core']
+
+puzzle-config = ['kotlinx-serialization-json']
+puzzle-context = []
+puzzle-token = ['kotlinx-serialization-json']
+puzzle-ast = ['kotlinx-serialization-json']
+puzzle-symbol = []
+puzzle-ir = []
+
 puzzle-core = [
     'kotlinx-coroutines-core',
     'kotlinx-serialization-json',

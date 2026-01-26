@@ -1,7 +1,7 @@
 package puzzle.ast.type
 
 import kotlinx.serialization.Serializable
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 import puzzle.ast.PzlAstNode
 
 @Serializable

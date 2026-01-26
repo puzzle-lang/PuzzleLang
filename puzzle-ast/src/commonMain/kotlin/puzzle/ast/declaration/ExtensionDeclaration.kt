@@ -9,7 +9,7 @@ import puzzle.ast.parameter.TypeSpec
 import puzzle.ast.type.NamedType
 import puzzle.ast.type.SuperTypeReference
 import puzzle.ast.type.TypeReference
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class ExtensionDeclaration(

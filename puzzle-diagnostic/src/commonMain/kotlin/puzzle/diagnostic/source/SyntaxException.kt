@@ -1,12 +1,17 @@
 package puzzle.diagnostic.source
 
 import puzzle.base.exception.PzlException
+import puzzle.base.location.SourcePosition
 import puzzle.context.FileContext
 
-class SyntaxException(message: String) : PzlException(message)
+private class SyntaxException(message: String) : PzlException(message)
+
+fun syntaxError(message: String): Nothing {
+	throw SyntaxException(message)
+}
 
 context(file: FileContext)
-private fun syntaxError(
+fun syntaxError(
 	message: String,
 	position: SourcePosition?,
 ): Nothing {

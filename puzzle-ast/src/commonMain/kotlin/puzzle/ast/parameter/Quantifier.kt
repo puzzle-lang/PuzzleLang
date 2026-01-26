@@ -4,7 +4,7 @@ package puzzle.ast.parameter
 
 import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class Quantifier(

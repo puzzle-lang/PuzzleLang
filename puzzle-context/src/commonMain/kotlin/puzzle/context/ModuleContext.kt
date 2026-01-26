@@ -7,13 +7,4 @@ class ModuleContext : Context() {
 	lateinit var name: String
 	
 	lateinit var files: List<FileContext>
-	
-	//	var ignoreRules = emptyList<IgnoreRule>()
-//
-//	var deps = emptySet<Dependence>()
 }
-
-data class Dependence(
-	val projectName: String,
-	val moduleName: String,
-)

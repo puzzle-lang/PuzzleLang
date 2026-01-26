@@ -2,8 +2,7 @@
 
 package puzzle.token.kinds
 
-import puzzle.core.collections.fastSetOf
-import puzzle.core.collections.mergeFastSets
+import puzzle.base.collection.fastSetOf
 
 sealed class SymbolKind(
 	override val value: String,
@@ -11,21 +10,16 @@ sealed class SymbolKind(
 	
 	companion object {
 		
-		val kinds = mergeFastSets(
-			OperatorKind.kinds,
-			AssignmentKind.kinds,
-			AccessKind.kinds,
-			BracketKind.kinds,
-			SeparatorKind.kinds,
-			fastSetOf(
-				COLON, QUESTION,
-				ELVIS, ORACLE,
-				AT,
-				ARROW,
-				TRIPLE_DOT,
+		val kinds = OperatorKind.kinds +
+				AssignmentKind.kinds +
+				AccessKind.kinds +
+				BracketKind.kinds +
+				SeparatorKind.kinds +
+				COLON + QUESTION +
+				ELVIS + ORACLE +
+				AT + ARROW +
+				TRIPLE_DOT +
 				PLUS_DOUBLE_DOT
-			)
-		)
 	}
 	
 	object COLON : SymbolKind(":")
@@ -180,7 +174,7 @@ sealed class BracketKind(value: String) : SymbolKind(value) {
 	
 	companion object {
 		
-		val kinds = mergeFastSets(Start.kinds, End.kinds)
+		val kinds = Start.kinds + End.kinds
 	}
 	
 	sealed class Start(value: String) : BracketKind(value) {

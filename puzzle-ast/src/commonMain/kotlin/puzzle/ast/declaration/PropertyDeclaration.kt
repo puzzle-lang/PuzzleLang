@@ -11,7 +11,7 @@ import puzzle.ast.parameter.ParameterReference
 import puzzle.ast.parameter.TypeSpec
 import puzzle.ast.statement.Statement
 import puzzle.ast.type.TypeReference
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class PropertyDeclaration(

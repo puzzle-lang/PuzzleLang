@@ -24,14 +24,14 @@ class FastSet<T>(
 		return elements.all { it in hashSet }
 	}
 	
-	fun fastForEach(action: (T) -> Unit) {
+	inline fun fastForEach(action: (T) -> Unit) {
 		val arr = elements
 		for (i in arr.indices) {
 			action(arr[i])
 		}
 	}
 	
-	fun fastForEachIndexed(action: (index: Int, T) -> Unit) {
+	inline fun fastForEachIndexed(action: (index: Int, T) -> Unit) {
 		val arr = elements
 		for (i in arr.indices) {
 			action(i, arr[i])

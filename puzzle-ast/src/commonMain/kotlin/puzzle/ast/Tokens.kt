@@ -2,7 +2,7 @@ package puzzle.ast
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 import puzzle.token.kinds.AssignmentKind
 import puzzle.token.kinds.ModifierKind
 import puzzle.token.kinds.OperatorKind

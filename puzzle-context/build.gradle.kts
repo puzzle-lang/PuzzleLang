@@ -15,6 +15,7 @@ kotlin {
 	sourceSets {
 		commonMain {
 			dependencies {
+				implementation(libs.bundles.puzzle.context)
 				implementation(projects.puzzleBase)
 			}
 		}

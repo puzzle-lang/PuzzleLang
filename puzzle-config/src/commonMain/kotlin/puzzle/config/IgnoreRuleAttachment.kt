@@ -1,0 +1,21 @@
+package puzzle.config
+
+import puzzle.context.ContextAttachment
+
+class IgnoreRuleAttachment(
+	val value: Set<IgnoreRule>,
+) : ContextAttachment
+
+data class IgnoreRule(
+	val path: String,
+	val kind: IgnoreKind,
+	val raw: String,
+)
+
+enum class IgnoreKind(
+	val value: String,
+) {
+	EXACT(""),
+	CHILDREN("*"),
+	RECURSIVE("**")
+}

@@ -4,12 +4,10 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import puzzle.ast.declaration.TopLevelAllowedDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class AstFile(
-	val name: String,
-	@Contextual
 	val builtin: Boolean,
 	val packageDirective: PackageDirective?,
 	val importDirectives: List<ImportDirective>,

@@ -2,8 +2,8 @@ package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
 import puzzle.ast.Operator
-import puzzle.diagnostic.source.SourceLocation
-import puzzle.diagnostic.source.span
+import puzzle.base.location.SourceLocation
+import puzzle.base.location.span
 
 @Serializable
 class PostfixUnaryExpression(

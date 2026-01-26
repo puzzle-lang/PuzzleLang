@@ -16,9 +16,13 @@ kotlin {
 		commonMain {
 			dependencies {
 				implementation(libs.bundles.puzzle.driver)
-				implementation(projects.puzzleBase)
-				implementation(projects.puzzleConfig)
 				implementation(projects.puzzleFrontend)
+				implementation(projects.puzzleSema)
+				implementation(projects.puzzleConfig)
+				implementation(projects.puzzleContext)
+				implementation(projects.puzzleToken)
+				implementation(projects.puzzleAst)
+				implementation(projects.puzzleBase)
 			}
 		}
 	}

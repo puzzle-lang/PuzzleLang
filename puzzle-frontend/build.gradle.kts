@@ -15,7 +15,12 @@ kotlin {
 	sourceSets {
 		commonMain {
 			dependencies {
-			
+				implementation(libs.bundles.puzzle.frontend)
+				implementation(projects.puzzleContext)
+				implementation(projects.puzzleToken)
+				implementation(projects.puzzleAst)
+				implementation(projects.puzzleDiagnostic)
+				implementation(projects.puzzleBase)
 			}
 		}
 	}

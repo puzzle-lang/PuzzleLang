@@ -1,7 +1,7 @@
 package puzzle.token
 
-import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.token.kinds.PzlTokenKind
+import puzzle.base.location.SourceLocation
+import puzzle.token.kinds.PzlTokenKind
 
 class PzlToken(
 	val kind: PzlTokenKind,

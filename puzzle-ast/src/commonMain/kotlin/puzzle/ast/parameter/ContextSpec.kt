@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
 import puzzle.ast.expression.Identifier
 import puzzle.ast.type.TypeReference
-import puzzle.diagnostic.source.SourceLocation
-import puzzle.diagnostic.source.span
+import puzzle.base.location.SourceLocation
+import puzzle.base.location.span
 
 @Serializable
 sealed interface ContextSpec<out R : ContextReceiver> : PzlAstNode {

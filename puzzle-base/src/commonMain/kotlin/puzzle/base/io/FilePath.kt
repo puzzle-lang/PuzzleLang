@@ -34,7 +34,7 @@ class FilePath internal constructor(
 	
 	val isDirectory by lazy { metadata?.isDirectory ?: false }
 	
-	val isExists by lazy { SystemFileSystem.exists(path) }
+	val exists by lazy { SystemFileSystem.exists(path) }
 	
 	fun readText(): String {
 		return SystemFileSystem.source(path)
@@ -59,7 +59,7 @@ class FilePath internal constructor(
 	}
 	
 	fun delete() {
-		if (!isExists) return
+		if (!exists) return
 		if (isFile) SystemFileSystem.delete(path)
 		if (isDirectory) {
 			this.list().forEach {

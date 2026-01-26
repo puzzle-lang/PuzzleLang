@@ -1,7 +1,7 @@
 package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class Identifier(
@@ -23,6 +23,8 @@ class Identifier(
 		return value
 	}
 }
+
+
 
 fun String.toIdentifier(
 	location: SourceLocation = SourceLocation.Builtin,

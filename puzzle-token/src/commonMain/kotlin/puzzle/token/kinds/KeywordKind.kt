@@ -1,29 +1,26 @@
 package puzzle.token.kinds
 
-import puzzle.core.collections.fastSetOf
-import puzzle.core.collections.mergeFastSets
-import puzzle.core.frontend.token.kinds.AccessorKind.GET
-import puzzle.core.frontend.token.kinds.AccessorKind.SET
-import puzzle.core.frontend.token.kinds.ContextualKind.*
-import puzzle.core.frontend.token.kinds.ModifierKind.*
-import puzzle.core.frontend.token.kinds.NamespaceKind.IMPORT
-import puzzle.core.frontend.token.kinds.NamespaceKind.PACKAGE
+import puzzle.base.collection.fastSetOf
+import puzzle.token.kinds.AccessorKind.GET
+import puzzle.token.kinds.AccessorKind.SET
+import puzzle.token.kinds.ContextualKind.*
+import puzzle.token.kinds.ModifierKind.*
+import puzzle.token.kinds.NamespaceKind.IMPORT
+import puzzle.token.kinds.NamespaceKind.PACKAGE
 
 sealed interface KeywordKind : PzlTokenKind {
 	
 	companion object {
 		
-		val kinds = mergeFastSets(
-			ModifierKind.availableKinds,
-			NamespaceKind.kinds,
-			DeclarationKind.kinds,
-			AccessorKind.kinds,
-			ControlFlowKind.kinds,
-			JumpKind.kinds,
-			ContextualKind.kinds,
-			TypeOperatorKind.kinds,
-			LiteralKind.keywordKinds
-		)
+		val kinds = ModifierKind.availableKinds +
+				NamespaceKind.kinds +
+				DeclarationKind.kinds +
+				AccessorKind.kinds +
+				ControlFlowKind.kinds +
+				JumpKind.kinds +
+				ContextualKind.kinds +
+				TypeOperatorKind.kinds +
+				LiteralKind.keywordKinds
 		
 		val softKeywords = setOf(
 			PRIVATE, PROTECTED, FILE, INTERNAL, MODULE, PUBLIC,
@@ -55,17 +52,69 @@ sealed class ModifierKind(
 		)
 	}
 	
-	object PRIVATE : ModifierKind("private", 0)
+	object PRIVATE : ModifierKind("private", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE -> 0
+				PROTECTED, FILE, INTERNAL, MODULE, PUBLIC -> -1
+			}
+		}
+	}
 	
-	object PROTECTED : ModifierKind("protected", 0)
+	object PROTECTED : ModifierKind("protected", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE -> 1
+				PROTECTED -> 0
+				FILE, INTERNAL, MODULE, PUBLIC -> -1
+			}
+		}
+	}
 	
-	object FILE : ModifierKind("file", 0)
+	object FILE : ModifierKind("file", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE, PROTECTED -> 1
+				FILE -> 0
+				INTERNAL, MODULE, PUBLIC -> -1
+			}
+		}
+	}
 	
-	object INTERNAL : ModifierKind("internal", 0)
+	object INTERNAL : ModifierKind("internal", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE, PROTECTED, FILE -> 1
+				INTERNAL -> 0
+				MODULE, PUBLIC -> -1
+			}
+		}
+	}
 	
-	object MODULE : ModifierKind("module", 0)
+	object MODULE : ModifierKind("module", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE, PROTECTED, FILE, INTERNAL -> 1
+				MODULE -> 0
+				PUBLIC -> -1
+			}
+		}
+	}
 	
-	object PUBLIC : ModifierKind("public", 0)
+	object PUBLIC : ModifierKind("public", 0), Visibility {
+		
+		override fun compareTo(other: Visibility): Int {
+			return when (other) {
+				PRIVATE, PROTECTED, FILE, INTERNAL, MODULE -> 1
+				PUBLIC -> 0
+			}
+		}
+	}
 	
 	object FINAL : ModifierKind("final", 1)
 	
@@ -96,6 +145,11 @@ sealed class ModifierKind(
 	object VAL : ModifierKind("val", 4)
 	
 	object BUILTIN : ModifierKind("builtin", -1)
+}
+
+sealed interface Visibility {
+	
+	operator fun compareTo(other: Visibility): Int
 }
 
 sealed class NamespaceKind(

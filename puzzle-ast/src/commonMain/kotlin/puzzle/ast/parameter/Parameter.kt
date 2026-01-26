@@ -7,7 +7,7 @@ import puzzle.ast.Modifier
 import puzzle.ast.expression.Expression
 import puzzle.ast.expression.Identifier
 import puzzle.ast.type.TypeReference
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class Parameter(

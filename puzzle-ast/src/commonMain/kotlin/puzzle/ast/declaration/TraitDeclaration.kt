@@ -1,7 +1,7 @@
 package puzzle.ast.declaration
 
 import kotlinx.serialization.Serializable
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 import puzzle.ast.AnnotationCall
 import puzzle.ast.DocComment
 import puzzle.ast.Modifier

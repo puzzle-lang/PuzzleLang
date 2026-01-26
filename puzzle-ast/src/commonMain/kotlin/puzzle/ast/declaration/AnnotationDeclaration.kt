@@ -7,7 +7,7 @@ import puzzle.ast.Modifier
 import puzzle.ast.expression.Identifier
 import puzzle.ast.parameter.Parameter
 import puzzle.ast.parameter.TypeSpec
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
 
 @Serializable
 class AnnotationDeclaration(

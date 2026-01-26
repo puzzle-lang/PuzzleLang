@@ -1,18 +1,14 @@
 package puzzle.token.kinds
 
-import puzzle.core.collections.fastSetOf
-import puzzle.core.collections.mergeFastSets
-import puzzle.core.frontend.model.SourceLocation
-import puzzle.core.frontend.token.PzlToken
+import puzzle.base.collection.fastSetOf
+import puzzle.base.location.SourceLocation
+import puzzle.token.PzlToken
 
 sealed interface LiteralKind : PzlTokenKind {
 	
 	companion object {
 		
-		val keywordKinds = mergeFastSets<KeywordKind>(
-			BooleanKind.kinds,
-			fastSetOf(NULL)
-		)
+		val keywordKinds = BooleanKind.kinds + NULL
 	}
 	
 	object NULL : LiteralKind, KeywordKind {
@@ -27,7 +23,7 @@ sealed class BooleanKind(
 	
 	companion object {
 		
-		val kinds = fastSetOf<BooleanKind>(TRUE, FALSE)
+		val kinds = fastSetOf(TRUE, FALSE)
 	}
 	
 	object TRUE : BooleanKind("true")

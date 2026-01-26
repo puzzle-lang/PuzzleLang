@@ -2,7 +2,9 @@ package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
-import puzzle.diagnostic.source.SourceLocation
+import puzzle.base.location.SourceLocation
+import puzzle.token.kinds.NumberSystem
+import puzzle.token.kinds.NumericType
 import puzzle.ast.expression.Expression as PzlExpression
 
 @Serializable
@@ -11,6 +13,8 @@ sealed interface LiteralExpression : PzlExpression
 @Serializable
 class NumberLiteral(
 	val value: String,
+	val system: NumberSystem,
+	val type: NumericType,
 	override val location: SourceLocation,
 ) : LiteralExpression
 

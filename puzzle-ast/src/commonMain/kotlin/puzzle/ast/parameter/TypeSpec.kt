@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
 import puzzle.ast.expression.Identifier
 import puzzle.ast.type.TypeReference
-import puzzle.diagnostic.source.SourceLocation
-import puzzle.core.frontend.token.kinds.ContextualKind
-import puzzle.core.frontend.token.kinds.OperatorKind
-import puzzle.core.frontend.token.kinds.PzlTokenKind
+import puzzle.base.location.SourceLocation
+import puzzle.token.kinds.ContextualKind
+import puzzle.token.kinds.OperatorKind
+import puzzle.token.kinds.PzlTokenKind
 
 @Serializable
 class TypeSpec(
