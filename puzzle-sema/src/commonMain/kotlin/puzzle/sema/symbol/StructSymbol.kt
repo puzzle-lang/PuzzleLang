@@ -2,9 +2,10 @@ package puzzle.sema.symbol
 
 import puzzle.ast.declaration.StructDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.scope.StructScope
+import puzzle.token.kinds.Visibility
 
 class StructSymbol(
 	override val name: Identifier,

@@ -1,7 +1,7 @@
 package puzzle.ast
 
 import kotlinx.serialization.Serializable
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class DocComment(

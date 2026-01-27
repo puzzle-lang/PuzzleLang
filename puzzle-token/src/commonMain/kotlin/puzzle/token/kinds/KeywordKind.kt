@@ -1,6 +1,6 @@
 package puzzle.token.kinds
 
-import puzzle.base.collection.fastSetOf
+import puzzle.core.collection.fastSetOf
 import puzzle.token.kinds.AccessorKind.GET
 import puzzle.token.kinds.AccessorKind.SET
 import puzzle.token.kinds.ContextualKind.*

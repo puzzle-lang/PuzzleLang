@@ -2,10 +2,10 @@ package puzzle.sema
 
 import puzzle.ast.AstFileAttachment
 import puzzle.ast.expression.toIdentifier
-import puzzle.context.FileContext
-import puzzle.context.ModuleContext
-import puzzle.context.ProjectContext
-import puzzle.context.RootContext
+import puzzle.core.context.FileContext
+import puzzle.core.context.ModuleContext
+import puzzle.core.context.ProjectContext
+import puzzle.core.context.RootContext
 import puzzle.sema.binding.declares
 import puzzle.sema.deferred.getDeferredDeclarers
 import puzzle.sema.scope.*

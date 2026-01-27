@@ -1,7 +1,7 @@
 package puzzle.frontend.parser.parser.expression
 
 import puzzle.ast.expression.*
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.token.kinds.BooleanKind.FALSE
 import puzzle.token.kinds.BooleanKind.TRUE

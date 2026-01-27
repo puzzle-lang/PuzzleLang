@@ -3,7 +3,7 @@ package puzzle.ast.declaration
 import kotlinx.serialization.Serializable
 import puzzle.ast.DocComment
 import puzzle.ast.statement.Statement
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class InitDeclaration(

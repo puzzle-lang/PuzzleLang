@@ -2,7 +2,7 @@ package puzzle.frontend.parser.parser.expression
 
 import puzzle.ast.expression.Expression
 import puzzle.ast.expression.IsExpression
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.type.parseTypeReference
 import puzzle.token.kinds.OperatorKind.NOT

@@ -1,6 +1,6 @@
 package puzzle.sema.scope
 
-import puzzle.context.RootContext
+import puzzle.core.context.RootContext
 import puzzle.sema.symbol.PzlSymbol
 
 object RootScope : PzlScope<RootContext> {

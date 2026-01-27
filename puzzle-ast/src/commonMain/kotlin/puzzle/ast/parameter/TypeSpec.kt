@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
 import puzzle.ast.expression.Identifier
 import puzzle.ast.type.TypeReference
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 import puzzle.token.kinds.ContextualKind
 import puzzle.token.kinds.OperatorKind
 import puzzle.token.kinds.PzlTokenKind

@@ -1,3 +1,24 @@
 package puzzle.core.exception
 
-abstract class PzlException(message: String) : Exception(message)
+import puzzle.core.io.FilePath
+import puzzle.core.location.SourcePosition
+
+abstract class PzlException(message: String) : RuntimeException(message)
+
+fun getExceptionMessage(
+	prefix: String,
+	message: String,
+	path: FilePath? = null,
+	position: SourcePosition? = null,
+): String {
+	return buildString {
+		append("[$prefix] ")
+		appendLine(message)
+		if (path != null) {
+			append(path.absolutePath)
+			if (position != null) {
+				append(":${position.line}:${position.column}")
+			}
+		}
+	}
+}

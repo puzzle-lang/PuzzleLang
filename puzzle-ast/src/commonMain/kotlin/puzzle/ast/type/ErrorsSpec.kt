@@ -2,7 +2,7 @@ package puzzle.ast.type
 
 import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class ErrorsSpec(

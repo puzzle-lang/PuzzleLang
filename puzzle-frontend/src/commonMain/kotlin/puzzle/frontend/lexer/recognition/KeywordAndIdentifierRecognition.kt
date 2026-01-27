@@ -1,10 +1,10 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.location.span
-import puzzle.context.FileContext
+import puzzle.core.location.span
+import puzzle.core.util.isIdentifierPart
+import puzzle.core.util.isIdentifierStart
+import puzzle.core.context.FileContext
 import puzzle.frontend.lexer.lexicalError
-import puzzle.frontend.util.isIdentifierPart
-import puzzle.frontend.util.isIdentifierStart
 import puzzle.token.PzlToken
 import puzzle.token.kinds.IdentifierKind
 import puzzle.token.kinds.KeywordKind

@@ -2,7 +2,7 @@ package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class BreakExpression(

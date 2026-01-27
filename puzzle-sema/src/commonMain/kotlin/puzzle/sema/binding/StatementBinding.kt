@@ -1,7 +1,7 @@
 package puzzle.sema.binding
 
 import puzzle.ast.statement.*
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.BlockScope
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.symbol.LocalSymbol

@@ -1,6 +1,6 @@
 package puzzle.core.util
 
-import puzzle.core.frontend.token.kinds.KeywordKind
+const val CHINESE_SPACE = "\u3000"
 
 private val hexChars = "0123456789ABCDEFabcdef".toSet()
 
@@ -39,14 +39,3 @@ fun Char.isIdentifierStart(): Boolean {
 fun Char.isIdentifierPart(): Boolean {
 	return this in 'a'..'z' || this in 'A'..'Z' || this == '_' || this in '0'..'9'
 }
-
-fun String.isIdentifierString(): Boolean {
-	if (this.isEmpty()) return false
-	val first = first()
-	if (!first.isIdentifierStart()) return false
-	if (this in KeywordKind.softKeywords) return true
-	if (this in KeywordKind.hardKeywords) return false
-	return this.drop(1).all { it.isIdentifierPart() }
-}
-
-const val CHINESE_SPACE = "\u3000"

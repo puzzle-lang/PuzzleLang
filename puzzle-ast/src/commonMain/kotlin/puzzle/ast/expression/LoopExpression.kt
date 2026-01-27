@@ -1,7 +1,7 @@
 package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 import puzzle.ast.statement.Statement
 
 @Serializable

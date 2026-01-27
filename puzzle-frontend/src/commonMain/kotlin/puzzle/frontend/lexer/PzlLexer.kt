@@ -1,6 +1,6 @@
 package puzzle.frontend.lexer
 
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.lexer.recognition.*
 import puzzle.token.PzlToken
 import puzzle.token.kinds.CommentKind.MultiLine

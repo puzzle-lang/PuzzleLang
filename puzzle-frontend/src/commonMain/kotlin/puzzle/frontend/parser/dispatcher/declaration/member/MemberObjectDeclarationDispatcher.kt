@@ -1,8 +1,8 @@
 package puzzle.frontend.parser.dispatcher.declaration.member
 
 import puzzle.ast.declaration.ObjectDeclaration
-import puzzle.context.FileContext
-import puzzle.base.location.SourceLocation
+import puzzle.core.context.FileContext
+import puzzle.core.location.SourceLocation
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.frontend.parser.dispatcher.declaration.DeclarationTarget

@@ -6,7 +6,7 @@ import puzzle.ast.Modifier
 import puzzle.ast.parameter.DeclarationContextSpec
 import puzzle.ast.parameter.TypeSpec
 import puzzle.ast.type.ErrorsSpec
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.ModifierTarget
 import puzzle.frontend.parser.parser.check

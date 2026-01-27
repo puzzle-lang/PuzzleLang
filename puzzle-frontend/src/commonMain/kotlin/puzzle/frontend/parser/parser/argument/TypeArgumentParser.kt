@@ -1,7 +1,7 @@
 package puzzle.frontend.parser.parser.argument
 
 import puzzle.ast.argument.TypeArgument
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.frontend.parser.parser.expression.parseIdentifier

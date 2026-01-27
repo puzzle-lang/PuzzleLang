@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
 import puzzle.ast.statement.Statement
 import puzzle.ast.type.TypeReference
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 sealed interface MatchExpression : Expression, CompoundAssignable

@@ -4,9 +4,10 @@ import puzzle.ast.declaration.Property
 import puzzle.ast.declaration.PropertyGetter
 import puzzle.ast.declaration.PropertySetter
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.BlockScope
 import puzzle.sema.scope.PzlScope
+import puzzle.token.kinds.Visibility
 
 class PropertySymbol(
 	override val name: Identifier,

@@ -1,9 +1,9 @@
 package puzzle.frontend.util
 
-import puzzle.base.location.SourceLocation
-import puzzle.context.FileContext
-import puzzle.context.endPosition
-import puzzle.context.startPosition
+import puzzle.core.location.SourceLocation
+import puzzle.core.context.FileContext
+import puzzle.core.context.endPosition
+import puzzle.core.context.startPosition
 import puzzle.token.PzlToken
 
 context(_: FileContext)

@@ -1,3 +1,0 @@
-package puzzle.context
-
-interface ContextAttachment

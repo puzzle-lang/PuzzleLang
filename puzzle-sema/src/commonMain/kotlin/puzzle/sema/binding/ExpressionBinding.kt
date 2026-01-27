@@ -2,10 +2,9 @@ package puzzle.sema.binding
 
 import puzzle.ast.ImportScope
 import puzzle.ast.expression.*
-import puzzle.config.DependenceAttachment
-import puzzle.context.FileContext
-import puzzle.context.ModuleContext
-import puzzle.context.findContext
+import puzzle.core.context.FileContext
+import puzzle.core.context.ModuleContext
+import puzzle.core.context.findContext
 import puzzle.sema.scope.BlockScope
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.scope.RootScope
@@ -214,7 +213,6 @@ private fun PzlScope<FileContext>.lookupSymbol(name: String): PzlSymbol {
 	if (segments != null) {
 		var scope: PzlScope<*> = RootScope
 		val module = findContext<ModuleContext>()
-		println(module[DependenceAttachment::class].value)
 //		segments.forEach { segment ->
 
 //		}

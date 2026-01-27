@@ -2,9 +2,10 @@ package puzzle.sema.symbol
 
 import puzzle.ast.declaration.MixinDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.MixinScope
 import puzzle.sema.scope.PzlScope
+import puzzle.token.kinds.Visibility
 
 class MixinSymbol(
 	override val name: Identifier,

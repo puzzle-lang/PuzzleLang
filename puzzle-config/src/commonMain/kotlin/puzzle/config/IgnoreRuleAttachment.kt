@@ -1,6 +1,6 @@
 package puzzle.config
 
-import puzzle.context.ContextAttachment
+import puzzle.core.context.ContextAttachment
 
 class IgnoreRuleAttachment(
 	val value: Set<IgnoreRule>,

@@ -1,7 +1,7 @@
 package puzzle.cli
 
 import kotlinx.coroutines.runBlocking
-import puzzle.base.exception.PzlException
+import puzzle.core.exception.PzlException
 import puzzle.diagnostic.source.PzlExceptionPrinter
 import puzzle.driver.CompilerDriver
 

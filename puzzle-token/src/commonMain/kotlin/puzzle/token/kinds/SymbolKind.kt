@@ -2,7 +2,7 @@
 
 package puzzle.token.kinds
 
-import puzzle.base.collection.fastSetOf
+import puzzle.core.collection.fastSetOf
 
 sealed class SymbolKind(
 	override val value: String,

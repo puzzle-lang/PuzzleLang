@@ -2,9 +2,10 @@ package puzzle.sema.symbol
 
 import puzzle.ast.declaration.EnumDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.EnumScope
 import puzzle.sema.scope.PzlScope
+import puzzle.token.kinds.Visibility
 
 class EnumSymbol(
 	override val name: Identifier,

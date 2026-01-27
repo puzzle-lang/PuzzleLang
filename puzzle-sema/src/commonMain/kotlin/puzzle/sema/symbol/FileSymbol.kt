@@ -2,7 +2,7 @@ package puzzle.sema.symbol
 
 import puzzle.ast.AstFile
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.FileScope
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.semaError

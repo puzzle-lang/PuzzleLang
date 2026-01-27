@@ -1,7 +1,7 @@
 package puzzle.sema.scope
 
-import puzzle.context.Context
-import puzzle.context.FileContext
+import puzzle.core.context.Context
+import puzzle.core.context.FileContext
 import puzzle.sema.symbol.PzlSymbol
 
 sealed interface PzlScope<CTX : Context> {

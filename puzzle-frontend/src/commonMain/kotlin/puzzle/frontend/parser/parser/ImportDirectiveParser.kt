@@ -3,8 +3,8 @@ package puzzle.frontend.parser.parser
 import puzzle.ast.ImportDirective
 import puzzle.ast.ImportScope
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.frontend.parser.parser.expression.matchIdentifier

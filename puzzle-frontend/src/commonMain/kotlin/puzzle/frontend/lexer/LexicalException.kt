@@ -1,9 +1,9 @@
 package puzzle.frontend.lexer
 
-import puzzle.base.exception.PzlException
-import puzzle.base.exception.getExceptionMessage
-import puzzle.context.FileContext
-import puzzle.context.calcPosition
+import puzzle.core.exception.PzlException
+import puzzle.core.exception.getExceptionMessage
+import puzzle.core.context.FileContext
+import puzzle.core.context.calcPosition
 
 private class LexicalException(message: String) : PzlException(message)
 

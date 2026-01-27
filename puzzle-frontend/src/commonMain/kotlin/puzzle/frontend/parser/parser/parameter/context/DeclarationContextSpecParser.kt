@@ -2,18 +2,18 @@ package puzzle.frontend.parser.parser.parameter.context
 
 import puzzle.ast.parameter.DeclarationContextReceiver
 import puzzle.ast.parameter.DeclarationContextSpec
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.frontend.parser.parser.expression.parseIdentifier
 import puzzle.frontend.parser.parser.type.parseTypeReference
-import puzzle.core.frontend.token.kinds.BracketKind.End.RPAREN
-import puzzle.core.frontend.token.kinds.BracketKind.Start.LPAREN
-import puzzle.core.frontend.token.kinds.ContextualKind.CONTEXT
-import puzzle.core.frontend.token.kinds.OperatorKind.NOT
-import puzzle.core.frontend.token.kinds.SeparatorKind.COMMA
-import puzzle.core.frontend.token.kinds.SymbolKind.COLON
+import puzzle.token.kinds.BracketKind.End.RPAREN
+import puzzle.token.kinds.BracketKind.Start.LPAREN
+import puzzle.token.kinds.ContextualKind.CONTEXT
+import puzzle.token.kinds.OperatorKind.NOT
+import puzzle.token.kinds.SeparatorKind.COMMA
+import puzzle.token.kinds.SymbolKind.COLON
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parseDeclarationContextSpec(): DeclarationContextSpec? {

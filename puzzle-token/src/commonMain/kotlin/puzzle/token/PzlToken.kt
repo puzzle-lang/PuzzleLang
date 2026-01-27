@@ -1,6 +1,6 @@
 package puzzle.token
 
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 import puzzle.token.kinds.PzlTokenKind
 
 class PzlToken(

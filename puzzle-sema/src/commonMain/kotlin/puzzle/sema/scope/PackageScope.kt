@@ -1,6 +1,6 @@
 package puzzle.sema.scope
 
-import puzzle.context.ModuleContext
+import puzzle.core.context.ModuleContext
 import puzzle.sema.symbol.PackageSymbol
 import puzzle.sema.symbol.PzlSymbol
 

@@ -8,10 +8,14 @@ object CliMessages {
 		puzzle build
 		    --path=<project-path>                     * 项目路径
 			
-		    --debug-features=<option1,option2,...>      DEBUG 功能选项
-		        output-ast-json                         开启输出 AST json 文件
+		    --features=<option1,option2,...>            功能选项
 				ansi-color                              开启终端 Ansi 颜色
 				error-stack                             开启错误堆栈信息
+		        all                                     开启以上功能
+				none                                    关闭以上功能          [默认]
+
+			--exports=<option1,option2,...>             导出选项
+				ast                                     导出 AST json
 		        all                                     开启以上功能
 				none                                    关闭以上功能          [默认]
 			

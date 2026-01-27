@@ -1,6 +1,6 @@
 package puzzle.sema.scope
 
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.checker.checkDuplicate
 import puzzle.sema.symbol.PzlSymbol
 import puzzle.sema.symbol.TraitSymbol

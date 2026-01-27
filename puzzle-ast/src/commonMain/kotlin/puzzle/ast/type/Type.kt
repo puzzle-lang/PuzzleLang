@@ -7,7 +7,7 @@ import puzzle.ast.argument.TypeArgument
 import puzzle.ast.declaration.ReturnSpec
 import puzzle.ast.parameter.LambdaContextSpec
 import puzzle.ast.parameter.LambdaParameter
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 sealed interface Type : PzlAstNode

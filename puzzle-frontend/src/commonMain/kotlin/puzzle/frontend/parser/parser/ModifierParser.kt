@@ -1,7 +1,7 @@
 package puzzle.frontend.parser.parser
 
 import puzzle.ast.Modifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.syntaxError
 import puzzle.token.kinds.ModifierKind
@@ -239,6 +239,6 @@ enum class ModifierTarget(
 	)
 }
 
-private val MemberAccessModifiers = setOf(PRIVATE, PROTECTED, FILE, INTERNAL, MODULE, PUBLIC)
+private val MemberAccessModifiers = setOf<ModifierKind>(PRIVATE, PROTECTED, FILE, INTERNAL, MODULE, PUBLIC)
 
-private val TopLevelAccessModifiers = setOf(PRIVATE, INTERNAL, MODULE, PUBLIC)
+private val TopLevelAccessModifiers = setOf<ModifierKind>(PRIVATE, INTERNAL, MODULE, PUBLIC)

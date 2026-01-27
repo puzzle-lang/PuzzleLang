@@ -2,8 +2,8 @@ package puzzle.frontend.parser.parser.expression
 
 import puzzle.ast.expression.LambdaExpression
 import puzzle.ast.parameter.ParameterReference
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.statement.parseStatements
 import puzzle.frontend.parser.parser.type.parseTypeReference

@@ -6,7 +6,7 @@ import puzzle.ast.parameter.DeclarationContextReceiver
 import puzzle.ast.parameter.Parameter
 import puzzle.ast.parameter.ParameterReference
 import puzzle.ast.parameter.TypeParameter
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.deferred.DeferredExpressionDeclarer
 import puzzle.sema.deferred.DeferredTypeReferenceDeclarer
 import puzzle.sema.deferred.getDeferredDeclarers

@@ -4,7 +4,7 @@ import puzzle.ast.parameter.Quantifier
 import puzzle.ast.parameter.TypeExpansion
 import puzzle.ast.parameter.TypeExpansionKind
 import puzzle.ast.parameter.VarargKind
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.token.kinds.OperatorKind.PLUS
 import puzzle.token.kinds.OperatorKind.STAR

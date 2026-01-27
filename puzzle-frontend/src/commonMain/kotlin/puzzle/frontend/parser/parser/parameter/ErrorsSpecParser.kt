@@ -2,8 +2,8 @@ package puzzle.frontend.parser.parser.parameter
 
 import puzzle.ast.type.ErrorsSpec
 import puzzle.ast.type.NamedType
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.type.parseTypeReference
 import puzzle.token.kinds.BracketKind.End.RBRACKET

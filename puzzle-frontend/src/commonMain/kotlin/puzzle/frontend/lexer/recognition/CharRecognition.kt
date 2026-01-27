@@ -1,9 +1,9 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.location.span
-import puzzle.base.util.isHex
-import puzzle.base.util.safeString
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
+import puzzle.core.util.isHex
+import puzzle.core.util.safeString
 import puzzle.frontend.lexer.lexicalError
 import puzzle.token.PzlToken
 import puzzle.token.kinds.CharKind

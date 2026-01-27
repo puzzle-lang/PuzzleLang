@@ -1,7 +1,7 @@
 package puzzle.sema.deferred
 
 import puzzle.ast.type.TypeReference
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.PzlScope
 
 class DeferredTypeReferenceDeclarer(

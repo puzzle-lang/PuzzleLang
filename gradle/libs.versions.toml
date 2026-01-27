@@ -20,17 +20,12 @@ puzzle-frontend = []
 puzzle-sema = []
 puzzle-backup = []
 puzzle-diagnostic = ['kotlinx-serialization-json']
-puzzle-base = ['kotlinx-serialization-json', 'kotlinx-io-core']
+puzzle-builtin = []
+puzzle-export = ['kotlinx-coroutines-core', 'kotlinx-serialization-json']
+puzzle-core = ['kotlinx-serialization-json', 'kotlinx-io-core']
 
 puzzle-config = ['kotlinx-serialization-json']
-puzzle-context = []
 puzzle-token = ['kotlinx-serialization-json']
 puzzle-ast = ['kotlinx-serialization-json']
 puzzle-symbol = []
 puzzle-ir = []
-
-puzzle-core = [
-    'kotlinx-coroutines-core',
-    'kotlinx-serialization-json',
-    'kotlinx-io-core'
-]

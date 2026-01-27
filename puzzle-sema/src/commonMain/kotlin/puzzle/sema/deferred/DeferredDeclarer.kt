@@ -1,6 +1,6 @@
 package puzzle.sema.deferred
 
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 
 sealed interface DeferredDeclarer {
 	

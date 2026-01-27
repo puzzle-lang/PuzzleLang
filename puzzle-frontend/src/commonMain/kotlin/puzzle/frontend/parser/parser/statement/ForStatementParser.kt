@@ -4,8 +4,8 @@ import puzzle.ast.parameter.ParameterReference
 import puzzle.ast.statement.ForDestructurePattern
 import puzzle.ast.statement.ForStatement
 import puzzle.ast.statement.ForValuePattern
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.IdentifierTarget
 import puzzle.frontend.parser.parser.expression.parseExpressionChain

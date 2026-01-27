@@ -1,11 +1,11 @@
 package puzzle.sema
 
 import puzzle.ast.PzlAstNode
-import puzzle.base.exception.PzlException
-import puzzle.base.exception.getExceptionMessage
-import puzzle.base.location.SourceLocation
-import puzzle.context.FileContext
-import puzzle.context.startPosition
+import puzzle.core.exception.PzlException
+import puzzle.core.exception.getExceptionMessage
+import puzzle.core.location.SourceLocation
+import puzzle.core.context.FileContext
+import puzzle.core.context.startPosition
 
 class SemaException(message: String) : PzlException(message)
 

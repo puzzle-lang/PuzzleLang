@@ -1,7 +1,7 @@
 package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 sealed interface ContextualExpression : Expression

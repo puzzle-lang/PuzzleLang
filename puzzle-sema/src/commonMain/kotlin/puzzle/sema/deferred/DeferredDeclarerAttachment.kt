@@ -1,7 +1,7 @@
 package puzzle.sema.deferred
 
-import puzzle.context.ContextAttachment
-import puzzle.context.FileContext
+import puzzle.core.context.ContextAttachment
+import puzzle.core.context.FileContext
 
 class DeferredDeclarerAttachment internal constructor(
 	val value: MutableList<DeferredDeclarer>,

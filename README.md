@@ -20,7 +20,7 @@ Puzzle 试图在**表达力、可读性与工程可控性**之间取得平衡，
 构建项目
 
 ```shell
-puzzle build --path=<project-path> --debug-features=all --infos=all
+puzzle build --path=<project-path> --features=all --infos=all --exports=all
 ```
 
 查看版本信息

@@ -9,7 +9,13 @@ version = property("puzzle-lang.version").toString()
 kotlin {
 	jvmToolchain(25)
 	
-	macosArm64()
+	macosArm64 {
+		binaries {
+			executable {
+				entryPoint = "puzzle.cli.main"
+			}
+		}
+	}
 	jvm("desktop")
 	
 	sourceSets {
@@ -18,8 +24,14 @@ kotlin {
 				implementation(libs.bundles.puzzle.cli)
 				implementation(projects.puzzleDriver)
 				implementation(projects.puzzleDiagnostic)
-				implementation(projects.puzzleBase)
+				implementation(projects.puzzleCore)
 			}
 		}
+	}
+}
+
+tasks.withType<Jar>().configureEach {
+	manifest {
+		attributes["Main-Class"] = "puzzle.cli.MainKt"
 	}
 }

@@ -1,6 +1,6 @@
 package puzzle.frontend.parser
 
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.token.PzlToken
 import puzzle.token.kinds.MetaKind.EOF
 import puzzle.token.kinds.PzlTokenKind

@@ -1,8 +1,8 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.util.safeString
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.util.safeString
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.token.PzlToken
 import puzzle.token.kinds.OperatorKind.IN
 import puzzle.token.kinds.OperatorKind.NOT_IN

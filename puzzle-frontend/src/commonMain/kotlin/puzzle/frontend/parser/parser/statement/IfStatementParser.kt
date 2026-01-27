@@ -5,8 +5,8 @@ import puzzle.ast.expression.IfExpression
 import puzzle.ast.statement.ExpressionStatement
 import puzzle.ast.statement.IfStatement
 import puzzle.ast.statement.Statement
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.parseExpressionChain
 import puzzle.frontend.parser.parser.expression.parsePostfixExpression

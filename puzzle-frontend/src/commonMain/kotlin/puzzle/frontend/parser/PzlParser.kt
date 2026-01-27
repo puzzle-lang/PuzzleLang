@@ -1,7 +1,7 @@
 package puzzle.frontend.parser
 
 import puzzle.ast.AstFile
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.parser.parseFile
 import puzzle.token.TokenAttachment
 

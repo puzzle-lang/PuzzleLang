@@ -19,10 +19,11 @@ kotlin {
 				implementation(projects.puzzleFrontend)
 				implementation(projects.puzzleSema)
 				implementation(projects.puzzleConfig)
-				implementation(projects.puzzleContext)
 				implementation(projects.puzzleToken)
+				implementation(projects.puzzleExport)
 				implementation(projects.puzzleAst)
-				implementation(projects.puzzleBase)
+				implementation(projects.puzzleBuiltin)
+				implementation(projects.puzzleCore)
 			}
 		}
 	}

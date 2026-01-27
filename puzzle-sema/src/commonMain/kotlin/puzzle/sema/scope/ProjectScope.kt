@@ -1,6 +1,6 @@
 package puzzle.sema.scope
 
-import puzzle.context.ProjectContext
+import puzzle.core.context.ProjectContext
 import puzzle.sema.symbol.ProjectSymbol
 import puzzle.sema.symbol.PzlSymbol
 

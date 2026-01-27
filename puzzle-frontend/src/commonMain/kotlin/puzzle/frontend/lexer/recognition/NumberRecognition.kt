@@ -1,10 +1,10 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.location.span
-import puzzle.base.util.isBinary
-import puzzle.base.util.isDecimal
-import puzzle.base.util.isHex
-import puzzle.context.FileContext
+import puzzle.core.location.span
+import puzzle.core.util.isBinary
+import puzzle.core.util.isDecimal
+import puzzle.core.util.isHex
+import puzzle.core.context.FileContext
 import puzzle.frontend.lexer.lexicalError
 import puzzle.token.PzlToken
 import puzzle.token.kinds.NumberKind

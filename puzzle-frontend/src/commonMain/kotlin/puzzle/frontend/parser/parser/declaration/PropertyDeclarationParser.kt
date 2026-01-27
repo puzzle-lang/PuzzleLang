@@ -7,11 +7,10 @@ import puzzle.ast.type.LambdaType
 import puzzle.ast.type.NamedType
 import puzzle.ast.type.TypeReference
 import puzzle.ast.type.copy
-import puzzle.context.FileContext
-import puzzle.base.location.SourceLocation
-import puzzle.base.location.copy
-import puzzle.base.location.span
-import puzzle.frontend.lexer.syntaxError
+import puzzle.core.context.FileContext
+import puzzle.core.location.SourceLocation
+import puzzle.core.location.copy
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.frontend.parser.isAnonymousBinding
@@ -25,6 +24,7 @@ import puzzle.frontend.parser.parser.statement.parseStatement
 import puzzle.frontend.parser.parser.statement.parseStatements
 import puzzle.frontend.parser.parser.type.parseTypeReference
 import puzzle.frontend.parser.syntaxError
+import puzzle.frontend.util.isIn
 import puzzle.token.kinds.AccessKind.DOT
 import puzzle.token.kinds.AccessKind.QUESTION_DOT
 import puzzle.token.kinds.AccessorKind.GET
@@ -37,7 +37,6 @@ import puzzle.token.kinds.ModifierKind.*
 import puzzle.token.kinds.OperatorKind.LT
 import puzzle.token.kinds.SeparatorKind.COMMA
 import puzzle.token.kinds.SymbolKind.COLON
-import puzzle.token.kinds.isIn
 
 context(_: FileContext, cursor: PzlTokenCursor)
 fun parsePropertyDeclaration(meta: DeclarationMeta, start: SourceLocation, isTopLevel: Boolean): PropertyDeclaration {

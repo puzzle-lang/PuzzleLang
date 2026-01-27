@@ -3,6 +3,7 @@ package puzzle.sema.symbol
 import puzzle.ast.PzlAstNode
 import puzzle.ast.expression.Identifier
 import puzzle.sema.scope.PzlScope
+import puzzle.token.kinds.Visibility
 
 sealed interface PzlSymbol {
 	

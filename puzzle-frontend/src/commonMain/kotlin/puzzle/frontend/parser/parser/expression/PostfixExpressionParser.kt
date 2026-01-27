@@ -2,8 +2,8 @@ package puzzle.frontend.parser.parser.expression
 
 import puzzle.ast.Operator
 import puzzle.ast.expression.*
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.util.equalsLine
 import puzzle.token.kinds.AccessKind.*

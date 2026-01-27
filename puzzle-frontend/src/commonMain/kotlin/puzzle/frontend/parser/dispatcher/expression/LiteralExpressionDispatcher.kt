@@ -1,7 +1,7 @@
 package puzzle.frontend.parser.dispatcher.expression
 
 import puzzle.ast.expression.Expression
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.parseLiteralExpression
 import puzzle.frontend.parser.parser.expression.parsePostfixExpression

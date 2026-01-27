@@ -1,7 +1,7 @@
 package puzzle.sema.checker
 
-import puzzle.base.util.containsType
-import puzzle.context.FileContext
+import puzzle.core.util.containsType
+import puzzle.core.context.FileContext
 import puzzle.sema.semaError
 import puzzle.sema.symbol.LocalSymbol
 import puzzle.sema.symbol.ParameterSymbol

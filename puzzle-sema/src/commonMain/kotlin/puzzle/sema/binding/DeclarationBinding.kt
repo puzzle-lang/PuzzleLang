@@ -3,7 +3,7 @@ package puzzle.sema.binding
 import puzzle.ast.declaration.*
 import puzzle.ast.type.SuperConstructorCall
 import puzzle.ast.type.SuperType
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.deferred.DeferredBodyDeclarer
 import puzzle.sema.deferred.DeferredExpressionDeclarer
 import puzzle.sema.deferred.getDeferredDeclarers

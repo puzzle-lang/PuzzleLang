@@ -1,27 +1,26 @@
 package puzzle.cli
 
-import puzzle.base.environment.PzlEnvironment
+import puzzle.core.environment.PzlEnvironment
 
-private val availableArgMap = mapOf(
+private val availableArgParseMap = mapOf(
 	"--path" to ::parsePathOption,
-	"--debug-features" to ::parseDebugFeatureOption,
-	"--infos" to ::parseInfoOption
+	"--features" to ::parseFeaturesOption,
+	"--exports" to ::parseExportsOption,
+	"--infos" to ::parseInfosOption
 )
 
 fun parseCliOptions(options: List<String>) {
 	val usedArgTypes = mutableSetOf<String>()
+	val argKeys = availableArgParseMap.keys
 	options.forEach { arg ->
-		availableArgMap.forEach { (argType, parseOption) ->
-			if (arg.startsWith("$argType=")) {
-				if (argType in usedArgTypes) {
-					cliError("重复的选项: $argType")
-				}
-				usedArgTypes += arg
-				val value = arg.removePrefix("$argType=")
-				parseOption(value)
-			}
+		val key = argKeys.find { arg.startsWith("$it=") }
+			?: cliError("未知选项: ${arg.split("=").first()}")
+		if (key in usedArgTypes) {
+			cliError("重复的选项: $key")
 		}
-		cliError("未知选项: $arg")
+		usedArgTypes += key
+		val value = arg.removePrefix("$key=")
+		availableArgParseMap[key]!!(value)
 	}
 	checkOption()
 }
@@ -36,63 +35,85 @@ private fun parsePathOption(value: String) {
 	PzlEnvironment.projectPath = value
 }
 
-private val availableDebugFeatures = setOf(
-	"output-ast-json",
+private val availableFeatureOptions = setOf(
 	"ansi-color",
 	"error-stack"
 )
 
-private fun parseDebugFeatureOption(value: String) {
-	if (value.isBlank()) cliError("--debug-features=<option1,option2,...> 缺少参数")
-	when (value) {
-		"all" -> {
-			PzlEnvironment.enableOutputAstJson = true
+private fun parseFeaturesOption(value: String) {
+	parseAndCheckOptions(
+		value = value,
+		key = "--features",
+		availableOptions = availableFeatureOptions,
+		onAll = {
 			PzlEnvironment.enableAnsiColor = true
 			PzlEnvironment.enableErrorStack = true
-			return
+		},
+		onAction = { options ->
+			PzlEnvironment.enableAnsiColor = "ansi-color" in options
+			PzlEnvironment.enableErrorStack = "error-stack" in options
 		}
-		
-		"none" -> return
-	}
-	val values = value.split(",")
-	values.forEach {
-		if (it !in availableDebugFeatures) {
-			cliError("--debug-features=$it 不可用的参数")
-		}
-	}
-	values.groupingBy { it }
-		.eachCount()
-		.filter { it.value > 1 }
-		.keys
-		.firstOrNull()
-		?.let { cliError("--debug-features=$it 重复的参数") }
-	PzlEnvironment.enableOutputAstJson = "output-ast-json" in values
-	PzlEnvironment.enableAnsiColor = "ansi-color" in values
-	PzlEnvironment.enableErrorStack = "error-stack" in values
+	)
 }
 
-private val availableReports = setOf(
+private val availableExportOptions = setOf(
+	"ast"
+)
+
+private fun parseExportsOption(value: String) {
+	parseAndCheckOptions(
+		value = value,
+		key = "--exports",
+		availableOptions = availableExportOptions,
+		onAll = {
+			PzlEnvironment.enableExportAst = true
+		},
+		onAction = { options ->
+			PzlEnvironment.enableExportAst = "ast" in options
+		}
+	)
+}
+
+private val availableInfoOptions = setOf(
 	"progress",
 	"ignore",
 	"file"
 )
 
-private fun parseInfoOption(value: String) {
-	if (value.isBlank()) cliError("--infos=<option1,option2,...> 缺少参数")
-	when (value) {
-		"all" -> {
+private fun parseInfosOption(value: String) {
+	parseAndCheckOptions(
+		value = value,
+		key = "--infos",
+		availableOptions = availableInfoOptions,
+		onAll = {
 			PzlEnvironment.enableInfoProgress = true
 			PzlEnvironment.enableInfoIgnore = true
 			PzlEnvironment.enableInfoFile = true
-			return
+		},
+		onAction = { options ->
+			PzlEnvironment.enableInfoProgress = "progress" in options
+			PzlEnvironment.enableInfoIgnore = "ignore" in options
+			PzlEnvironment.enableInfoFile = "file" in options
 		}
-		
+	)
+}
+
+private fun parseAndCheckOptions(
+	value: String,
+	key: String,
+	availableOptions: Set<String>,
+	onAll: () -> Unit,
+	onAction: (Set<String>) -> Unit,
+) {
+	if (value.isBlank()) cliError("$key=<option1,option2,...> 缺少参数")
+	when (value) {
+		"all" -> return onAll()
 		"none" -> return
 	}
 	val values = value.split(",")
 	values.forEach {
-		if (it !in availableReports) {
-			cliError("--infos=$it 不可用的参数")
+		if (it !in availableOptions) {
+			cliError("$key=$it 不可用的参数")
 		}
 	}
 	values.groupingBy { it }
@@ -100,8 +121,6 @@ private fun parseInfoOption(value: String) {
 		.filter { it.value > 1 }
 		.keys
 		.firstOrNull()
-		?.let { cliError("--infos=$it 重复的参数") }
-	PzlEnvironment.enableInfoProgress = "progress" in values
-	PzlEnvironment.enableInfoIgnore = "ignore" in values
-	PzlEnvironment.enableInfoFile = "file" in values
+		?.let { cliError("$key=$it 重复的参数") }
+	onAction(values.toSet())
 }

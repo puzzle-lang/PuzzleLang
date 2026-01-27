@@ -1,6 +1,6 @@
 package puzzle.driver
 
-import puzzle.base.exception.PzlException
+import puzzle.core.exception.PzlException
 
 class ConfigException(message: String) : PzlException(message)
 

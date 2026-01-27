@@ -1,15 +1,11 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.location.span
-import puzzle.base.util.getIndentWidth
-import puzzle.base.util.isHex
-import puzzle.base.util.removeIndent
-import puzzle.base.util.safeString
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
+import puzzle.core.util.*
 import puzzle.frontend.lexer.TemplateExpressionLexerScanner
 import puzzle.frontend.lexer.lexicalError
 import puzzle.frontend.lexer.recognition.StringRecognition.CharType.*
-import puzzle.frontend.util.isIdentifierStart
 import puzzle.token.PzlToken
 import puzzle.token.kinds.MetaKind.EOF
 import puzzle.token.kinds.StringKind

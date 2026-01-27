@@ -2,7 +2,7 @@ package puzzle.sema.symbol
 
 import puzzle.ast.expression.Identifier
 import puzzle.ast.parameter.TypeParameter
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.PzlScope
 
 class TypeParameterSymbol(

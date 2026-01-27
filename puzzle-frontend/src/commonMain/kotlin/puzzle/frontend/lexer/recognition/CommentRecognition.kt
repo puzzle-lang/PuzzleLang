@@ -1,7 +1,7 @@
 package puzzle.frontend.lexer.recognition
 
-import puzzle.base.location.span
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.lexer.lexicalError
 import puzzle.token.PzlToken
 import puzzle.token.kinds.CommentKind.*

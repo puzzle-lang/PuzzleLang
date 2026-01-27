@@ -6,11 +6,10 @@ import puzzle.ast.type.LambdaType
 import puzzle.ast.type.NamedType
 import puzzle.ast.type.TypeReference
 import puzzle.ast.type.copy
-import puzzle.context.FileContext
-import puzzle.base.location.SourceLocation
-import puzzle.base.location.copy
-import puzzle.base.location.span
-import puzzle.frontend.lexer.syntaxError
+import puzzle.core.context.FileContext
+import puzzle.core.location.SourceLocation
+import puzzle.core.location.copy
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.dispatcher.declaration.DeclarationMeta
 import puzzle.frontend.parser.parser.expression.IdentifierTarget

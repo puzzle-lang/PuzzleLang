@@ -16,7 +16,7 @@ kotlin {
 		commonMain {
 			dependencies {
 				implementation(libs.bundles.puzzle.config)
-				implementation(projects.puzzleContext)
+				implementation(projects.puzzleCore)
 			}
 		}
 	}

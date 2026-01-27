@@ -3,7 +3,7 @@ package puzzle.ast
 import kotlinx.serialization.Serializable
 import puzzle.ast.expression.Argument
 import puzzle.ast.type.NamedType
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class AnnotationCall(

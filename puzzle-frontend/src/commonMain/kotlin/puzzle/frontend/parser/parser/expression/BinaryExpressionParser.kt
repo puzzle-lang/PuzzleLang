@@ -4,7 +4,7 @@ import puzzle.ast.Operator
 import puzzle.ast.expression.BinaryExpression
 import puzzle.ast.expression.Expression
 import puzzle.ast.expression.JumpExpression
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.syntaxError
 import puzzle.token.kinds.Assoc

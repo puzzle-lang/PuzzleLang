@@ -3,8 +3,8 @@ package puzzle.frontend.parser.parser.type
 import puzzle.ast.type.SuperConstructorCall
 import puzzle.ast.type.SuperType
 import puzzle.ast.type.SuperTypeReference
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.ArgumentTarget
 import puzzle.frontend.parser.parser.expression.parseArguments

@@ -1,6 +1,6 @@
 package puzzle.cli
 
-import puzzle.base.exception.PzlException
+import puzzle.core.exception.PzlException
 
 class CliException(message: String) : PzlException(message)
 

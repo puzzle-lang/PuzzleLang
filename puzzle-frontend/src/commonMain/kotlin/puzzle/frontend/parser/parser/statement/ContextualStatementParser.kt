@@ -3,8 +3,8 @@ package puzzle.frontend.parser.parser.statement
 import puzzle.ast.statement.ContextualStatement
 import puzzle.ast.statement.SuperStatement
 import puzzle.ast.statement.ThisStatement
-import puzzle.context.FileContext
-import puzzle.base.location.span
+import puzzle.core.context.FileContext
+import puzzle.core.location.span
 import puzzle.frontend.parser.PzlTokenCursor
 import puzzle.frontend.parser.parser.expression.ArgumentTarget
 import puzzle.frontend.parser.parser.expression.parseArguments

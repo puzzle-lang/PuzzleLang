@@ -4,7 +4,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import puzzle.ast.declaration.TopLevelAllowedDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class AstFile(

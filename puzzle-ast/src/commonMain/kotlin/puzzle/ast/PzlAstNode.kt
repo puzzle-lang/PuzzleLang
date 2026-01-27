@@ -1,6 +1,6 @@
 package puzzle.ast
 
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 interface PzlAstNode {
 	

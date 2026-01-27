@@ -1,7 +1,7 @@
 package puzzle.token.kinds
 
-import puzzle.base.collection.fastSetOf
-import puzzle.base.location.SourceLocation
+import puzzle.core.collection.fastSetOf
+import puzzle.core.location.SourceLocation
 import puzzle.token.PzlToken
 
 sealed interface LiteralKind : PzlTokenKind {

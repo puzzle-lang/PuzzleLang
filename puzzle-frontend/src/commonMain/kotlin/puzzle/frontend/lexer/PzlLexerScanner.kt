@@ -1,6 +1,6 @@
 package puzzle.frontend.lexer
 
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.token.PzlToken
 import puzzle.token.kinds.BracketKind.End.RBRACE
 import puzzle.token.kinds.BracketKind.Start.LBRACE

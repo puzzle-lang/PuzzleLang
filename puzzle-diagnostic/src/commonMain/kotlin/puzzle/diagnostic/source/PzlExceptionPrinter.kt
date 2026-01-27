@@ -1,10 +1,10 @@
 package puzzle.diagnostic.source
 
-import puzzle.base.environment.PzlEnvironment
-import puzzle.base.exception.PzlException
-import puzzle.base.util.AnsiStyle
-import puzzle.base.util.beginAnsi
-import puzzle.base.util.endAnsi
+import puzzle.core.environment.PzlEnvironment
+import puzzle.core.exception.PzlException
+import puzzle.core.util.AnsiStyle
+import puzzle.core.util.beginAnsi
+import puzzle.core.util.endAnsi
 
 object PzlExceptionPrinter {
 	

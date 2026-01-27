@@ -1,7 +1,7 @@
 package puzzle.sema.deferred
 
 import puzzle.ast.expression.Expression
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.binding.declare
 import puzzle.sema.scope.PzlScope
 

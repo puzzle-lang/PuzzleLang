@@ -16,12 +16,11 @@ kotlin {
 		commonMain {
 			dependencies {
 				implementation(libs.bundles.puzzle.sema)
-				implementation(projects.puzzleContext)
 				implementation(projects.puzzleSymbol)
 				implementation(projects.puzzleToken)
 				implementation(projects.puzzleAst)
 				implementation(projects.puzzleConfig)
-				implementation(projects.puzzleBase)
+				implementation(projects.puzzleCore)
 			}
 		}
 	}

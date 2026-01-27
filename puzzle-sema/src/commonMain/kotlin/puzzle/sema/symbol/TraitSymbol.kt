@@ -2,9 +2,10 @@ package puzzle.sema.symbol
 
 import puzzle.ast.declaration.TraitDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.scope.TraitScope
+import puzzle.token.kinds.Visibility
 
 class TraitSymbol(
 	override val name: Identifier,

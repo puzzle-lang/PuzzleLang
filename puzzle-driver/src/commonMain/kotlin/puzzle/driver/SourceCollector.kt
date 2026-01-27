@@ -1,18 +1,18 @@
 package puzzle.driver
 
 import kotlinx.serialization.json.Json
-import puzzle.base.environment.PzlEnvironment
-import puzzle.base.io.FilePath
-import puzzle.base.io.path
-import puzzle.base.util.AnsiStyle
-import puzzle.base.util.appendAnsi
-import puzzle.base.util.beginAnsi
-import puzzle.base.util.endAnsi
+import puzzle.core.context.FileContext
+import puzzle.core.context.ModuleContext
+import puzzle.core.context.ProjectContext
+import puzzle.core.context.RootContext
+import puzzle.core.environment.PzlEnvironment
+import puzzle.core.io.FilePath
+import puzzle.core.io.path
+import puzzle.core.util.AnsiStyle
+import puzzle.core.util.appendAnsi
+import puzzle.core.util.beginAnsi
+import puzzle.core.util.endAnsi
 import puzzle.config.*
-import puzzle.context.FileContext
-import puzzle.context.ModuleContext
-import puzzle.context.ProjectContext
-import puzzle.context.RootContext
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -146,6 +146,7 @@ object SourceCollector {
 	private fun getProjectContext(path: FilePath, config: ProjectConfig): ProjectContext {
 		return ProjectContext().apply {
 			this.name = config.name!!
+			this.path = path
 			this.modules = config.modules!!.map {
 				val modulePath = path(path, it)
 				val moduleConfig = getModuleConfig(modulePath, config)
@@ -271,7 +272,7 @@ object SourceCollector {
 		return RootContext.projects.maxOfOrNull { project ->
 			project.modules.maxOfOrNull { module ->
 				module.files.maxOfOrNull {
-					it.path.absolutePath.length
+					it.path!!.absolutePath.length
 				} ?: 0
 			} ?: 0
 		} ?: 0

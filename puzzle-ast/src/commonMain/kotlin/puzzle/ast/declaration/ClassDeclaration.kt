@@ -10,7 +10,7 @@ import puzzle.ast.parameter.Parameter
 import puzzle.ast.parameter.TypeSpec
 import puzzle.ast.type.NamedType
 import puzzle.ast.type.SuperType
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 
 @Serializable
 class ClassDeclaration(

@@ -2,7 +2,7 @@ package puzzle.ast.expression
 
 import kotlinx.serialization.Serializable
 import puzzle.ast.PzlAstNode
-import puzzle.base.location.SourceLocation
+import puzzle.core.location.SourceLocation
 import puzzle.token.kinds.NumberSystem
 import puzzle.token.kinds.NumericType
 import puzzle.ast.expression.Expression as PzlExpression

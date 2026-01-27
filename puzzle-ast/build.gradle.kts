@@ -17,8 +17,7 @@ kotlin {
 			dependencies {
 				implementation(libs.bundles.puzzle.ast)
 				implementation(projects.puzzleToken)
-				implementation(projects.puzzleContext)
-				implementation(projects.puzzleBase)
+				implementation(projects.puzzleCore)
 			}
 		}
 	}

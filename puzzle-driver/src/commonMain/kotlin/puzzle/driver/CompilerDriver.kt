@@ -2,14 +2,16 @@ package puzzle.driver
 
 import kotlinx.coroutines.*
 import puzzle.ast.AstFileAttachment
-import puzzle.base.environment.PzlEnvironment
-import puzzle.base.io.FilePath
-import puzzle.base.io.path
-import puzzle.base.util.*
+import puzzle.core.context.FileContext
+import puzzle.core.context.RootContext
+import puzzle.core.environment.PzlEnvironment
+import puzzle.core.io.FilePath
+import puzzle.core.io.path
+import puzzle.core.util.*
+import puzzle.builtin.BuiltinAstGenerator
 import puzzle.config.Dependence
 import puzzle.config.DependenceAttachment
-import puzzle.context.FileContext
-import puzzle.context.RootContext
+import puzzle.export.AstExporter
 import puzzle.frontend.lexer.FileLexerScanner
 import puzzle.frontend.parser.PzlParser
 import puzzle.sema.PzlSymbolBuilder
@@ -57,10 +59,8 @@ object CompilerDriver {
 			println("全局符号表创建用时${CHINESE_SPACE.repeat(2)}: ${rootSymbol.duration.format()}")
 		}
 		
-		if (PzlEnvironment.enableOutputAstJson) {
-			val writeDuration = measureTime {
-				AstDebugWriter.write(projectPath)
-			}
+		if (PzlEnvironment.enableExportAst) {
+			val writeDuration = measureTime { AstExporter.export(projectPath) }
 			if (PzlEnvironment.enableInfoProgress) {
 				println("抽象语法树导出用时${CHINESE_SPACE.repeat(2)}: ${writeDuration.format()}")
 			}
@@ -89,7 +89,7 @@ private suspend fun CoroutineScope.compileAllFiles() {
 context(file: FileContext)
 private fun compileFile() {
 	val markStart = markNow()
-	val source = measureTimedValue { file.path.readText().toCharArray() }
+	val source = measureTimedValue { file.path!!.readText().toCharArray() }
 	file.lineStarts = source.value.getLineStarts()
 	val tokens = measureTimedValue { FileLexerScanner.scan(source.value) }
 	file += TokenAttachment(tokens.value)
@@ -100,7 +100,7 @@ private fun compileFile() {
 	if (PzlEnvironment.enableInfoFile) {
 		val totalDuration = markStart.elapsedNow()
 		printDurations(
-			path = file.path,
+			path = file.path!!,
 			charSize = source.value.size,
 			tokenSize = tokens.value.size,
 			totalDuration = totalDuration,

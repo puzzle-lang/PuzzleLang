@@ -2,9 +2,10 @@ package puzzle.sema.symbol
 
 import puzzle.ast.declaration.TypeAliasDeclaration
 import puzzle.ast.expression.Identifier
-import puzzle.context.FileContext
+import puzzle.core.context.FileContext
 import puzzle.sema.scope.PzlScope
 import puzzle.sema.scope.TypeAliasScope
+import puzzle.token.kinds.Visibility
 
 class TypeAliasSymbol(
 	override val name: Identifier,
