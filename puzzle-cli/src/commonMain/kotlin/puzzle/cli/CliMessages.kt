@@ -37,12 +37,12 @@ object CliMessages {
 	
 	fun version() {
 		val message = """
-		Puzzle CLI 当前版本: v0.1.3-dev
+		Puzzle CLI 当前版本: v0.1.4-dev
 		
 		第三方依赖版本:
 			kotlin:                     v2.3.0
 			kotlinx-coroutines-core:    v1.10.2
-			kotlinx-serialization:      v1.10.0-RC
+			kotlinx-serialization:      v1.10.0
 			kotlinx-io-core:            v0.8.2
     """.trimIndent()
 		println(message)
