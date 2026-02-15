@@ -10,7 +10,7 @@ class FunScope(
 	override val owner: FunSymbol,
 ) : PzlScope<FileContext> {
 	
-	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	

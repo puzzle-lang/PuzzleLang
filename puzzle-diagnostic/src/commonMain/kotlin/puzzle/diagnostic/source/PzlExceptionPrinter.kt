@@ -14,11 +14,11 @@ object PzlExceptionPrinter {
 				beginAnsi(AnsiStyle.BRIGHT_RED)
 			}
 			append("错误: ${e.message}")
-			if (PzlEnvironment.enableErrorStack) {
+			if (PzlEnvironment.enableStackTrace) {
 				val message = e.stackTraceToString()
 				val index = message.indexOf("\n")
 				if (index > 0) {
-					append(message.substring(index))
+//					append(message.substring(index))
 				}
 			}
 			if (PzlEnvironment.enableAnsiColor) {

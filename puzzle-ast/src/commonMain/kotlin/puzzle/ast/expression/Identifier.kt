@@ -5,29 +5,26 @@ import puzzle.core.location.SourceLocation
 
 @Serializable
 class Identifier(
-	val value: String,
-	override val location: SourceLocation,
+    val value: String,
+    override val location: SourceLocation,
 ) : Expression, DirectAssignable, CompoundAssignable {
-	
-	override fun equals(other: Any?): Boolean {
-		if (this === other) return true
-		if (other !is Identifier) return false
-		return this.value == other.value
-	}
-	
-	override fun hashCode(): Int {
-		return value.hashCode()
-	}
-	
-	override fun toString(): String {
-		return value
-	}
-}
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Identifier) return false
+        return this.value == other.value
+    }
+
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
+
+    override fun toString(): String {
+        return this.value
+    }
+}
 
 
 fun String.toIdentifier(
-	location: SourceLocation = SourceLocation.Builtin,
-): Identifier {
-	return Identifier(this, location)
-}
+    location: SourceLocation = SourceLocation.Builtin,
+): Identifier = Identifier(this, location)

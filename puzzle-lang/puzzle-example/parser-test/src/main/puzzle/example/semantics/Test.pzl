@@ -1,10 +1,10 @@
 package puzzle.example.semantics
 
-import puzzle.example.test.test
+import puzzle.example.test.Test
 
 fun main() {
     val name = ""
     val name = ""
 
-    test()
+    Test.test()
 }

@@ -9,7 +9,7 @@ object PzlParser {
 	
 	context(file: FileContext)
 	fun parse(): AstFile {
-		val tokens = file[TokenAttachment::class].value
+		val tokens = file[TokenAttachment::class].values
 		val cursor = PzlTokenCursor(tokens)
 		return context(cursor) { parseFile() }
 	}
