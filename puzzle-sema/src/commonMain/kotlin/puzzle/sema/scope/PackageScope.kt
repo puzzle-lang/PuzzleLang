@@ -9,7 +9,7 @@ class PackageScope(
 	override val owner: PackageSymbol,
 ) : PzlScope<ModuleContext> {
 	
-	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	

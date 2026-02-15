@@ -10,7 +10,7 @@ class BlockScope(
 	override val owner: PzlSymbol? = null,
 ) : PzlScope<FileContext> {
 	
-	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	

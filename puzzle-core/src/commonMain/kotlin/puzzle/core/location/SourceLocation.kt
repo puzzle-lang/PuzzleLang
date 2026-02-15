@@ -34,7 +34,7 @@ infix fun SourceLocation.span(other: SourceLocation): SourceLocation {
 	if (this !is SourceLocation.File || other !is SourceLocation.File) {
 		return SourceLocation.Builtin
 	}
-	if (this.start >= other.end) error("this.start >= other.end")
+	if (this.start >= other.end) error("this.start 必须小于 other.end")
 	return SourceLocation.File(this.start, other.end)
 }
 

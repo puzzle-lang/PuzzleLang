@@ -1,7 +1,7 @@
 package puzzle.frontend.parser.parser
 
 import puzzle.ast.ImportDirective
-import puzzle.ast.ImportScope
+import puzzle.ast.ImportKind
 import puzzle.ast.expression.Identifier
 import puzzle.core.context.FileContext
 import puzzle.core.location.span
@@ -20,7 +20,7 @@ fun parseImportDirective(): ImportDirective {
 	val start = cursor.previous.location
 	val name = parseIdentifierString(IdentifierTarget.IMPORT)
 	val segments = mutableListOf(name)
-	var scope = ImportScope.SINGLE
+	var scope = ImportKind.SINGLE
 	var alias: Identifier? = null
 	while (cursor.match(DOT)) {
 		when {
@@ -33,12 +33,12 @@ fun parseImportDirective(): ImportDirective {
 			}
 			
 			cursor.match(STAR) -> {
-				scope = ImportScope.WILDCARD
+				scope = ImportKind.WILDCARD
 				break
 			}
 			
 			cursor.match(DOUBLE_STAR) -> {
-				scope = ImportScope.RECURSIVE
+				scope = ImportKind.RECURSIVE
 				break
 			}
 		}
@@ -47,7 +47,7 @@ fun parseImportDirective(): ImportDirective {
 	return ImportDirective(
 		segments = segments,
 		alias = alias,
-		scope = scope,
+		kind = scope,
 		location = start span end
 	)
 }

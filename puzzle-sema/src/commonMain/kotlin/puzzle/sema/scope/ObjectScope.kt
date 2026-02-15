@@ -11,7 +11,7 @@ class ObjectScope(
 	override val owner: ObjectSymbol,
 ) : PzlScope<FileContext>, InitContainer {
 	
-	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	

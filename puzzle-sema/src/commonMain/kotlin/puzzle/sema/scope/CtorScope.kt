@@ -11,7 +11,7 @@ class CtorScope(
 	override val owner: CtorSymbol,
 ) : PzlScope<FileContext> {
 	
-	override val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
+	private val symbolsByName = mutableMapOf<String?, MutableList<PzlSymbol>>()
 	
 	override val orderedSymbols = mutableListOf<PzlSymbol>()
 	

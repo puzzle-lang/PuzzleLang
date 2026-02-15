@@ -182,6 +182,6 @@ fun builtinAst(
 		this.name = name
 		this.parent = module
 		this += AstFileAttachment(file)
-		this += FileSymbolAttachment(PzlSymbolBuilder.buildFileSymbol())
+		this += FileSymbolAttachment(PzlSymbolBuilder.buildPackageSymbol())
 	}
 }
